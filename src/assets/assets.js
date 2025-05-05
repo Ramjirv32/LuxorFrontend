@@ -76,10 +76,8 @@ export const assets = {
 }
 
 export const cities = [
-    "Dubai",
-    "Singapore",
-    "New York",
-    "London",
+    "chennai",
+    "pondicherry",
 ];
 
 // Exclusive Offers Dummy Data
@@ -131,7 +129,7 @@ export const userDummyData = {
 // Hotel Dummy Data
 export const hotelDummyData = {
     "_id": "67f76393197ac559e4089b72",
-    "name": "Urbanza Suites",
+    "name": "EMIRATES BEACH VILLA",
     "address": "Main Road  123 Street , 23 Colony",
     "contact": "+0123456789",
     "owner": userDummyData,
