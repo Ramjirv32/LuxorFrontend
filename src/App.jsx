@@ -27,7 +27,7 @@ const App = () => {
 
       {/* WhatsApp Button */}
       <a
-  href="https://wa.me/7904040739"
+  href="https://wa.me/9940047463?text=Hi%2C%20I%20am%20interested%20in%20booking%20a%20villas."
   target="_blank"
   rel="noopener noreferrer"
   className="fixed bottom-5 right-5 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition duration-300 z-50 text-2xl"
