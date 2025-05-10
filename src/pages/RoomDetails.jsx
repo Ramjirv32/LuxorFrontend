@@ -62,7 +62,7 @@ const RoomDetails = () => {
                 </div>
             </div>
             {/* Room Price */}
-            <p className='text-2xl font-medium'>${room.pricePerNight}/night</p>
+            <p className='text-2xl font-medium'> ₹{room.pricePerNight}/night</p>
         </div>
 
         {/* CheckIn CheckOut Form */}
@@ -116,7 +116,7 @@ const RoomDetails = () => {
         {/* Hosted By */}
         <div className='flex flex-col items-start gap-4'>
             <div className='flex flex-col items-start gap-4'> 
-                <img src={assets.logo} alt="Host" className='h-14 w-14 md:h-18 md:w-18 rounded-full'/>
+                <img src={assets.logo1} alt="Host" className='h-14 w-14 md:h-18 md:w-18 rounded-full'/>
                 <div>
                     <p className='text-lg md:text-xl'>Hosted By Guna</p>
                     <div className='flex items-center mt-1'>
