@@ -5,6 +5,8 @@ import Home from './pages/Home'
 import Footer from './components/Footer'
 import AllRooms from './pages/AllRooms'
 import RoomDetails from './pages/RoomDetails'
+import { FaWhatsapp } from 'react-icons/fa';
+
 
 const App = () => {
 
@@ -22,8 +24,20 @@ const App = () => {
 
       </div>
       <Footer />
+
+      {/* WhatsApp Button */}
+      <a
+  href="https://wa.me/7904040739"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="fixed bottom-5 right-5 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition duration-300 z-50 text-2xl"
+>
+  <FaWhatsapp />
+</a>
+
     </div>
   )
 }
 
 export default App
+
