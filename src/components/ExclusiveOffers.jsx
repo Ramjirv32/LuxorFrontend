@@ -8,7 +8,7 @@ const ExclusiveOffers = () => {
         <div className='flex felx-col md:flex-row items-center justify-between w-full'>
             <Title align='left' title='Exlusive Offers' subTitle='Take Advantage of our limited-time offers and special packages to enhance your stay and create unforgetable memories' />
             <button className='group flex items-center gap-2 font-medium cursor-pointer ma-md:mt-12'>
-                View All Offers
+                View All Offers In LuxorStay
                 <img src={assets.arrowIcon} alt="arrow-icon" className='group-hover:translate-x- transition-all' />
             </button>
         </div>
