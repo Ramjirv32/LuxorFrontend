@@ -46,12 +46,17 @@ const Navbar = () => {
 
     return (
             
-            <nav className={`fixed top-0 left-0  w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${isScrolled ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4" : "py-4 md:py-6"}`}>
+            <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${isScrolled ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4" : "py-4 md:py-6"}`}>
 
-                {/* Logo */}
-                <Link to='/'>
-                    <img src={assets.logo} alt="logo" className={`h-20 ${isScrolled && ""}`} />
-                </Link>
+                {/* Logo with text */}
+                <div className="flex items-center gap-3">
+                    <Link to='/' className="flex items-center gap-3">
+                        <img src={assets.logo} alt="logo" className={`h-20 ${isScrolled && ""}`} />
+                        <h1 className={`text-3xl ml-10 font-bold font-playfair ${isScrolled ? "text-gray-800" : "text-white"}`}>
+                            Luxor Holiday Home Stays
+                        </h1>
+                    </Link>
+                </div>
 
                 {/* Desktop Nav */}
                 <div className="hidden md:flex items-center gap-4 lg:gap-8">
