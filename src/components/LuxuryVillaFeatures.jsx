@@ -45,6 +45,7 @@ const LuxuryVillaFeatures = () => {
         </div>
       </section>
 
+
       <section className="py-20 bg-gray-200">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto" data-aos="fade-up">
@@ -60,6 +61,7 @@ const LuxuryVillaFeatures = () => {
           </div>
         </div>
       </section>
+
 
       <section className="py-20">
         <div className="container mx-auto px-4">
