@@ -67,21 +67,21 @@ export default function Contact() {
               <Phone className="w-6 h-6 text-black mt-1" />
               <div>
                 <h3 className="font-medium">Phone</h3>
-                <p className="text-gray-600">+91 422 123 4567</p>
+                <p className="text-gray-600">+91 99400 47463</p>
               </div>
             </div>
             <div className="flex items-start space-x-4">
               <Mail className="w-6 h-6 text-black mt-1" />
               <div>
                 <h3 className="font-medium">Email</h3>
-                <p className="text-gray-600">info@indiantraveldreams.com</p>
+                <p className="text-gray-600">luxorholidayhomestays@gmail.com</p>
               </div>
             </div>
             <div className="flex items-start space-x-4">
               <MapPin className="w-6 h-6 text-black mt-1" />
               <div>
                 <h3 className="font-medium">Address</h3>
-                <p className="text-gray-600">123 Gandhi Road, Coimbatore, Tamil Nadu 641001, India</p>
+                <p className="text-gray-600">40/2B Kovalam main road, Chennai, 603112</p>
               </div>
             </div>
           </div>
