@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import Navbar from './components/Navbar'
 import {Route, Routes, useLocation} from 'react-router-dom'
 import Home from './pages/Home'
@@ -14,8 +16,17 @@ import HelpCenter from './components/Footer/Help-center'
 import Safety from './components/Footer/safety-info'
 // import Accessibility from '@/components/Footer/Accessibility'
 import Gallery from './components/Navbar/Gallery'
-const App = () => {
 
+const App = () => {
+  useEffect(() => {
+    // Initialize AOS animation library
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
+
+  
   const isOwnerPath = useLocation().pathname.includes("owner");
   return (
     <div>
