@@ -220,17 +220,21 @@ const fetchRoomDetails = async (roomId) => {
             <div className="mb-6">
               <h3 className="font-medium text-lg mb-3">Room Features</h3>
               <div className="flex flex-wrap gap-4">
-                {room.amenities.map((amenity, index) => (
-                  <div key={index} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F5F5FF]/70">
-                    <img 
-                      src={facilityIcons[amenity]} 
-                      alt={amenity} 
-                      className="w-5 h-5"
-                      onError={(e) => {e.target.style.display = 'none'}}
-                    />
-                    <p className="text-sm">{amenity}</p>
-                  </div>
-                ))}
+                {room.amenities && room.amenities.length > 0 ? (
+                  room.amenities.map((amenity, index) => (
+                    <div key={index} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F5F5FF]/70">
+                      <img 
+                        src={facilityIcons[amenity]} 
+                        alt={amenity} 
+                        className="w-5 h-5"
+                        onError={(e) => {e.target.style.display = 'none'}}
+                      />
+                      <p className="text-sm">{amenity}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500">No specific amenities listed for this room.</p>
+                )}
               </div>
             </div>
             

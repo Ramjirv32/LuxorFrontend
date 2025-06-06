@@ -51,27 +51,29 @@ const SearchResults = () => {
     cities: []
   });
   
-  // Filter options
-  const amenitiesOptions = [
-    "Free WiFi",
-    "Air Conditioning", 
-    "Swimming Pool",
-    "Free Breakfast"
-  ];
-  
-  const cityOptions = [
-    "Chennai",
-    "Pondicherry",
-    "Bangalore",
-    "Mumbai"
-  ];
-  
-  const priceRanges = [
-    '5,000 to 10,000',
-    '10,000 to 15,000',
-    '15,000 to 20,000',
-    'Above 20,000',
-  ];
+  // Update these filter options to match the seeded data
+const amenitiesOptions = [
+  "Air Conditioning",
+  "Free WiFi", 
+  "Room Service",
+  "Free Breakfast",
+  "Swimming Pool",
+  "Mini Bar",
+  "Mountain View",
+  "Ocean View"
+];
+
+const cityOptions = [
+  "Chennai",
+  "Pondicherry" 
+];
+
+const priceRanges = [
+  '4,500 to 8,000',
+  '8,000 to 12,000',
+  '12,000 to 15,000',
+  'Above 15,000',
+];
   
   // Local search params for refine search form
   const [localSearchParams, setLocalSearchParams] = useState({
@@ -122,35 +124,26 @@ const SearchResults = () => {
     }
   };
   
-  // Add debug logs to viewHotelDetails function:
+  // Replace the problematic viewHotelDetails function with this improved version
 const viewHotelDetails = async (hotelId) => {
   console.log("Clicked on hotel with ID:", hotelId);
   try {
-    // Find the hotel in filtered hotels
-    const hotel = filteredHotels.find(h => 
-      (h.hotel.id === hotelId || h.hotel._id === hotelId)
-    );
+    // Directly fetch rooms for this hotel from the API endpoint
+    const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}/rooms`);
+    const data = await response.json();
     
-    console.log("Found hotel:", hotel);
+    console.log("Hotel rooms API response:", data);
     
-    // If this hotel has valid rooms with IDs
-    if (hotel && hotel.rooms && hotel.rooms.length > 0) {
-      // Check for room ID
-      const firstRoom = hotel.rooms[0];
-      const roomId = firstRoom.id || firstRoom._id;
+    if (response.ok && data && data.length > 0) {
+      // Get the ID of the first room
+      const roomId = data[0]._id;
+      console.log("Selected room ID:", roomId);
       
-      console.log("First room:", firstRoom);
-      console.log("Room ID:", roomId);
-      
-      if (roomId) {
-        // Navigate with the room ID
-        navigate(`/rooms/${roomId}?checkIn=${checkIn || ''}&checkOut=${checkOut || ''}&guests=${guests || 1}`);
-        return;
-      }
+      // Navigate to room details with search parameters
+      navigate(`/rooms/${roomId}?checkIn=${checkIn || ''}&checkOut=${checkOut || ''}&guests=${guests || 1}`);
+    } else {
+      alert("No available rooms found for this hotel. Please try another hotel.");
     }
-    
-    // If we get here, no valid rooms were found
-    alert("No rooms available for this hotel. Please try another hotel.");
   } catch (error) {
     console.error("Error navigating to room details:", error);
     alert("Error loading room details. Please try again.");
@@ -227,19 +220,29 @@ const viewHotelDetails = async (hotelId) => {
         
         // Filter by average price range
         if (filters.priceRange.length > 0) {
-          // Calculate average price of all rooms in the hotel
-          const avgPrice = hotel.rooms.reduce((total, room) => 
-            total + parseInt(room.pricePerNight.replace(/,/g, '')), 0) / hotel.rooms.length;
-          
-          const inPriceRange = filters.priceRange.some(range => {
-            if (range.startsWith('Above')) {
-              return avgPrice > parseInt(range.split(' ')[1].replace(/,/g, ''));
-            }
-            const [min, max] = range.split(' to ').map(p => parseInt(p.replace(/,/g, '')));
-            return avgPrice >= min && avgPrice <= max;
+          // Check if this hotel's price range overlaps with any selected price range filter
+          const hotelHasMatchingPrice = hotel.rooms.some(room => {
+            // Convert room price to number by removing commas
+            const roomPrice = parseInt(room.pricePerNight.replace(/,/g, ''));
+            
+            // Check if this room's price falls within any of the selected price ranges
+            return filters.priceRange.some(range => {
+              // Parse the price range
+              if (range.includes('Above')) {
+                // For "Above X" format
+                const minPrice = parseInt(range.split('Above ')[1].replace(/,/g, ''));
+                return roomPrice > minPrice;
+              } else {
+                // For "X to Y" format
+                const [minStr, maxStr] = range.replace('₹ ', '').split(' to ');
+                const minPrice = parseInt(minStr.replace(/,/g, ''));
+                const maxPrice = parseInt(maxStr.replace(/,/g, ''));
+                return roomPrice >= minPrice && roomPrice <= maxPrice;
+              }
+            });
           });
           
-          if (!inPriceRange) return false;
+          if (!hotelHasMatchingPrice) return false;
         }
         
         return true;
