@@ -16,3 +16,12 @@
 .font-playfair{
     font-family: Outfit !important;
 }
+/* Add this to your existing CSS file */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 0.8s infinite;
+}
