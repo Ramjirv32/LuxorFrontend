@@ -5,19 +5,19 @@ import { assets, facilityIcons } from '../assets/assets';
 import { getImageByFilename } from '../utils/imageMapping';
 import { API_BASE_URL } from '../config/api';
 
-const CheckBox = ({label, selected = false, onChage = () => { }}) => {
+const CheckBox = ({label, selected = false, onChange = () => { }}) => {
     return (
         <label className="flex gap-3 items-center cursor-pointer mt-2 text-sm">
-            <input type="checkbox" checked={selected} onChange={(e)=>onChage(e.target.checked, label)}/>
+            <input type="checkbox" checked={selected} onChange={(e)=>onChange(e.target.checked, label)}/>
             <span className='font-light select-none'>{label}</span>
         </label>
     )
 }
 
-const RadioButton = ({label, selected = false, onChage = () => { }}) => {
+const RadioButton = ({label, selected = false, onChange = () => { }}) => {
     return (
         <label className="flex gap-3 items-center cursor-pointer mt-2 text-sm">
-            <input type="radio" name="sortOption" checked={selected} onChange={()=>onChage(label)}/>
+            <input type="radio" name="sortOption" checked={selected} onChange={()=>onChange(label)}/>
             <span className='font-light select-none'>{label}</span>
         </label>
     )
@@ -199,7 +199,7 @@ const AllRooms = () => {
                                 key={index} 
                                 label={roomType}
                                 selected={filters.roomType.includes(roomType)}
-                                onChage={(selected, type) => handleRoomTypeChange(selected, type)}
+                                onChange={(selected, type) => handleRoomTypeChange(selected, type)}
                             />
                         ))}
                     </div>
@@ -211,7 +211,7 @@ const AllRooms = () => {
                                 key={index} 
                                 label={` ₹ ${range}`}
                                 selected={filters.priceRange.includes(` ₹ ${range}`)}
-                                onChage={(selected, range) => handlePriceRangeChange(selected, range)}
+                                onChange={(selected, range) => handlePriceRangeChange(selected, range)}
                             />
                         ))}
                     </div>
@@ -223,7 +223,7 @@ const AllRooms = () => {
                                 key={index} 
                                 label={option}
                                 selected={filters.sortOption === option}
-                                onChage={handleSortOptionChange}
+                                onChange={handleSortOptionChange}
                             />
                         ))}
                     </div>

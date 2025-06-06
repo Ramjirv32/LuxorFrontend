@@ -16,6 +16,7 @@ import HelpCenter from './components/Footer/Help-center'
 import Safety from './components/Footer/safety-info'
 // import Accessibility from '@/components/Footer/Accessibility'
 import Gallery from './components/Navbar/Gallery'
+import SearchResults from './pages/SearchResults';
 
 const App = () => {
   useEffect(() => {
@@ -34,26 +35,19 @@ const App = () => {
       <div className='min-h-[70vh]'>
         <Routes>
           <Route path='/' element={<Home/>} />
-      
-          
           <Route path='/rooms' element={<AllRooms/>} />
           <Route path='/rooms/:id' element={<RoomDetails/>} />
-          <Route path='/room/:id' element={<RoomDetails/>} />
+          <Route path='/search-results' element={<SearchResults/>} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/partners' element={<Partners />} />
-          {/* <Route path='/about' element={<About />} /> */}
           <Route path='/h' element={<HelpCenter />} />
           <Route path='/si' element={<Safety/>} />
           <Route path='/g' element={<Gallery/>} />
           <Route path='about' element={<About />} />
-          
         </Routes>
-
-      
       </div>
       <Footer />
 
-    
       <a
         href="https://wa.me/7904040739?text=Hi%2C%20I%20am%20interested%20in%20booking%20a%20villas."
         target="_blank"
@@ -62,7 +56,6 @@ const App = () => {
       >
         <FaWhatsapp />
       </a>
-
     </div>
   )
 }
