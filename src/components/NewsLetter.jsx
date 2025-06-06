@@ -1,22 +1,82 @@
-import React from 'react'
-import { assets } from '../assets/assets'
-import Title from './Title'
+// Frontend component (React)
+import React, { useState } from 'react';
+import { assets } from '../assets/assets';
+import Title from './Title';
 
 const NewsLetter = () => {
-  return (
-    <div className="flex flex-col items-center max-w-5xl lg:w-full rounded-2xl px-4 py-12 md:py-16 mx-2 lg:mx-auto my-30 bg-gray-900 text-white">
-            
-            <Title title="Stay Inspired" subTitle='Join our newsletter and be the frist to discover new destination, exclusive offers, and travel inspiration...'/>
+const [email, setEmail] = useState('');
+const [message, setMessage] = useState('');
+const [status, setStatus] = useState(''); // 'success', 'error', or ''
+const [loading, setLoading] = useState(false);
 
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-6">
-                <input type="text" className="bg-white/10 px-4 py-2.5 border border-white/20 rounded outline-none max-w-66 w-full" placeholder="Enter your email" />
-                <button className="flex items-center justify-center gap-2 group bg-black px-4 md:px-7 py-2.5 rounded active:scale-95 transition-all">Subscribe
-                    <img src={assets.arrowIcon} alt="arrow-icon" className='w-3.5 invert group-hover:translate-x-1 transition-all' />
-                </button>
-            </div>
-            <p className="text-gray-500 mt-6 text-xs text-center">By subscribing, you agree to our Privacy Policy and consent to receive updates.</p>
-        </div>
-  )
+const handleSubscribe = async (e) => {
+e.preventDefault();
+// Simple validation
+if (!email || !email.includes('@')) {
+setMessage('Please enter a valid email address');
+setStatus('error');
+return;
 }
+setLoading(true);
+try {
+const response = await fetch('https://luxor-backend.vercel.app/api/newsletter/subscribe', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+},
+body: JSON.stringify({ email }),
+});
+const data = await response.json();
+if (response.ok) {
+setMessage(data.message);
+setStatus('success');
+setEmail('');
+} else {
+setMessage(data.error || 'Subscription failed. Please try again.');
+setStatus('error');
+}
+} catch (error) {
+setMessage('Network error. Please try again later.');
+setStatus('error');
+} finally {
+setLoading(false);
+}
+};
 
-export default NewsLetter
+return (
+<div className="flex flex-col items-center max-w-5xl lg:w-full rounded-2xl px-4 py-12 md:py-16 mx-2 lg:mx-auto my-30 bg-gray-900 text-white">
+<Title title="Stay Inspired" subTitle='Join our newsletter and be the first to discover new destinations, exclusive offers, and travel inspiration...'/>
+
+<form onSubmit={handleSubscribe} className="w-full flex flex-col items-center">
+<div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-6 w-full max-w-md">
+<input
+type="email"
+value={email}
+onChange={(e) => setEmail(e.target.value)}
+className="bg-white/10 px-4 py-2.5 border border-white/20 rounded outline-none max-w-66 w-full"
+placeholder="Enter your email"
+required
+/>
+<button
+type="submit"
+disabled={loading}
+className="flex items-center justify-center gap-2 group bg-black px-4 md:px-7 py-2.5 rounded active:scale-95 transition-all disabled:opacity-50"
+>
+{loading ? 'Subscribing...' : 'Subscribe'}
+{!loading && (
+<img src={assets.arrowIcon} alt="arrow-icon" className='w-3.5 invert group-hover:translate-x-1 transition-all' />
+)}
+</button>
+</div>
+{message && (
+<div className={`mt-4 px-4 py-2 rounded ${status === 'success' ? 'bg-green-800/30 text-green-200' : 'bg-red-800/30 text-red-200'}`}>
+{message}
+</div>
+)}
+</form>
+<p className="text-gray-500 mt-6 text-xs text-center">By subscribing, you agree to our Privacy Policy and consent to receive updates.</p>
+</div>
+);
+};
+
+export default NewsLetter;
