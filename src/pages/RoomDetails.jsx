@@ -6,7 +6,7 @@ import { assets, facilityIcons } from '../assets/assets';
 import roomImg11 from '../assets/roomImg11.png';
 
 const RoomDetails = () => {
-  const { roomId } = useParams();
+  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
@@ -37,14 +37,20 @@ const RoomDetails = () => {
       setGuests(Number(initialGuests));
     }
     
-    fetchRoomDetails();
-  }, [roomId]);
+    if (id) {
+      fetchRoomDetails(id);
+    } else {
+      setError("No room ID provided");
+      setLoading(false);
+    }
+  }, [id]);
   
   // Update the fetch function to handle any potential issues with hotel data
 
-const fetchRoomDetails = async () => {
+const fetchRoomDetails = async (roomId) => {
   setLoading(true);
   try {
+    console.log(`Fetching room details for ID: ${roomId}`);
     const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}`);
     
     if (!response.ok) {
@@ -63,11 +69,7 @@ const fetchRoomDetails = async () => {
     
     // Set the first image as the main image if available or use fallback
     if (data.images && data.images.length > 0) {
-      // If we have real image paths, use them
-      const imagePath = data.images[0].startsWith('http') 
-        ? data.images[0] 
-        : roomImg11; // Or use a function to map filename to image path
-      setMainImage(imagePath);
+      setMainImage(roomImg11); // Using fallback image for now
     }
   } catch (error) {
     console.error("Error fetching room details:", error);
@@ -78,7 +80,7 @@ const fetchRoomDetails = async () => {
 };
   
   const handleBookNow = () => {
-    navigate(`/booking/${roomId}?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`);
+    navigate(`/booking/${id}?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`);
   };
   
   // Format price with commas
@@ -331,7 +333,7 @@ const fetchRoomDetails = async () => {
                   onChange={(e) => {
                     const params = new URLSearchParams(location.search);
                     params.set('checkIn', e.target.value);
-                    navigate(`/rooms/${roomId}?${params.toString()}`);
+                    navigate(`/rooms/${id}?${params.toString()}`);
                   }}
                   min={new Date().toISOString().split('T')[0]}
                 />
@@ -345,7 +347,7 @@ const fetchRoomDetails = async () => {
                   onChange={(e) => {
                     const params = new URLSearchParams(location.search);
                     params.set('checkOut', e.target.value);
-                    navigate(`/rooms/${roomId}?${params.toString()}`);
+                    navigate(`/rooms/${id}?${params.toString()}`);
                   }}
                   min={checkIn || new Date().toISOString().split('T')[0]}
                 />

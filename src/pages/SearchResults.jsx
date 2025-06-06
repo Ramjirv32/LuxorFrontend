@@ -122,28 +122,40 @@ const SearchResults = () => {
     }
   };
   
-  // Replace the viewHotelDetails function with this improved version
-const viewHotelDetails = (hotelId) => {
-  // Find the hotel in our filtered results
-  const hotel = filteredHotels.find(h => h.hotel.id === hotelId);
-  
-  // Debug what's happening
-  console.log("Selected hotel:", hotel);
-  
-  if (hotel && hotel.rooms && hotel.rooms.length > 0) {
-    // Get the ID of the first room - check both id and _id fields
-    const roomId = hotel.rooms[0].id || hotel.rooms[0]._id;
+  // Add debug logs to viewHotelDetails function:
+const viewHotelDetails = async (hotelId) => {
+  console.log("Clicked on hotel with ID:", hotelId);
+  try {
+    // Find the hotel in filtered hotels
+    const hotel = filteredHotels.find(h => 
+      (h.hotel.id === hotelId || h.hotel._id === hotelId)
+    );
     
-    if (roomId) {
-      // Navigate to room details with search parameters
-      navigate(`/rooms/${roomId}?checkIn=${checkIn || ''}&checkOut=${checkOut || ''}&guests=${guests || 1}`);
-      return;
+    console.log("Found hotel:", hotel);
+    
+    // If this hotel has valid rooms with IDs
+    if (hotel && hotel.rooms && hotel.rooms.length > 0) {
+      // Check for room ID
+      const firstRoom = hotel.rooms[0];
+      const roomId = firstRoom.id || firstRoom._id;
+      
+      console.log("First room:", firstRoom);
+      console.log("Room ID:", roomId);
+      
+      if (roomId) {
+        // Navigate with the room ID
+        navigate(`/rooms/${roomId}?checkIn=${checkIn || ''}&checkOut=${checkOut || ''}&guests=${guests || 1}`);
+        return;
+      }
     }
+    
+    // If we get here, no valid rooms were found
+    alert("No rooms available for this hotel. Please try another hotel.");
+  } catch (error) {
+    console.error("Error navigating to room details:", error);
+    alert("Error loading room details. Please try again.");
   }
-  
-  // If we reach here, either there are no rooms or we couldn't find a room ID
-  alert("No available rooms found for this hotel. Please try another hotel.");
-}
+};
   
   const handleSearchUpdate = (e) => {
     e.preventDefault();
