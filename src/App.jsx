@@ -13,6 +13,7 @@ import About from './components/Footer/About'
 import HelpCenter from './components/Footer/Help-center'
 import Safety from './components/Footer/safety-info'
 // import Accessibility from '@/components/Footer/Accessibility'
+import Gallery from './components/Navbar/Gallery'
 const App = () => {
 
   const isOwnerPath = useLocation().pathname.includes("owner");
@@ -31,6 +32,9 @@ const App = () => {
           <Route path='/partners' element={<Partners />} />
           <Route path='/about' element={<About />} />
           <Route path='/h' element={<HelpCenter />} />
+          <Route path='/si' element={<Safety/>} />
+          <Route path='/g' element={<Gallery/>} />
+          
         </Routes>
 
       

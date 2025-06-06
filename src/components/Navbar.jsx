@@ -13,7 +13,6 @@ const Navbar = () => {
     const navLinks = [
         { name: 'Home', path: '/' },
         { name: 'Villas', path: '/rooms' },
-        { name: 'Experience', path: '/' },
         { name: 'Contact', path: '/contact' },
         { name: 'About', path: '/about' },
     ];
@@ -53,7 +52,7 @@ const Navbar = () => {
                 <div className="flex items-center gap-3">
                     <Link to='/' className="flex items-center gap-3">
                         <img src={assets.logo} alt="logo" className={`h-20 ${isScrolled && ""}`} />
-                        <h1 className={`text-3xl ml-10 font-bold font-playfair ${isScrolled ? "text-gray-800" : "text-white"}`}>
+                        <h1 className={`text-3xl ml-2 font-bold font-playfair ${isScrolled ? "text-gray-800" : "text-white"}`}>
                             Luxor Holiday Home Stays
                         </h1>
                     </Link>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { assets } from '../../assets/assets';
 
 const About = () => {
   return (
@@ -18,7 +19,7 @@ const About = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
             <img 
-              src="/images/about-us.jpg" 
+              src={assets.logo}
               alt="Luxury villa exterior" 
               className="rounded-lg shadow-lg w-full h-auto"
             />
