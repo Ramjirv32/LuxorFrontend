@@ -112,7 +112,7 @@ const PropertyCarousel = () => {
         ))}
       </div>
 
-      {/* Carousel Container */}
+   
       <div className="relative">
         {/* Left Arrow */}
         <button
