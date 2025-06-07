@@ -156,6 +156,12 @@ const MyBookings = () => {
               
               <div className="mt-6 flex gap-4 flex-wrap">
                 <button 
+                  onClick={() => navigate(`/booking/${booking._id}?checkIn=${booking.checkInDate}&checkOut=${booking.checkOutDate}&guests=${booking.guests}`)} 
+                  className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition duration-300"
+                >
+                  View Booking Details
+                </button>
+                <button 
                   onClick={() => navigate(`/rooms/${booking.room._id}`)} 
                   className="bg-transparent border border-orange-500 text-orange-500 px-4 py-2 rounded hover:bg-orange-50 transition duration-300"
                 >

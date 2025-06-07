@@ -8,6 +8,7 @@ import Footer from './components/Footer'
 import AllRooms from './pages/AllRooms'
 import RoomDetails from './pages/RoomDetails'
 import MyBookings from './pages/MyBookings'
+import BookingDetails from './pages/BookingDetails'; // Import the new component
 import { FaWhatsapp } from 'react-icons/fa';
 import Contact from './pages/Contact'
 import Partners from './components/Footer/Partners'
@@ -40,6 +41,7 @@ const App = () => {
             <Route path='/rooms/:id' element={<RoomDetails/>} />
             <Route path='/search-results' element={<SearchResults/>} />
             <Route path='/my-bookings' element={<MyBookings/>} />
+            <Route path='/booking/:id' element={<BookingDetails/>} /> {/* Add this new route */}
             <Route path='/contact' element={<Contact />} />
             <Route path='/partners' element={<Partners />} />
             <Route path='/h' element={<HelpCenter />} />
