@@ -63,18 +63,30 @@ const RoomDetails = () => {
       }
       
       const data = await response.json();
-      console.log("Room details:", data);
+      console.log("Room details raw data:", data);
       
       // Check if hotel data is populated
-      if (!data.hotel) {
+      if (!data.hotel || !data.hotel._id) {
+        console.error("Room data is missing hotel information:", data);
         throw new Error("Room data is missing hotel information");
       }
       
-      setRoom(data);
+      // Make sure the IDs are properly accessible
+      const processedRoom = {
+        ...data,
+        _id: data._id || data.id, // Ensure _id is available
+        hotel: {
+          ...data.hotel,
+          _id: data.hotel._id || data.hotel.id // Ensure hotel _id is available
+        }
+      };
+      
+      console.log("Processed room data:", processedRoom);
+      setRoom(processedRoom);
       
       // Set the first image as the main image if available or use fallback
       if (data.images && data.images.length > 0) {
-        setMainImage(roomImg11); // Using fallback image for now
+        setMainImage(data.images[0] || roomImg11);
       }
     } catch (error) {
       console.error("Error fetching room details:", error);
@@ -103,21 +115,61 @@ const RoomDetails = () => {
       // Calculate total price (price per night * nights * 1.18 for taxes)
       const basePrice = parseInt(room.pricePerNight.replace(/,/g, ''));
       const totalPrice = basePrice * nights * 1.18;
+      
+      // Get email from multiple potential sources to ensure it's available
+      let userEmail = null;
+      
+      // First priority: userData.email
+      if (userData && userData.email) {
+        userEmail = userData.email;
+        console.log("Using email from userData:", userEmail);
+      } 
+      // Second priority: localStorage
+      else if (localStorage.getItem('userEmail')) {
+        userEmail = localStorage.getItem('userEmail');
+        console.log("Using email from localStorage:", userEmail);
+      } 
+      // Third option: ask user for email if all else fails
+      else {
+        userEmail = prompt("Please enter your email address to complete booking:");
+        if (userEmail) {
+          localStorage.setItem('userEmail', userEmail);
+        }
+      }
+      
+      if (!userEmail) {
+        throw new Error("Email is required to complete booking");
+      }
+      
+      // Ensure we have valid MongoDB IDs
+      const userId = userData?._id || userData?.id;
+      const roomId = room?._id;
+      const hotelId = room?.hotel?._id;
+      
+      // Log details for debugging
+      console.log("User data:", userData);
+      console.log("Room data:", room);
+      console.log("IDs for booking:", { userId, roomId, hotelId, userEmail });
+      
+      if (!userId || !roomId || !hotelId) {
+        throw new Error("Missing required IDs for booking. Please refresh and try again.");
+      }
 
       const bookingData = {
-        userId: userData.id,
-        roomId: room._id,
-        hotelId: room.hotel._id,
-        checkInDate: new Date(checkIn),
-        checkOutDate: new Date(checkOut),
+        userId,
+        roomId,
+        hotelId,
+        checkInDate: checkIn,
+        checkOutDate: checkOut,
         totalPrice: Math.round(totalPrice),
-        guests: guests,
-        paymentMethod: paymentMethod,
-        isPaid: paymentMethod !== 'Pay At Hotel', // Mark as paid if not pay at hotel
-        userEmail: userData.email || localStorage.getItem('userEmail')
+        guests,
+        paymentMethod,
+        isPaid: paymentMethod !== 'Pay At Hotel',
+        userEmail,
+        userName: userData.firstName ? `${userData.firstName} ${userData.lastName || ''}`.trim() : 'Guest'
       };
 
-      console.log("Booking data:", bookingData);
+      console.log("Sending booking data:", bookingData);
 
       const response = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: 'POST',
@@ -128,10 +180,22 @@ const RoomDetails = () => {
         body: JSON.stringify(bookingData)
       });
 
-      const data = await response.json();
+      // Debug: Log the full response
+      const responseText = await response.text();
+      console.log("Response status:", response.status);
+      console.log("Response text:", responseText);
+
+      // Parse JSON response if it's valid JSON
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        console.log("Response is not valid JSON");
+        data = { error: responseText };
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || data.message || 'Failed to book room');
+        throw new Error(data.error || "Failed to book room");
       }
 
       console.log("Booking successful:", data);
@@ -144,7 +208,7 @@ const RoomDetails = () => {
 
     } catch (error) {
       console.error("Error booking room:", error);
-      setBookingError(error.message);
+      setBookingError(error.message || "An error occurred while booking");
     } finally {
       setIsBookingLoading(false);
     }

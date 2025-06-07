@@ -1,5 +1,6 @@
 // Get the API base URL from environment variables with fallback
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://luxor-backend.vercel.app';
+// export const API_BASE_URL = 'http://localhost:5000'; // Using environment variable instead of hardcoded value
 
 // Helper function for authenticated requests
 export const authFetch = async (url, options = {}) => {
