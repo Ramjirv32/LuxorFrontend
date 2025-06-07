@@ -52,42 +52,75 @@ const Navbar = () => {
                 try {
                     console.log("Syncing user with backend:", user.id);
                     
+                    // Get user email directly from Clerk
+                    const userEmail = user.primaryEmailAddress?.emailAddress;
+                    
+                    if (!userEmail) {
+                        console.error("No email found in Clerk user data");
+                        return;
+                    }
+                    
+                    // Store user email immediately
+                    localStorage.setItem('userEmail', userEmail);
+                    
                     // Get user details from Clerk
                     const userData = {
-                        email: user.primaryEmailAddress?.emailAddress,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
+                        email: userEmail,
+                        firstName: user.firstName || '',
+                        lastName: user.lastName || '',
                         clerkId: user.id,
-                        profileImageUrl: user.imageUrl,
-                        // Add any additional fields you need
-                        phoneNumber: user.phoneNumbers?.[0]?.phoneNumber
+                        profileImageUrl: user.imageUrl || '',
+                        phoneNumber: user.phoneNumbers?.[0]?.phoneNumber || ''
                     };
 
-                    // Send to our backend
-                    const response = await axios.post(`${API_BASE_URL}/api/auth/clerk-sync`, userData);
-                    
-                    if (response.data.token) {
-                        // Store JWT token and user info in localStorage
-                        localStorage.setItem('authToken', response.data.token);
-                        localStorage.setItem('userEmail', userData.email);
-                        localStorage.setItem('userId', response.data.user.id);
-                        
-                        // Update context
-                        setAuthToken(response.data.token);
-                        setUserData(response.data.user);
+                    console.log("User data being sent to backend:", userData);
 
-                        console.log('User synced with backend successfully');
+                    // Use fetch instead of axios for consistency
+                    const response = await fetch(`${API_BASE_URL}/api/auth/clerk-sync`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(userData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Backend returned ${response.status}: ${await response.text()}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.token && data.user) {
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('userId', data.user.id || data.user._id);
+                        localStorage.setItem('userEmail', data.user.email);
+                        
+                        setAuthToken(data.token);
+                        setUserData({
+                            ...data.user,
+                            _id: data.user._id || data.user.id,
+                            id: data.user.id || data.user._id,
+                            email: data.user.email
+                        });
                     }
                 } catch (error) {
                     console.error('Error syncing user with backend:', error);
+                    
+                    // Use basic user data from Clerk as fallback
+                    if (user?.primaryEmailAddress?.emailAddress) {
+                        const email = user.primaryEmailAddress.emailAddress;
+                        localStorage.setItem('userEmail', email);
+                        
+                        setUserData({
+                            id: user.id,
+                            _id: user.id,
+                            email: email,
+                            firstName: user.firstName || '',
+                            lastName: user.lastName || '',
+                            profileImageUrl: user.imageUrl || ''
+                        });
+                    }
                 }
-            } else if (isLoaded && !isSignedIn) {
-                // User logged out, clear local storage
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userEmail');
-                localStorage.removeItem('userId');
-                setAuthToken(null);
-                setUserData(null);
             }
         };
 

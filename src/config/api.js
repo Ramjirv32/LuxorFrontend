@@ -1,49 +1,55 @@
 // Get the API base URL from environment variables with fallback
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://luxor-backend.vercel.app';
+// export const API_BASE_URL = 'http://localhost:5000'; // Using environment variable instead of hardcoded value
 
 // Helper function for authenticated requests
 export const authFetch = async (url, options = {}) => {
-  const token = localStorage.getItem('authToken');
-  
-  const headers = {
-    ...options.headers,
-    'Content-Type': 'application/json',
-  };
-  
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  
-  const config = {
-    ...options,
-    headers,
-  };
-  
   try {
-   
     if (import.meta.env.DEV) {
       console.log(`Making API request to: ${API_BASE_URL}${url}`);
+
+    const token = localStorage.getItem('authToken');
+    
+    const headers = {
+      ...options.headers,
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const response = await fetch(`${API_BASE_URL}${url}`, config);
+    const response = await fetch(`${API_BASE_URL}${url}`, {
+      ...options,
+      headers
+    });
     
-    // Check if response is JSON (some endpoints might return non-JSON data)
-    const contentType = response.headers.get('content-type');
-    let data;
-    
-    if (contentType && contentType.includes('application/json')) {
-      data = await response.json();
-    } else {
-      data = { message: await response.text() };
-    }
-    
+    // First check if the response is OK
     if (!response.ok) {
-      throw new Error(data.message || 'API request failed');
+      let errorMessage = `API error: ${response.status}`;
+      
+      try {
+        // Try to parse error as JSON
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+      } catch (e) {
+        // If not JSON, get text
+        errorMessage = await response.text() || errorMessage;
+      }
+      
+      throw new Error(errorMessage);
     }
     
-    return data;
+    // For successful requests, check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    }
+    
+    // Return text for non-JSON responses
+    return await response.text();
   } catch (error) {
-    console.error('API request error:', error);
+    console.error('API request failed:', error);
     throw error;
   }
 };

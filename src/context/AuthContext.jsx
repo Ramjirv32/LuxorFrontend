@@ -6,38 +6,82 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState(() => {
+    // Try to initialize from localStorage
+    const token = localStorage.getItem('authToken');
+    const userId = localStorage.getItem('userId');
+    const userEmail = localStorage.getItem('userEmail');
+    
+    if (token && userId && userEmail) {
+      return {
+        id: userId,
+        _id: userId, // Add both formats to be safe
+        email: userEmail
+      };
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem('authToken');
-      if (token) {
+      const userId = localStorage.getItem('userId');
+      const userEmail = localStorage.getItem('userEmail');
+      
+      if (token && (userId || userEmail)) {
         try {
-          // Verify token with backend
-          const response = await axios.get(`${API_BASE_URL}/api/auth/verify`, {
-            headers: { Authorization: `Bearer ${token}` }
+          // Set initial userData from localStorage to prevent null values
+          setUserData({
+            _id: userId, // Use _id format for MongoDB compatibility
+            id: userId,  // Keep id for backward compatibility
+            email: userEmail
           });
+          
+          // Verify token with backend
+          const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          const data = await response.json();
 
-          if (response.data.valid) {
+          if (data.valid && data.user) {
             setAuthToken(token);
-            setUserData(response.data.user);
+            // Make sure both id and _id formats are available
+            setUserData({
+              ...data.user,
+              _id: data.user._id || data.user.id,
+              id: data.user.id || data.user._id,
+              email: data.user.email
+            });
+            console.log("User verified:", data.user);
           } else {
             // Token invalid or expired
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userEmail');
-            setAuthToken(null);
-            setUserData(null);
+            clearUserData();
           }
         } catch (error) {
           console.error('Token verification error:', error);
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('userEmail');
-          setAuthToken(null);
-          setUserData(null);
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            clearUserData();
+          }
         }
+      } else {
+        setAuthToken(null);
+        setUserData(null);
       }
       setLoading(false);
+    };
+
+    // Helper to clear user data
+    const clearUserData = () => {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userId');
+      setAuthToken(null);
+      setUserData(null);
     };
 
     verifyToken();
@@ -46,6 +90,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('userId');
     setAuthToken(null);
     setUserData(null);
   };
