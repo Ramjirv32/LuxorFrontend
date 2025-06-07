@@ -65,6 +65,17 @@ const fetchRoomDetails = async (roomId) => {
       throw new Error("Room data is missing hotel information");
     }
     
+    // Log the amenities to check for duplicates
+    if (data.amenities) {
+      console.log("Original amenities:", data.amenities);
+      console.log("Unique amenities:", [...new Set(data.amenities)]);
+    }
+    
+    // Clean the amenities data before setting the room state
+    if (data.amenities && Array.isArray(data.amenities)) {
+      data.amenities = [...new Set(data.amenities)];
+    }
+    
     setRoom(data);
     
     // Set the first image as the main image if available or use fallback
@@ -221,7 +232,8 @@ const fetchRoomDetails = async (roomId) => {
               <h3 className="font-medium text-lg mb-3">Room Features</h3>
               <div className="flex flex-wrap gap-4">
                 {room.amenities && room.amenities.length > 0 ? (
-                  room.amenities.map((amenity, index) => (
+               
+                  [...new Set(room.amenities)].map((amenity, index) => (
                     <div key={index} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F5F5FF]/70">
                       <img 
                         src={facilityIcons[amenity]} 
@@ -398,7 +410,7 @@ const fetchRoomDetails = async (roomId) => {
                   : 'bg-orange-500 hover:bg-orange-600'
               }`}
             >
-              Book Now
+             Search 
             </button>
             
             {(!checkIn || !checkOut) && (

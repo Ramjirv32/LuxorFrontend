@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import villaImage from '../../assets/About/advantages-of-living-in-a-villa.jpg';
-import villaVideo from '../../assets/About/Villa Vela - Ultra Modern House in La Reserva de Sotogrande, Spain _ Cinematic Video by Drumelia.mp4';
+import villaVideo from "../../assets/About/v.mp4";
 
 const Gallery = () => {
   const [isInView, setIsInView] = useState(false);

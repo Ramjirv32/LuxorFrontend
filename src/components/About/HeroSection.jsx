@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import backgroundVideo from '../../assets/About/Villa Vela - Ultra Modern House in La Reserva de Sotogrande, Spain _ Cinematic Video by Drumelia.mp4';
+import backgroundVideo from '../../assets/About/v.mp4';
 
 const HeroSection = () => {
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
