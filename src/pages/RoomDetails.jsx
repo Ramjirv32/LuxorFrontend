@@ -22,7 +22,7 @@ const RoomDetails = () => {
   
   const { userData, authToken } = useAuth();
   
-  // Extract search parameters from the URL
+
   const searchParams = new URLSearchParams(location.search);
   const checkIn = searchParams.get('checkIn');
   const checkOut = searchParams.get('checkOut');
