@@ -20,7 +20,7 @@ export const authFetch = async (url, options = {}) => {
   };
   
   try {
-    // Log to verify the URL when in development
+   
     if (import.meta.env.DEV) {
       console.log(`Making API request to: ${API_BASE_URL}${url}`);
     }
