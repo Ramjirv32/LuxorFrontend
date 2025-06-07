@@ -497,7 +497,6 @@ const Hero = () => {
         </div>
       </div>
       
-      {/* Video control overlay */}
       <motion.div 
         className="absolute bottom-5 right-5 z-30 opacity-0 hover:opacity-100"
         initial={{ opacity: 0 }}

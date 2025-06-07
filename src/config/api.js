@@ -5,9 +5,6 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://luxor-
 // Helper function for authenticated requests
 export const authFetch = async (url, options = {}) => {
   try {
-    if (import.meta.env.DEV) {
-      console.log(`Making API request to: ${API_BASE_URL}${url}`);
-
     const token = localStorage.getItem('authToken');
     
     const headers = {
