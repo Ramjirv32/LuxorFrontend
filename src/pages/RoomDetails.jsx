@@ -4,6 +4,7 @@ import { API_BASE_URL } from '../config/api';
 import StarRating from '../components/StarRating';
 import { assets, facilityIcons } from '../assets/assets';
 import roomImg11 from '../assets/roomImg11.png';
+import { useAuth } from '../context/AuthContext';
 
 const RoomDetails = () => {
   const { id } = useParams();
@@ -14,13 +15,19 @@ const RoomDetails = () => {
   const [error, setError] = useState(null);
   const [mainImage, setMainImage] = useState(roomImg11);
   const [guests, setGuests] = useState(1);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingError, setBookingError] = useState(null);
+  const [isBookingLoading, setIsBookingLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('Pay At Hotel');
+  
+  const { userData, authToken } = useAuth();
   
   // Extract search parameters from the URL
   const searchParams = new URLSearchParams(location.search);
   const checkIn = searchParams.get('checkIn');
   const checkOut = searchParams.get('checkOut');
   const initialGuests = searchParams.get('guests');
-  
+
   // Calculate nights of stay
   const calculateNights = () => {
     if (!checkIn || !checkOut) return 0;
@@ -45,53 +52,102 @@ const RoomDetails = () => {
     }
   }, [id]);
   
-  // Update the fetch function to handle any potential issues with hotel data
-
-const fetchRoomDetails = async (roomId) => {
-  setLoading(true);
-  try {
-    console.log(`Fetching room details for ID: ${roomId}`);
-    const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}`);
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch room details: ${response.statusText}`);
+  const fetchRoomDetails = async (roomId) => {
+    setLoading(true);
+    try {
+      console.log(`Fetching room details for ID: ${roomId}`);
+      const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch room details: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log("Room details:", data);
+      
+      // Check if hotel data is populated
+      if (!data.hotel) {
+        throw new Error("Room data is missing hotel information");
+      }
+      
+      setRoom(data);
+      
+      // Set the first image as the main image if available or use fallback
+      if (data.images && data.images.length > 0) {
+        setMainImage(roomImg11); // Using fallback image for now
+      }
+    } catch (error) {
+      console.error("Error fetching room details:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-    
-    const data = await response.json();
-    console.log("Room details:", data);
-    
-    // Check if hotel data is populated
-    if (!data.hotel) {
-      throw new Error("Room data is missing hotel information");
-    }
-    
-    // Log the amenities to check for duplicates
-    if (data.amenities) {
-      console.log("Original amenities:", data.amenities);
-      console.log("Unique amenities:", [...new Set(data.amenities)]);
-    }
-    
-    // Clean the amenities data before setting the room state
-    if (data.amenities && Array.isArray(data.amenities)) {
-      data.amenities = [...new Set(data.amenities)];
-    }
-    
-    setRoom(data);
-    
-    // Set the first image as the main image if available or use fallback
-    if (data.images && data.images.length > 0) {
-      setMainImage(roomImg11); // Using fallback image for now
-    }
-  } catch (error) {
-    console.error("Error fetching room details:", error);
-    setError(error.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
   
-  const handleBookNow = () => {
-    navigate(`/booking/${id}?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`);
+  const handleBookNow = async () => {
+    // Check if user is logged in
+    if (!userData || !authToken) {
+      alert("Please log in to book a room");
+      return;
+    }
+
+    if (!checkIn || !checkOut || nights === 0) {
+      alert("Please select check-in and check-out dates");
+      return;
+    }
+
+    setIsBookingLoading(true);
+    setBookingError(null);
+
+    try {
+      // Calculate total price (price per night * nights * 1.18 for taxes)
+      const basePrice = parseInt(room.pricePerNight.replace(/,/g, ''));
+      const totalPrice = basePrice * nights * 1.18;
+
+      const bookingData = {
+        userId: userData.id,
+        roomId: room._id,
+        hotelId: room.hotel._id,
+        checkInDate: new Date(checkIn),
+        checkOutDate: new Date(checkOut),
+        totalPrice: Math.round(totalPrice),
+        guests: guests,
+        paymentMethod: paymentMethod,
+        isPaid: paymentMethod !== 'Pay At Hotel', // Mark as paid if not pay at hotel
+        userEmail: userData.email || localStorage.getItem('userEmail')
+      };
+
+      console.log("Booking data:", bookingData);
+
+      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify(bookingData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Failed to book room');
+      }
+
+      console.log("Booking successful:", data);
+      setBookingSuccess(true);
+      
+      // Show booking success for 3 seconds then redirect
+      setTimeout(() => {
+        navigate('/my-bookings');
+      }, 3000);
+
+    } catch (error) {
+      console.error("Error booking room:", error);
+      setBookingError(error.message);
+    } finally {
+      setIsBookingLoading(false);
+    }
   };
   
   // Format price with commas
@@ -105,14 +161,6 @@ const fetchRoomDetails = async (roomId) => {
     
     // Otherwise format the number with commas
     return Number(price).toLocaleString('en-IN');
-  };
-  
-  // Calculate total price
-  const calculateTotalPrice = () => {
-    if (!room || !nights) return "0";
-    
-    const basePrice = parseInt(room.pricePerNight.replace(/,/g, ''));
-    return formatPrice(basePrice * nights);
   };
 
   if (loading) {
@@ -143,14 +191,14 @@ const fetchRoomDetails = async (roomId) => {
   if (!room) {
     return (
       <div className="min-h-screen pt-28 px-4 md:px-16 lg:px-24 xl:px-32">
-        <div className="bg-yellow-50 p-6 rounded-xl text-yellow-800">
+        <div className="bg-yellow-50 p-6 rounded-xl text-yellow-700">
           <h2 className="text-2xl font-bold mb-4">Room Not Found</h2>
-          <p>We couldn't find the room you're looking for.</p>
+          <p>We could not find the room you're looking for.</p>
           <button 
-            onClick={() => navigate(-1)} 
+            onClick={() => navigate('/rooms')} 
             className="mt-4 bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600"
           >
-            Go Back
+            View All Rooms
           </button>
         </div>
       </div>
@@ -159,7 +207,7 @@ const fetchRoomDetails = async (roomId) => {
 
   return (
     <div className="min-h-screen pt-28 px-4 md:px-16 lg:px-24 xl:px-32">
-      {/* Room Navigation Path */}
+      {/* Breadcrumb Navigation */}
       <div className="flex items-center text-sm text-gray-500 mb-6">
         <span onClick={() => navigate('/')} className="cursor-pointer hover:text-orange-500">Home</span>
         <span className="mx-2">/</span>
@@ -186,7 +234,7 @@ const fetchRoomDetails = async (roomId) => {
         </div>
       </div>
       
-      {/* Room Images */}
+      {/* Main Image and Gallery */}
       <div className="flex flex-col lg:flex-row gap-4 mb-10">
         {/* Main Image */}
         <div className="lg:w-2/3">
@@ -214,6 +262,23 @@ const fetchRoomDetails = async (roomId) => {
           ))}
         </div>
       </div>
+      
+      {/* Booking Success Message (Conditional Rendering) */}
+      {bookingSuccess && (
+        <div className="mb-8 bg-green-50 p-6 rounded-xl border border-green-200 text-green-700">
+          <h2 className="text-2xl font-bold mb-4">Booking Confirmed!</h2>
+          <p>Your booking has been successfully processed. Thank you for choosing {room.hotel.name}.</p>
+          <p className="mt-2">We'll redirect you to your bookings page shortly...</p>
+        </div>
+      )}
+
+      {/* Booking Error Message (Conditional Rendering) */}
+      {bookingError && (
+        <div className="mb-8 bg-red-50 p-6 rounded-xl border border-red-200 text-red-700">
+          <h2 className="text-2xl font-bold mb-4">Booking Failed</h2>
+          <p>{bookingError}</p>
+        </div>
+      )}
       
       {/* Room Info and Booking Section */}
       <div className="flex flex-col lg:flex-row gap-8">
@@ -385,6 +450,20 @@ const fetchRoomDetails = async (roomId) => {
                 ))}
               </select>
             </div>
+
+            {/* Payment Method */}
+            <div className="mb-6">
+              <label className="block text-sm text-gray-600 mb-2">Payment Method</label>
+              <select 
+                className="w-full border border-gray-300 rounded px-3 py-2"
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              >
+                <option value="Pay At Hotel">Pay At Hotel</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="UPI">UPI</option>
+              </select>
+            </div>
             
             <div className="border-t border-b border-gray-200 py-4 my-4">
               <div className="flex justify-between mb-2">
@@ -403,19 +482,25 @@ const fetchRoomDetails = async (roomId) => {
             
             <button 
               onClick={handleBookNow}
-              disabled={!checkIn || !checkOut || nights === 0}
+              disabled={!checkIn || !checkOut || nights === 0 || isBookingLoading}
               className={`w-full py-3 rounded-md text-white font-medium mt-2 ${
-                !checkIn || !checkOut || nights === 0
+                !checkIn || !checkOut || nights === 0 || isBookingLoading
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-orange-500 hover:bg-orange-600'
               }`}
             >
-             Search 
+             {isBookingLoading ? 'Processing...' : 'Book Now'} 
             </button>
             
             {(!checkIn || !checkOut) && (
               <p className="text-xs text-center mt-2 text-red-600">
                 Please select check-in and check-out dates
+              </p>
+            )}
+
+            {!userData && (
+              <p className="text-xs text-center mt-2 text-red-600">
+                Please log in to book this room
               </p>
             )}
           </div>

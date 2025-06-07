@@ -7,14 +7,13 @@ import Home from './pages/Home'
 import Footer from './components/Footer'
 import AllRooms from './pages/AllRooms'
 import RoomDetails from './pages/RoomDetails'
+import MyBookings from './pages/MyBookings'
 import { FaWhatsapp } from 'react-icons/fa';
 import Contact from './pages/Contact'
 import Partners from './components/Footer/Partners'
 import About from './components/Footer/About'
-// import canceloption from "./components/Footer/Cancel-option"
 import HelpCenter from './components/Footer/Help-center'
 import Safety from './components/Footer/safety-info'
-// import Accessibility from '@/components/Footer/Accessibility'
 import Gallery from './components/Navbar/Gallery'
 import SearchResults from './pages/SearchResults';
 import { AuthProvider } from './context/AuthContext';
@@ -40,6 +39,7 @@ const App = () => {
             <Route path='/rooms' element={<AllRooms/>} />
             <Route path='/rooms/:id' element={<RoomDetails/>} />
             <Route path='/search-results' element={<SearchResults/>} />
+            <Route path='/my-bookings' element={<MyBookings/>} />
             <Route path='/contact' element={<Contact />} />
             <Route path='/partners' element={<Partners />} />
             <Route path='/h' element={<HelpCenter />} />
