@@ -8,7 +8,7 @@ import Footer from './components/Footer'
 import AllRooms from './pages/AllRooms'
 import RoomDetails from './pages/RoomDetails'
 import MyBookings from './pages/MyBookings'
-import BookingDetails from './pages/BookingDetails'; // Import the new component
+import BookingDetails from './pages/BookingDetails';
 import { FaWhatsapp } from 'react-icons/fa';
 import Contact from './pages/Contact'
 import Partners from './components/Footer/Partners'
@@ -20,6 +20,8 @@ import SearchResults from './pages/SearchResults';
 import { AuthProvider } from './context/AuthContext';
 
 const App = () => {
+  const { pathname } = useLocation();
+  
   useEffect(() => {
     // Initialize AOS animation library
     AOS.init({
@@ -27,6 +29,11 @@ const App = () => {
       once: true,
     });
   }, []);
+  
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   
   const isOwnerPath = useLocation().pathname.includes("owner");
   
@@ -41,7 +48,7 @@ const App = () => {
             <Route path='/rooms/:id' element={<RoomDetails/>} />
             <Route path='/search-results' element={<SearchResults/>} />
             <Route path='/my-bookings' element={<MyBookings/>} />
-            <Route path='/booking/:id' element={<BookingDetails/>} /> {/* Add this new route */}
+            <Route path='/booking/:id' element={<BookingDetails/>} />
             <Route path='/contact' element={<Contact />} />
             <Route path='/partners' element={<Partners />} />
             <Route path='/h' element={<HelpCenter />} />

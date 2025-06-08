@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { FaCalendarAlt, FaUsers, FaMapMarkerAlt, FaUtensils, FaWifi, FaSwimmingPool, FaStar } from "react-icons/fa"
+import { FiChevronDown } from "react-icons/fi"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { useNavigate } from "react-router-dom"
@@ -34,6 +35,16 @@ const Hero = () => {
   const navbarHeight = useNavbarHeight()
   const navigate = useNavigate()
   const videoRef = useRef(null)
+  const formRef = useRef(null)
+  const locationDropdownRef = useRef(null)
+
+  // Text animation
+  const [displayText, setDisplayText] = useState("")
+  const fullText = "Comfort"
+  
+  // For 3D effect
+  const [tiltX, setTiltX] = useState(0)
+  const [tiltY, setTiltY] = useState(0)
 
   // Booking form state
   const [searchParams, setSearchParams] = useState({
@@ -46,9 +57,35 @@ const Hero = () => {
   const [error, setError] = useState(null)
   const [showTableReservation, setShowTableReservation] = useState(false)
   const [videoLoaded, setVideoLoaded] = useState(false)
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false)
 
   // DatePicker z-index management
   const [datePickerOpen, setDatePickerOpen] = useState(false)
+
+  // Typewriter effect for "Comfort"
+  useEffect(() => {
+    if (displayText.length < fullText.length) {
+      const timeoutId = setTimeout(() => {
+        setDisplayText(fullText.slice(0, displayText.length + 1))
+      }, 150)
+      
+      return () => clearTimeout(timeoutId)
+    }
+  }, [displayText])
+  
+  // Close location dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target)) {
+        setShowLocationDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const handleInputChange = (e) => {
     const { id, value } = e.target
@@ -63,6 +100,14 @@ const Hero = () => {
       ...prev,
       [field]: date ? date.toISOString().split("T")[0] : "",
     }))
+  }
+
+  const handleLocationSelect = (location) => {
+    setSearchParams({
+      ...searchParams,
+      destination: location
+    })
+    setShowLocationDropdown(false)
   }
 
   const handleSearch = async (e) => {
@@ -124,7 +169,7 @@ const Hero = () => {
     { icon: <FaStar className="w-5 h-5" />, name: "5-Star Service" },
   ]
 
-  // Destination options for the dropdown
+  // Available locations - using original
   const locations = ["Chennai", "Pondicherry", "Goa", "Kerala"]
 
   // Custom date picker styles to fix z-index issues
@@ -132,10 +177,73 @@ const Hero = () => {
     position: "relative",
     zIndex: datePickerOpen ? 1000 : 1,
   }
+  
+  // Custom styles for Hero component only - SCOPED to avoid navbar conflicts
+  const heroStyles = `
+    /* Typewriter effect */
+    .hero-typewriter-cursor::after {
+      content: '|';
+      display: inline-block;
+      color: #D4AF37;
+      animation: heroTypeBlink 1s step-end infinite;
+      margin-left: 2px;
+    }
+    
+    @keyframes heroTypeBlink {
+      from, to { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    
+    /* Gold gradient for buttons */
+    .hero-gold-gradient {
+      background: linear-gradient(to right, #D4AF37, #BFA181);
+    }
+    
+    /* Gold text */
+    .hero-gold-text {
+      color: #D4AF37;
+    }
+    
+    /* Custom styles for form inputs */
+    .hero-form input[type="date"], 
+    .hero-form select, 
+    .hero-form .custom-dropdown-btn {
+      color-scheme: dark;
+    }
+    
+    .hero-form input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+    
+    /* Gold focus styles */
+    .hero-gold-focus:focus {
+      border-color: #D4AF37 !important;
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25) !important;
+    }
+    
+    /* 3D Tilt animation */
+    .hero-tilt-card {
+      transform-style: preserve-3d;
+      transition: transform 0.1s ease;
+    }
+    
+    /* Location dropdown options */
+    .hero-location-option {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      background-color: #333 !important;
+    }
+    
+    /* Hero container - ensure it doesn't affect navbar */
+    .hero-container {
+      position: relative;
+      z-index: 1;
+    }
+  `
 
   return (
     <div
-      className="relative w-full overflow-hidden"
+      className="hero-container relative w-full overflow-hidden"
       style={{
         minHeight: `calc(100vh - ${navbarHeight}px)`,
         marginTop: `${navbarHeight}px`,
@@ -145,6 +253,9 @@ const Hero = () => {
         paddingRight: "env(safe-area-inset-right)",
       }}
     >
+      {/* Add scoped styles that won't affect the navbar */}
+      <style>{heroStyles}</style>
+      
       {/* Video Background */}
       <motion.div 
         className="absolute inset-0 z-0"
@@ -181,7 +292,7 @@ const Hero = () => {
           transition={{ duration: 1 }}
         >
           <motion.div 
-            className="text-[#49B9FF] text-xl mb-6 font-light tracking-wider"
+            className="text-[#D4AF37] text-xl mb-6 font-light tracking-wider"
             animate={{ 
               opacity: [0.5, 1, 0.5],
               scale: [0.98, 1, 0.98]
@@ -192,10 +303,10 @@ const Hero = () => {
           </motion.div>
           
           <motion.div
-            className="w-24 h-1 bg-[#49B9FF]/30 rounded-full overflow-hidden"
+            className="w-24 h-1 bg-[#D4AF37]/30 rounded-full overflow-hidden"
           >
             <motion.div
-              className="h-full bg-gradient-to-r from-[#49B9FF] to-[#2276E3]"
+              className="h-full bg-gradient-to-r from-[#D4AF37] to-[#BFA181]"
               initial={{ width: "0%" }}
               animate={{ width: "100%" }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -216,7 +327,7 @@ const Hero = () => {
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
               <motion.p
-                className="text-lg font-light mb-2 text-[#49B9FF] tracking-wider"
+                className="text-lg font-light mb-2 text-[#D4AF37] tracking-wider"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
@@ -230,7 +341,7 @@ const Hero = () => {
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
                 Your Kingdom of{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F0E6CA] to-white">Comfort</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F0E6CA] hero-typewriter-cursor">{displayText}</span>
               </motion.h1>
               <motion.p
                 className="text-lg mb-8 text-gray-200 max-w-md leading-relaxed"
@@ -241,6 +352,7 @@ const Hero = () => {
                 Experience unparalleled luxury in our exclusive villas, where every detail is crafted for your ultimate
                 relaxation and pleasure.
               </motion.p>
+              
               {/* Feature highlights */}
               <motion.div
                 className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10"
@@ -254,14 +366,15 @@ const Hero = () => {
                     className="p-3 rounded-lg bg-black/30 backdrop-blur-sm flex flex-col items-center text-center transition-all"
                     whileHover={{
                       scale: 1.05,
-                      backgroundColor: "rgba(73, 185, 255, 0.15)",
+                      backgroundColor: "rgba(212, 175, 55, 0.15)",
                     }}
                   >
-                    <div className="text-[#49B9FF] text-2xl mb-2">{amenity.icon}</div>
+                    <div className="text-[#D4AF37] text-2xl mb-2">{amenity.icon}</div>
                     <div className="text-white text-sm font-medium">{amenity.name}</div>
                   </motion.div>
                 ))}
               </motion.div>
+              
               {/* Buttons */}
               <motion.div
                 className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0"
@@ -270,8 +383,8 @@ const Hero = () => {
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
                 <motion.button
-                  className="px-8 py-3 bg-gradient-to-r from-[#49B9FF] to-[#2276E3] text-white rounded-full font-semibold text-lg tracking-wide"
-                  whileHover={{ scale: 1.03, boxShadow: "0 0 15px rgba(73, 185, 255, 0.5)" }}
+                  className="px-8 py-3 hero-gold-gradient text-white rounded-full font-semibold text-lg tracking-wide"
+                  whileHover={{ scale: 1.03, boxShadow: "0 0 15px rgba(212, 175, 55, 0.5)" }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <span className="flex items-center justify-center">
@@ -289,11 +402,11 @@ const Hero = () => {
                 </motion.button>
 
                 <motion.button
-                  className="px-8 py-3 border-2 border-white/40 bg-black/20 text-white rounded-full font-semibold text-lg backdrop-blur-sm"
+                  className="px-8 py-3 border-2 border-[#D4AF37]/40 bg-black/20 text-white rounded-full font-semibold text-lg backdrop-blur-sm"
                   whileHover={{
                     scale: 1.03,
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    borderColor: "rgba(73, 185, 255, 0.7)",
+                    backgroundColor: "rgba(212, 175, 55, 0.1)",
+                    borderColor: "rgba(212, 175, 55, 0.7)",
                   }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -320,28 +433,43 @@ const Hero = () => {
 
             {/* Right side - Booking Form */}
             <motion.div
-              className="lg:w-1/2 mt-8 lg:mt-0 w-full max-w-md mx-auto lg:max-w-lg"
+              className="lg:w-1/2 mt-8 lg:mt-0 w-full max-w-md mx-auto lg:max-w-lg hero-tilt-card"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
+              ref={formRef}
+              onMouseMove={(e) => {
+                if (formRef.current) {
+                  const rect = formRef.current.getBoundingClientRect();
+                  const x = (e.clientX - rect.left) / rect.width - 0.5;
+                  const y = (e.clientY - rect.top) / rect.height - 0.5;
+                  
+                  formRef.current.style.transform = `perspective(1000px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg)`;
+                }
+              }}
+              onMouseLeave={() => {
+                if (formRef.current) {
+                  formRef.current.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+                }
+              }}
             >
-              <div className="backdrop-blur-lg bg-white/10 p-6 sm:p-8 rounded-2xl shadow-2xl border border-white/20">
+              <div className="backdrop-blur-lg bg-black/30 p-6 sm:p-8 rounded-2xl shadow-2xl border border-[#D4AF37]/20">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-xl sm:text-2xl font-semibold text-white">Book Your Stay</h3>
                   <button
-                    className="text-[#49B9FF] hover:text-white text-sm flex items-center gap-1 transition-colors"
+                    className="text-[#D4AF37] hover:text-white text-sm flex items-center gap-1 transition-colors"
                   >
                     View Amenities
                     <span>→</span>
                   </button>
                 </div>
 
-                <form onSubmit={handleSearch} className="space-y-6">
+                <form onSubmit={handleSearch} className="space-y-6 hero-form">
                   {/* Check-in and Check-out */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div style={datePickerWrapperStyles}>
                       <label htmlFor="checkIn" className="block text-white text-sm font-medium mb-1">
-                        <FaCalendarAlt className="inline mr-2" /> Check-in
+                        <FaCalendarAlt className="inline mr-2 text-[#D4AF37]" /> Check-in
                       </label>
                       <DatePicker
                         id="checkIn"
@@ -349,7 +477,7 @@ const Hero = () => {
                         onChange={(date) => handleDateChange(date, "checkIn")}
                         onCalendarOpen={() => setDatePickerOpen(true)}
                         onCalendarClose={() => setDatePickerOpen(false)}
-                        className="w-full p-3 bg-white/10 text-white backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-[#49B9FF] focus:border-transparent placeholder-gray-400"
+                        className="w-full p-3 bg-black/40 text-white border border-[#D4AF37]/30 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent hero-gold-focus"
                         placeholderText="Select date"
                         dateFormat="yyyy-MM-dd"
                         minDate={new Date()}
@@ -361,7 +489,7 @@ const Hero = () => {
 
                     <div style={datePickerWrapperStyles}>
                       <label htmlFor="checkOut" className="block text-white text-sm font-medium mb-1">
-                        <FaCalendarAlt className="inline mr-2" /> Check-out
+                        <FaCalendarAlt className="inline mr-2 text-[#D4AF37]" /> Check-out
                       </label>
                       <DatePicker
                         id="checkOut"
@@ -369,7 +497,7 @@ const Hero = () => {
                         onChange={(date) => handleDateChange(date, "checkOut")}
                         onCalendarOpen={() => setDatePickerOpen(true)}
                         onCalendarClose={() => setDatePickerOpen(false)}
-                        className="w-full p-3 bg-white/10 text-white backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-[#49B9FF] focus:border-transparent placeholder-gray-400"
+                        className="w-full p-3 bg-black/40 text-white border border-[#D4AF37]/30 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent hero-gold-focus"
                         placeholderText="Select date"
                         dateFormat="yyyy-MM-dd"
                         minDate={
@@ -388,13 +516,13 @@ const Hero = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="guests" className="block text-white text-sm font-medium mb-1">
-                        <FaUsers className="inline mr-2" /> Guests
+                        <FaUsers className="inline mr-2 text-[#D4AF37]" /> Guests
                       </label>
                       <select
                         id="guests"
                         value={searchParams.guests}
                         onChange={handleInputChange}
-                        className="w-full p-3 bg-white/10 text-white backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-[#49B9FF] focus:border-transparent"
+                        className="w-full p-3 bg-black/40 text-white border border-[#D4AF37]/30 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent hero-gold-focus"
                       >
                         {[1, 2, 3, 4, 5, 6].map((num) => (
                           <option key={num} value={num} className="bg-gray-800 text-white">
@@ -404,26 +532,46 @@ const Hero = () => {
                       </select>
                     </div>
 
-                    <div>
+                    {/* Location with custom dropdown */}
+                    <div className="relative" ref={locationDropdownRef}>
                       <label htmlFor="destination" className="block text-white text-sm font-medium mb-1">
-                        <FaMapMarkerAlt className="inline mr-2" /> Location
+                        <FaMapMarkerAlt className="inline mr-2 text-[#D4AF37]" /> Location
                       </label>
-                      <select
-                        id="destination"
-                        value={searchParams.destination}
-                        onChange={handleInputChange}
-                        className="w-full p-3 bg-white/10 text-white backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-[#49B9FF] focus:border-transparent"
-                        required
+                      <button
+                        type="button"
+                        onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+                        className="w-full p-3 bg-black/40 text-white border border-[#D4AF37]/30 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent flex justify-between items-center hero-gold-focus"
                       >
-                        <option value="" disabled className="bg-gray-800 text-gray-400">
-                          Select location
-                        </option>
-                        {locations.map((loc) => (
-                          <option key={loc} value={loc} className="bg-gray-800 text-white">
-                            {loc}
-                          </option>
-                        ))}
-                      </select>
+                        <span>{searchParams.destination || "Select location"}</span>
+                        <FiChevronDown className={`transition-transform text-[#D4AF37] ${showLocationDropdown ? "rotate-180" : ""}`} />
+                      </button>
+                      
+                      {showLocationDropdown && (
+                        <div
+                          className="absolute z-20 mt-1 w-full rounded-md bg-gray-800 shadow-lg border border-[#D4AF37]/30 overflow-hidden hero-location-option"
+                        >
+                          <div className="max-h-60 overflow-auto py-1">
+                            {locations.map((location) => (
+                              <button
+                                key={location}
+                                type="button"
+                                onClick={() => handleLocationSelect(location)}
+                                className={`w-full px-4 py-2 text-left hover:bg-[#D4AF37]/20 transition-colors ${searchParams.destination === location ? 'bg-[#D4AF37]/30 text-[#D4AF37]' : 'text-gray-300'}`}
+                              >
+                                {location}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Hidden input for form validation */}
+                      <input 
+                        type="hidden" 
+                        id="destination" 
+                        value={searchParams.destination} 
+                        required
+                      />
                     </div>
                   </div>
 
@@ -434,10 +582,10 @@ const Hero = () => {
                       id="tableReservation"
                       checked={showTableReservation}
                       onChange={() => setShowTableReservation(!showTableReservation)}
-                      className="w-5 h-5 text-[#49B9FF] bg-white/10 border-white/30 rounded focus:ring-[#49B9FF] focus:ring-offset-0 focus:ring-offset-black/20"
+                      className="w-5 h-5 text-[#D4AF37] bg-black/40 border-[#D4AF37]/30 rounded focus:ring-[#D4AF37] focus:ring-offset-0 focus:ring-offset-black/20"
                     />
                     <label htmlFor="tableReservation" className="ml-2 text-white flex items-center cursor-pointer">
-                      <FaUtensils className="mr-2" />
+                      <FaUtensils className="mr-2 text-[#D4AF37]" />
                       <span>Add Table Reservation</span>
                     </label>
                   </div>
@@ -456,7 +604,7 @@ const Hero = () => {
                   {/* Book Now Button */}
                   <button
                     type="submit"
-                    className="w-full py-3 bg-gradient-to-r from-[#49B9FF] to-[#2276E3] text-white font-bold rounded-lg relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 ease-in-out hover:from-[#2276E3] hover:to-[#49B9FF]"
+                    className="w-full py-3 hero-gold-gradient text-white font-bold rounded-lg relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 ease-in-out hover:opacity-90"
                     disabled={loading}
                     style={{ letterSpacing: "0.05em" }}
                   >
@@ -490,6 +638,11 @@ const Hero = () => {
                       )}
                     </span>
                   </button>
+                  
+                  {/* 3D effect indicator */}
+                  <div className="text-[#D4AF37]/50 text-xs text-center">
+                    Move mouse for 3D effect ✨
+                  </div>
                 </form>
               </div>
             </motion.div>
@@ -505,11 +658,11 @@ const Hero = () => {
         transition={{ duration: 0.3 }}
       >
         <motion.button 
-          className="bg-black/50 backdrop-blur-sm text-white p-3 rounded-full border border-white/20"
+          className="bg-black/50 backdrop-blur-sm text-white p-3 rounded-full border border-[#D4AF37]/20"
           whileHover={{ 
             scale: 1.1, 
             backgroundColor: "rgba(0, 0, 0, 0.7)",
-            boxShadow: "0 0 10px rgba(255, 255, 255, 0.3)"
+            boxShadow: "0 0 10px rgba(212, 175, 55, 0.3)"
           }}
           whileTap={{ scale: 0.95 }}
           onClick={() => {

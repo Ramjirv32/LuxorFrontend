@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react'
-
-import { CCarousel, CCarouselItem, CImage } from '@coreui/react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, MapPin, Star, Heart } from 'lucide-react'
 
@@ -8,6 +6,11 @@ export const FeaturedDestination = () => {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
   
+  // Preserve any backend data fetching if it exists
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  
+  // Property data - could be fetched from backend
   const properties = [
     {
       id: 1,
@@ -77,6 +80,35 @@ export const FeaturedDestination = () => {
     }
   ]
 
+  // Add support for touch events for mobile swipe
+  const touchStartRef = useRef(null);
+  const touchEndRef = useRef(null);
+
+  const handleTouchStart = (e) => {
+    touchStartRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartRef.current || !touchEndRef.current) return;
+    
+    const distance = touchStartRef.current - touchEndRef.current;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    } else if (isRightSwipe) {
+      prevSlide();
+    }
+
+    touchStartRef.current = null;
+    touchEndRef.current = null;
+  };
+
   const nextSlide = () => {
     if (isTransitioning) return
     setIsTransitioning(true)
@@ -116,6 +148,31 @@ export const FeaturedDestination = () => {
     }
   }, [showSwipeHint])
 
+  // Any original backend logic would be preserved here
+  useEffect(() => {
+    // This is where we would fetch properties from an API if needed
+    // For example:
+    /*
+    const fetchProperties = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/featured-properties');
+        const data = await response.json();
+        if (data.properties) {
+          setProperties(data.properties);
+        }
+      } catch (err) {
+        console.error('Error fetching properties:', err);
+        setError('Failed to load properties');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+    */
+  }, []);
+
   return (
     <div className="max-w-7xl mx-auto relative">
       {/* Title with animation */}
@@ -139,190 +196,210 @@ export const FeaturedDestination = () => {
         </div>
       </motion.div>
 
-      {/* Carousel Container */}
-      <div className="relative overflow-hidden rounded-2xl shadow-lg">
-        {/* Hand swipe hint animation */}
-        <AnimatePresence>
-          {showSwipeHint && (
-            <motion.div 
-              className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <motion.div 
-                className="bg-black/70 text-white px-4 py-2 rounded-full flex items-center gap-2"
-                animate={{ 
-                  x: [0, -50, 0], 
-                  opacity: [0.9, 0.6, 0.9] 
-                }}
-                transition={{ 
-                  repeat: 2, 
-                  duration: 1.5,
-                  repeatType: "reverse"  
-                }}
-              >
-                <span className="text-lg">👆</span>
-                <span className="text-sm font-medium">Swipe to explore</span>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        {/* Navigation Arrows */}
-        <button
-          onClick={prevSlide}
-          disabled={isTransitioning}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg border border-gray-100 disabled:opacity-50"
-        >
-          <ChevronLeft className="w-5 h-5 text-gray-700" />
-        </button>
-        
-        <button
-          onClick={nextSlide}
-          disabled={isTransitioning}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg border border-gray-100 disabled:opacity-50"
-        >
-          <ChevronRight className="w-5 h-5 text-gray-700" />
-        </button>
-
-        {/* Crossfade Carousel */}
-        <div className="relative h-[600px] w-full">
-          {properties.map((property, index) => (
-            <AnimatePresence key={property.id}>
-              {index === activeIndex && (
-                <motion.div
-                  className="absolute inset-0"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.7 }}
-                >
-                  <div className="h-full w-full relative">
-                    {/* Property Image with overlay */}
-                    <motion.img
-                      src={property.image}
-                      alt={property.name}
-                      className="w-full h-full object-cover"
-                      initial={{ scale: 1.1 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.7 }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-
-                    {/* Rating Badge */}
-                    <motion.div 
-                      className="absolute top-5 left-5 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-1 shadow-lg"
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <span className="font-semibold text-sm">{property.rating}</span>
-                      <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                    </motion.div>
-                    
-                    {/* Heart Button */}
-                    <motion.button 
-                      className="absolute top-5 right-5 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-sm"
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <Heart className="w-4 h-4 text-gray-600 hover:text-red-500 transition-colors" />
-                    </motion.button>
-
-                    {/* Property details - animated from bottom */}
-                    <motion.div 
-                      className="absolute bottom-0 left-0 right-0 p-6 text-white"
-                      initial={{ opacity: 0, y: 50 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4, duration: 0.5 }}
-                    >
-                      <motion.h3 
-                        className="text-2xl font-bold mb-2"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 }}
-                      >
-                        {property.name}
-                      </motion.h3>
-                      
-                      <motion.div 
-                        className="flex items-center gap-1.5 mb-3"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
-                      >
-                        <MapPin className="w-4 h-4" />
-                        <span className="text-sm">{property.location}</span>
-                      </motion.div>
-                      
-                      <motion.p 
-                        className="text-sm text-gray-200 mb-4"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.7 }}
-                      >
-                        Up to {property.guests} Guests • {property.rooms} Rooms • {property.baths} Baths
-                      </motion.p>
-                      
-                      <motion.div 
-                        className="flex items-center justify-between"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.8 }}
-                      >
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl font-bold">
-                              {property.price}
-                            </span>
-                            {property.originalPrice && (
-                              <span className="text-sm text-gray-300 line-through">
-                                {property.originalPrice}
-                              </span>
-                            )}
-                            {property.originalPrice && (
-                              <span className="text-xs font-medium text-green-400 bg-green-900/40 rounded-full px-2 py-0.5">
-                                {Math.round((1 - parseInt(property.price.replace(/[^0-9]/g, '')) / parseInt(property.originalPrice.replace(/[^0-9]/g, ''))) * 100)}% OFF
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-gray-300 mt-0.5">Per Night + Taxes</p>
-                        </div>
-                        
-                        <motion.button 
-                          className="bg-white text-blue-600 font-medium px-4 py-2 rounded-lg shadow-md"
-                          whileHover={{ scale: 1.05, backgroundColor: "#f8fafc" }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          View Details
-                        </motion.button>
-                      </motion.div>
-                      
-                      {/* Best Rated Badge */}
-                      {property.bestRated && (
-                        <motion.div 
-                          className="absolute top-[-60px] right-0 bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-full flex items-center gap-1.5"
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.4 }}
-                        >
-                          <Star className="w-3.5 h-3.5 fill-yellow-400" />
-                          <span className="text-xs font-medium">Best Rated</span>
-                        </motion.div>
-                      )}
-                    </motion.div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          ))}
+      {/* Loading and error states */}
+      {loading && (
+        <div className="flex justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
-      </div>
+      )}
+      
+      {error && (
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 text-center">
+          {error}
+        </div>
+      )}
+
+      {/* Carousel Container */}
+      {!loading && !error && (
+        <div 
+          className="relative overflow-hidden rounded-2xl shadow-lg"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* Hand swipe hint animation */}
+          <AnimatePresence>
+            {showSwipeHint && (
+              <motion.div 
+                className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.div 
+                  className="bg-black/70 text-white px-4 py-2 rounded-full flex items-center gap-2"
+                  animate={{ 
+                    x: [0, -50, 0], 
+                    opacity: [0.9, 0.6, 0.9] 
+                  }}
+                  transition={{ 
+                    repeat: 2, 
+                    duration: 1.5,
+                    repeatType: "reverse"  
+                  }}
+                >
+                  <span className="text-lg">👆</span>
+                  <span className="text-sm font-medium">Swipe to explore</span>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
+          {/* Navigation Arrows */}
+          <button
+            onClick={prevSlide}
+            disabled={isTransitioning}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg border border-gray-100 disabled:opacity-50"
+          >
+            <ChevronLeft className="w-5 h-5 text-gray-700" />
+          </button>
+          
+          <button
+            onClick={nextSlide}
+            disabled={isTransitioning}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg border border-gray-100 disabled:opacity-50"
+          >
+            <ChevronRight className="w-5 h-5 text-gray-700" />
+          </button>
+
+          {/* Crossfade Carousel */}
+          <div className="relative h-[600px] sm:h-[600px] w-full">
+            {properties.map((property, index) => (
+              <AnimatePresence key={property.id}>
+                {index === activeIndex && (
+                  <motion.div
+                    className="absolute inset-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.7 }}
+                  >
+                    <div className="h-full w-full relative">
+                      {/* Property Image with overlay */}
+                      <motion.img
+                        src={property.image}
+                        alt={property.name}
+                        className="w-full h-full object-cover"
+                        initial={{ scale: 1.1 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 0.7 }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+
+                      {/* Rating Badge */}
+                      <motion.div 
+                        className="absolute top-5 left-5 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-1 shadow-lg"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        <span className="font-semibold text-sm">{property.rating}</span>
+                        <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                      </motion.div>
+                      
+                      {/* Heart Button */}
+                      <motion.button 
+                        className="absolute top-5 right-5 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-sm"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <Heart className="w-4 h-4 text-gray-600 hover:text-red-500 transition-colors" />
+                      </motion.button>
+
+                      {/* Property details - animated from bottom */}
+                      <motion.div 
+                        className="absolute bottom-0 left-0 right-0 p-6 text-white"
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4, duration: 0.5 }}
+                      >
+                        <motion.h3 
+                          className="text-2xl font-bold mb-2"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.5 }}
+                        >
+                          {property.name}
+                        </motion.h3>
+                        
+                        <motion.div 
+                          className="flex items-center gap-1.5 mb-3"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.6 }}
+                        >
+                          <MapPin className="w-4 h-4" />
+                          <span className="text-sm">{property.location}</span>
+                        </motion.div>
+                        
+                        <motion.p 
+                          className="text-sm text-gray-200 mb-4"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.7 }}
+                        >
+                          Up to {property.guests} Guests • {property.rooms} Rooms • {property.baths} Baths
+                        </motion.p>
+                        
+                        <motion.div 
+                          className="flex items-center justify-between"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.8 }}
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-2xl font-bold">
+                                {property.price}
+                              </span>
+                              {property.originalPrice && (
+                                <span className="text-sm text-gray-300 line-through">
+                                  {property.originalPrice}
+                                </span>
+                              )}
+                              {property.originalPrice && (
+                                <span className="text-xs font-medium text-green-400 bg-green-900/40 rounded-full px-2 py-0.5">
+                                  {Math.round((1 - parseInt(property.price.replace(/[^0-9]/g, '')) / parseInt(property.originalPrice.replace(/[^0-9]/g, ''))) * 100)}% OFF
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-300 mt-0.5">Per Night + Taxes</p>
+                          </div>
+                          
+                          <motion.button 
+                            className="bg-white text-blue-600 font-medium px-4 py-2 rounded-lg shadow-md"
+                            whileHover={{ scale: 1.05, backgroundColor: "#f8fafc" }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            View Details
+                          </motion.button>
+                        </motion.div>
+                        
+                        {/* Best Rated Badge */}
+                        {property.bestRated && (
+                          <motion.div 
+                            className="absolute top-[-60px] right-0 bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-full flex items-center gap-1.5"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.4 }}
+                          >
+                            <Star className="w-3.5 h-3.5 fill-yellow-400" />
+                            <span className="text-xs font-medium">Best Rated</span>
+                          </motion.div>
+                        )}
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Pagination Dots - Enhanced */}
       <div className="flex justify-center gap-2 mt-6">
@@ -361,6 +438,7 @@ export const FeaturedDestination = () => {
     </div>
   )
 }
+
 export default FeaturedDestination
 
 // You can also keep the named export if you want

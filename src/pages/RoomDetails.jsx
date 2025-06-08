@@ -6,6 +6,7 @@ import { assets, facilityIcons } from '../assets/assets';
 import roomImg11 from '../assets/roomImg11.png';
 import { useAuth } from '../context/AuthContext';
 
+
 const RoomDetails = () => {
   const { id } = useParams();
   const location = useLocation();
@@ -23,12 +24,13 @@ const RoomDetails = () => {
   const { userData, authToken } = useAuth();
   
 
+
   const searchParams = new URLSearchParams(location.search);
   const checkIn = searchParams.get('checkIn');
   const checkOut = searchParams.get('checkOut');
   const initialGuests = searchParams.get('guests');
 
-  // Calculate nights of stay
+
   const calculateNights = () => {
     if (!checkIn || !checkOut) return 0;
     const startDate = new Date(checkIn);
