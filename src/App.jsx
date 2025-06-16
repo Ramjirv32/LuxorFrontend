@@ -36,7 +36,7 @@ const App = () => {
   }, [pathname]);
   
   const isOwnerPath = useLocation().pathname.includes("owner");
-  
+  // j
   return (
     <AuthProvider>
       <div>
