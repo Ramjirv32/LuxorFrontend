@@ -43,6 +43,7 @@ import roomImg21 from './roomImg21.png'
 import roomImg22 from './roomImg22.png'
 import roomImg23 from './roomImg23.png'
 import roomImg24 from './roomImg24.png'
+import whatsappIcon from './whatsappIcon.svg'
 
 
 export const assets = {
@@ -79,6 +80,7 @@ export const assets = {
     totalBookingIcon,
     totalRevenueIcon,
     logo1,
+    whatsappIcon
 }
 
 export const cities = [

@@ -8,6 +8,8 @@ import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { useNavigate } from "react-router-dom"
 import backgroundVideo from "../assets/About/v.mp4"
+import { Popover } from "@headlessui/react"
+import { Minus, Plus, Users } from "lucide-react"
 
 // Helper for navbar height detection
 const useNavbarHeight = () => {
@@ -51,13 +53,19 @@ const Hero = () => {
     destination: "",
     checkIn: "",
     checkOut: "",
-    guests: 1,
+    adults: 1,
+    children: 0,
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [showTableReservation, setShowTableReservation] = useState(false)
   const [videoLoaded, setVideoLoaded] = useState(false)
   const [showLocationDropdown, setShowLocationDropdown] = useState(false)
+
+  // Add local state for guests
+  const [adults, setAdults] = useState(1)
+  const [children, setChildren] = useState(0)
+  const [infants, setInfants] = useState(0)
 
   // DatePicker z-index management
   const [datePickerOpen, setDatePickerOpen] = useState(false)
@@ -87,11 +95,22 @@ const Hero = () => {
     }
   }, [])
 
+  // Sync guest state with searchParams
+  useEffect(() => {
+    setSearchParams((prev) => ({
+      ...prev,
+      adults,
+      children,
+      infants,
+    }))
+    // eslint-disable-next-line
+  }, [adults, children, infants])
+
   const handleInputChange = (e) => {
     const { id, value } = e.target
     setSearchParams((prev) => ({
       ...prev,
-      [id]: id === "guests" ? Number.parseInt(value, 10) : value,
+      [id]: Number.parseInt(value, 10),
     }))
   }
 
@@ -113,8 +132,13 @@ const Hero = () => {
   const handleSearch = async (e) => {
     e.preventDefault()
 
-    if (!searchParams.destination || !searchParams.checkIn || !searchParams.checkOut || !searchParams.guests) {
-      setError("Please fill in all search fields")
+    if (
+      !searchParams.destination ||
+      !searchParams.checkIn ||
+      !searchParams.checkOut ||
+      searchParams.adults < 1
+    ) {
+      setError("Please fill in all search fields (at least 1 adult required)")
       return
     }
     // Validate dates: checkOut must be after checkIn
@@ -128,10 +152,11 @@ const Hero = () => {
       setError(null)
 
       const formattedDestination =
-        searchParams.destination.charAt(0).toUpperCase() + searchParams.destination.slice(1).toLowerCase()
+        searchParams.destination.charAt(0).toUpperCase() +
+        searchParams.destination.slice(1).toLowerCase()
 
       navigate(
-        `/search-results?location=${formattedDestination}&checkIn=${searchParams.checkIn}&checkOut=${searchParams.checkOut}&guests=${searchParams.guests}`,
+        `/search-results?location=${formattedDestination}&checkIn=${searchParams.checkIn}&checkOut=${searchParams.checkOut}&adults=${searchParams.adults}&children=${searchParams.children}`,
       )
     } catch (err) {
       console.error("Search error:", err)
@@ -354,26 +379,7 @@ const Hero = () => {
               </motion.p>
               
               {/* Feature highlights */}
-              <motion.div
-                className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
-              >
-                {amenities.map((amenity, i) => (
-                  <motion.div
-                    key={i}
-                    className="p-3 rounded-lg bg-black/30 backdrop-blur-sm flex flex-col items-center text-center transition-all"
-                    whileHover={{
-                      scale: 1.05,
-                      backgroundColor: "rgba(212, 175, 55, 0.15)",
-                    }}
-                  >
-                    <div className="text-[#D4AF37] text-2xl mb-2">{amenity.icon}</div>
-                    <div className="text-white text-sm font-medium">{amenity.name}</div>
-                  </motion.div>
-                ))}
-              </motion.div>
+              
               
               {/* Buttons */}
               <motion.div
@@ -514,22 +520,98 @@ const Hero = () => {
 
                   {/* Guests and Location */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Guests */}
                     <div>
-                      <label htmlFor="guests" className="block text-white text-sm font-medium mb-1">
-                        <FaUsers className="inline mr-2 text-[#D4AF37]" /> Guests
-                      </label>
-                      <select
-                        id="guests"
-                        value={searchParams.guests}
-                        onChange={handleInputChange}
-                        className="w-full p-3 bg-black/40 text-white border border-[#D4AF37]/30 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent hero-gold-focus"
-                      >
-                        {[1, 2, 3, 4, 5, 6].map((num) => (
-                          <option key={num} value={num} className="bg-gray-800 text-white">
-                            {num} {num === 1 ? "Guest" : "Guests"}
-                          </option>
-                        ))}
-                      </select>
+                      <label className="text-xs font-medium text-gray-500 uppercase block mb-1">Guests</label>
+                      <Popover className="relative">
+                        {({ open }) => (
+                          <>
+                            <Popover.Button className="w-full flex justify-between items-center border border-[#D4AF37]/30 bg-black/40 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent hero-gold-focus">
+                              <span>{adults + children + infants} Guests</span>
+                              <Users className="h-4 w-4 ml-2" />
+                            </Popover.Button>
+                            <Popover.Panel className="absolute z-20 mt-2 w-80 max-w-full bg-white rounded-xl shadow-lg p-4 space-y-4 left-0">
+                              <div className="space-y-4">
+                                {/* Adults */}
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <div className="font-medium text-gray-900">Adults</div>
+                                    <div className="text-xs text-gray-500">Age 13+</div>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <button
+                                      type="button"
+                                      className="p-1 rounded-full border border-gray-300 text-gray-700 disabled:opacity-50"
+                                      onClick={() => setAdults(Math.max(1, adults - 1))}
+                                      disabled={adults <= 1}
+                                    >
+                                      <Minus className="h-4 w-4" />
+                                    </button>
+                                    <span className="w-8 text-center">{adults}</span>
+                                    <button
+                                      type="button"
+                                      className="p-1 rounded-full border border-gray-300 text-gray-700"
+                                      onClick={() => setAdults(adults + 1)}
+                                    >
+                                      <Plus className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                </div>
+                                {/* Children */}
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <div className="font-medium text-gray-900">Children</div>
+                                    <div className="text-xs text-gray-500">Age 3-12</div>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <button
+                                      type="button"
+                                      className="p-1 rounded-full border border-gray-300 text-gray-700 disabled:opacity-50"
+                                      onClick={() => setChildren(Math.max(0, children - 1))}
+                                      disabled={children <= 0}
+                                    >
+                                      <Minus className="h-4 w-4" />
+                                    </button>
+                                    <span className="w-8 text-center">{children}</span>
+                                    <button
+                                      type="button"
+                                      className="p-1 rounded-full border border-gray-300 text-gray-700"
+                                      onClick={() => setChildren(children + 1)}
+                                    >
+                                      <Plus className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                </div>
+                                {/* Infants */}
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <div className="font-medium text-gray-900">Infants</div>
+                                    <div className="text-xs text-gray-500">Under 2</div>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <button
+                                      type="button"
+                                      className="p-1 rounded-full border border-gray-300 text-gray-700 disabled:opacity-50"
+                                      onClick={() => setInfants(Math.max(0, infants - 1))}
+                                      disabled={infants <= 0}
+                                    >
+                                      <Minus className="h-4 w-4" />
+                                    </button>
+                                    <span className="w-8 text-center">{infants}</span>
+                                    <button
+                                      type="button"
+                                      className="p-1 rounded-full border border-gray-300 text-gray-700"
+                                      onClick={() => setInfants(infants + 1)}
+                                    >
+                                      <Plus className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </Popover.Panel>
+                          </>
+                        )}
+                      </Popover>
                     </div>
 
                     {/* Location with custom dropdown */}
@@ -573,21 +655,6 @@ const Hero = () => {
                         required
                       />
                     </div>
-                  </div>
-
-                  {/* Table Reservation Toggle */}
-                  <div className="flex items-center p-3 rounded-lg">
-                    <input
-                      type="checkbox"
-                      id="tableReservation"
-                      checked={showTableReservation}
-                      onChange={() => setShowTableReservation(!showTableReservation)}
-                      className="w-5 h-5 text-[#D4AF37] bg-black/40 border-[#D4AF37]/30 rounded focus:ring-[#D4AF37] focus:ring-offset-0 focus:ring-offset-black/20"
-                    />
-                    <label htmlFor="tableReservation" className="ml-2 text-white flex items-center cursor-pointer">
-                      <FaUtensils className="mr-2 text-[#D4AF37]" />
-                      <span>Add Table Reservation</span>
-                    </label>
                   </div>
 
                   {/* Error message */}
