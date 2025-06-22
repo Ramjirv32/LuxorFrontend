@@ -17,6 +17,17 @@ const CheckBox = ({label, selected = false, onChange = () => {}}) => {
   );
 };
 
+function parseQuery(queryString) {
+  const params = new URLSearchParams(queryString);
+  return {
+    location: params.get("location") || "",
+    checkIn: params.get("checkIn") || "",
+    checkOut: params.get("checkOut") || "",
+    adults: params.get("adults") || "",
+    children: params.get("children") || "",
+  };
+}
+
 const SearchResults = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -259,6 +270,54 @@ const viewHotelDetails = async (hotelId) => {
   const totalHotels = filteredHotels.length;
   const totalRooms = filteredHotels.reduce((acc, hotel) => acc + hotel.totalRooms, 0);
   
+  // Villa search state
+  const [villas, setVillas] = useState([]);
+  const [query, setQuery] = useState({});
+  
+  useEffect(() => {
+    const q = parseQuery(location.search);
+    setQuery(q);
+
+    const fetchVillas = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Fetch villas filtered by location
+        const villaRes = await fetch(
+          `${API_BASE_URL}/api/villas/search?location=${encodeURIComponent(q.location)}`
+        );
+        const villaList = await villaRes.json();
+
+        // Fetch all bookings for the selected date range
+        const bookingRes = await fetch(
+          `${API_BASE_URL}/api/bookings/search?checkIn=${q.checkIn}&checkOut=${q.checkOut}`
+        );
+        const bookings = await bookingRes.json();
+
+        // Build a set of booked villa IDs for the date range
+        const bookedVillaIds = new Set(bookings.map((b) => String(b.villaId)));
+
+        // Mark each villa as available or not
+        const results = villaList.map((villa) => ({
+          ...villa,
+          isBooked: bookedVillaIds.has(String(villa._id)),
+        }));
+
+        setVillas(results);
+      } catch (err) {
+        setError("Failed to fetch search results.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (q.location && q.checkIn && q.checkOut) {
+      fetchVillas();
+    } else {
+      setLoading(false);
+    }
+  }, [location.search]);
+  
   return (
     <div className='pt-24 md:pt-28'>
       {/* Refine search bar */}
@@ -483,6 +542,35 @@ const viewHotelDetails = async (hotelId) => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Villa search results - new section */}
+      <div className="max-w-5xl mx-auto px-4 py-12">
+        <h2 className="text-2xl font-bold mb-6">
+          Villas in {query.location} ({query.checkIn} to {query.checkOut})
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {villas.map((villa) => (
+            <div key={villa._id} className="bg-white rounded-lg shadow p-6 flex flex-col">
+              <img
+                src={Array.isArray(villa.images) && villa.images.length > 0 ? villa.images[0] : "/placeholder.svg"}
+                alt={villa.name}
+                className="w-full h-56 object-cover rounded mb-4"
+              />
+              <h3 className="text-xl font-semibold mb-2">{villa.name}</h3>
+              <div className="text-gray-600 mb-2">{villa.location}</div>
+              <div className="mb-2">₹ {villa.price} per night</div>
+              <div className="mb-2">
+                {villa.isBooked ? (
+                  <span className="text-red-600 font-semibold">Booked for selected dates</span>
+                ) : (
+                  <span className="text-green-600 font-semibold">Available</span>
+                )}
+              </div>
+              <div className="text-gray-500 text-sm">{villa.description}</div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

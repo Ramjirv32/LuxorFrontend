@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { assets } from '../assets/assets';
 import Title from './Title';
+import { API_BASE_URL } from "../config/api";
 
 const NewsLetter = () => {
 const [email, setEmail] = useState('');
@@ -19,7 +20,7 @@ return;
 }
 setLoading(true);
 try {
-const response = await fetch('https://luxor-backend.vercel.app/api/newsletter/subscribe', {
+const response = await fetch(`${API_BASE_URL}/api/newsletter/subscribe`, {
 method: 'POST',
 headers: {
 'Content-Type': 'application/json',

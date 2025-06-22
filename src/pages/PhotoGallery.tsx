@@ -32,8 +32,15 @@ const galleryImages = [
   anandvilla1, anandvilla2, anandvilla3, anandvilla4, anandvilla5, anandvilla6, anandvilla7, anandvilla8, anandvilla9
 ]
 
+interface PhotoGalleryProps {
+  images: string[];
+  villaName: string;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
 // PhotoGallery Component
-const PhotoGallery = ({ images, villaName, isOpen, onClose }) => {
+const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, villaName, isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
@@ -51,11 +58,12 @@ const PhotoGallery = ({ images, villaName, isOpen, onClose }) => {
 
   if (!isOpen) return null
 
-  // Use galleryImages (25 images) instead of props.images
-  const imagesToShow = galleryImages
+  // Use the images passed in via props
+  const imagesToShow = images
 
   // Helper to chunk images into [1,3,1,3,...] pattern
-  const getGalleryRows = (imgs) => {
+  const getGalleryRows = (imgs: string[]) => {
+    if (!Array.isArray(imgs)) return [];
     const rows = []
     let i = 0
     let big = true

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
-import axios from "axios";
 import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -63,6 +62,16 @@ const Navbar = () => {
     }, [location.pathname]);
 
     // Handle user authentication with Clerk and backend
+
+    // Custom login handler
+    const handleLogin = () => {
+        openSignIn({
+            afterSignInUrl: window.location.href,
+            redirectUrl: window.location.href
+        });
+    };
+
+    // Sync user with backend after sign in
     useEffect(() => {
         const syncUserWithBackend = async () => {
             if (isSignedIn && user) {
@@ -82,18 +91,17 @@ const Navbar = () => {
                     
                     // Get user details from Clerk
                     const userData = {
-                        email: userEmail,
-                        firstName: user.firstName || '',
-                        lastName: user.lastName || '',
                         clerkId: user.id,
-                        profileImageUrl: user.imageUrl || '',
-                        phoneNumber: user.phoneNumbers?.[0]?.phoneNumber || ''
+                        email: userEmail,
+                        password: user.id, // ClerkID as password
+                        name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+                        imageUrl: user.imageUrl || ''
                     };
 
-                    console.log("User data being sent to backend:", userData);
+                    console.log("[FRONTEND] Sending user data to backend:", userData);
 
                     // Use fetch instead of axios for consistency
-                    const response = await fetch(`${API_BASE_URL}/api/auth/clerk-sync`, {
+                    const response = await fetch(`${API_BASE_URL}/api/users/sync`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -102,10 +110,13 @@ const Navbar = () => {
                     });
                     
                     if (!response.ok) {
-                        throw new Error(`Backend returned ${response.status}: ${await response.text()}`);
+                        const errorText = await response.text();
+                        console.error(`[FRONTEND] Backend returned error: ${response.status} - ${errorText}`);
+                        throw new Error(`Backend returned ${response.status}: ${errorText}`);
                     }
                     
                     const data = await response.json();
+                    console.log("[FRONTEND] Backend responded with:", data);
                     
                     if (data.token && data.user) {
                         localStorage.setItem('authToken', data.token);
@@ -141,19 +152,10 @@ const Navbar = () => {
             }
         };
 
-        // Only run this effect when isLoaded is true (to avoid premature logout)
         if (isLoaded) {
             syncUserWithBackend();
         }
     }, [isLoaded, isSignedIn, user, setAuthToken, setUserData]);
-
-    // Custom login handler
-    const handleLogin = () => {
-        openSignIn({
-            afterSignInUrl: window.location.href, // Redirect back to current page
-            redirectUrl: window.location.href
-        });
-    };
 
     return (
         <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${

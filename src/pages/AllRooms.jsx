@@ -18,13 +18,15 @@ import {
 import PhotoGallery from "./PhotoGallery"
 import Ac from "../assets/Facilities/AC.png"
 import Kitchen from "../assets/Facilities/KITCHEN.png"
-// import Microwave from "../assets/Facilities/MICROWAVE.png"
 import Parking from "../assets/Facilities/PARK.png"
 import Pool from "../assets/Facilities/p.png"
 import Wifi from "../assets/Facilities/WIFI.png"
+import { useUser } from "@clerk/clerk-react"; // or your own AuthContext
+import { useNavigate } from "react-router-dom"; // if using react-router
+import { API_BASE_URL } from "../config/api";
+import Swal from 'sweetalert2'
 
 
-// Import villa images
 import anandvilla1 from "../assets/empireanandvilla/anandvilla1.jpg"
 import anandvilla2 from "../assets/empireanandvilla/anandvilla2.jpg"
 import anandvilla3 from "../assets/empireanandvilla/anandvilla3.jpg"
@@ -41,6 +43,43 @@ import anandvilla13 from "../assets/empireanandvilla/anandvilla13.jpg"
 import anandvilla14 from "../assets/empireanandvilla/anandvilla14.jpg"
 import anandvilla15 from "../assets/empireanandvilla/anandvilla15.jpg"
 import anandvilla16 from "../assets/empireanandvilla/anandvilla16.jpg"
+
+
+const imageImports = {
+  "anandvilla1.jpg": anandvilla1,
+  "anandvilla2.jpg": anandvilla2,
+  "anandvilla3.jpg": anandvilla3,
+  "anandvilla4.jpg": anandvilla4,
+  "anandvilla5.jpg": anandvilla5,
+  "anandvilla6.jpg": anandvilla6,
+  "anandvilla7.jpg": anandvilla7,
+  "anandvilla8.jpg": anandvilla8,
+  "anandvilla9.jpg": anandvilla9,
+  "anandvilla10.jpg": anandvilla10,
+  "anandvilla11.jpg": anandvilla11,
+  "anandvilla12.jpg": anandvilla12,
+  "anandvilla13.jpg": anandvilla13,
+  "anandvilla14.jpg": anandvilla14,
+  "anandvilla15.jpg": anandvilla15,
+  "anandvilla16.jpg": anandvilla16,
+  // Also support .jpeg extension
+  "anandvilla1.jpeg": anandvilla1,
+  "anandvilla2.jpeg": anandvilla2,
+  "anandvilla3.jpeg": anandvilla3,
+  "anandvilla4.jpeg": anandvilla4,
+  "anandvilla5.jpeg": anandvilla5,
+  "anandvilla6.jpeg": anandvilla6,
+  "anandvilla7.jpeg": anandvilla7,
+  "anandvilla8.jpeg": anandvilla8,
+  "anandvilla9.jpeg": anandvilla9,
+  "anandvilla10.jpeg": anandvilla10,
+  "anandvilla11.jpeg": anandvilla11,
+  "anandvilla12.jpeg": anandvilla12,
+  "anandvilla13.jpeg": anandvilla13,
+  "anandvilla14.jpeg": anandvilla14,
+  "anandvilla15.jpeg": anandvilla15,
+  "anandvilla16.jpeg": anandvilla16,
+}
 
 export const empireAnandVillaImages = [
   anandvilla1,
@@ -61,416 +100,46 @@ export const empireAnandVillaImages = [
   anandvilla16,
 ]
 
-const villasData = [
-  {
-    id: 1,
-    name: "Villa Kaia",
-    location: "Saligao Goa, India",
-    guests: 8,
-    bedrooms: 4,
-    beds: 4,
-    price: 15300,
-    type: "VILLA",
-    amenities: ["Private Pool", "Pet Friendly"],
-    rating: 4.8,
-    image: anandvilla1,
-    description:
-      "Located in the peaceful village of Saligao, Villa Kaia an elegant 4-bedroom retreat offers a perfect Goan escape with comfort and style.",
-    fullDescription:
-      "Located in the peaceful village of Saligao, Villa Kaia an elegant 4-bedroom retreat offers a perfect Goan escape with comfort and style. This stunning property features modern amenities, spacious rooms, and beautiful outdoor spaces perfect for relaxation and entertainment.",
-    facilities: [
-      { name: "Private Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Microwave", image: Kitchen }, // Use Kitchen or correct import if available
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 2,
-    name: "Villa Scapes",
-    location: "Siolim Goa, India",
-    guests: 7,
-    bedrooms: 3,
-    beds: 3,
-    price: 9900,
-    type: "VILLA",
-    amenities: ["Private Pool"],
-    rating: 4.6,
-    image: anandvilla2,
-    description: "A beautiful villa in Siolim offering stunning views and modern amenities for a perfect getaway.",
-    fullDescription:
-      "A beautiful villa in Siolim offering stunning views and modern amenities for a perfect getaway. This property combines traditional Goan architecture with contemporary comfort.",
-    facilities: [
-      { name: "Private Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Microwave", image: Kitchen },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 3,
-    name: "Villa Dahlia",
-    location: "Arpora Goa, India",
-    guests: 10,
-    bedrooms: 4,
-    beds: 5,
-    price: 24999,
-    type: "VILLA",
-    amenities: ["Private Pool", "Shared Pool"],
-    rating: 4.9,
-    image: anandvilla3,
-    description: "Luxurious villa in Arpora with premium amenities and spacious accommodation for large groups.",
-    fullDescription:
-      "Luxurious villa in Arpora with premium amenities and spacious accommodation for large groups. Features include multiple pools, elegant interiors, and beautiful outdoor spaces.",
-    facilities: [
-      { name: "Private Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Microwave", image: Kitchen },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 4,
-    name: "Villa Serenity",
-    location: "Candolim Goa, India",
-    guests: 6,
-    bedrooms: 3,
-    beds: 3,
-    price: 12500,
-    type: "VILLA",
-    amenities: ["Private Pool", "Pet Friendly"],
-    rating: 4.7,
-    image: anandvilla4,
-    description: "Peaceful retreat in Candolim offering tranquility and modern comfort.",
-    fullDescription:
-      "Peaceful retreat in Candolim offering tranquility and modern comfort. Perfect for families and groups seeking a serene vacation experience.",
-    facilities: [
-      { name: "Private Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Microwave", image: Kitchen },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 5,
-    name: "Ocean View Apartment",
-    location: "Baga Goa, India",
-    guests: 4,
-    bedrooms: 2,
-    beds: 2,
-    price: 8500,
-    type: "APARTMENT",
-    amenities: ["Shared Pool"],
-    rating: 4.4,
-    image: anandvilla5,
-    description: "Modern apartment with ocean views in the heart of Baga.",
-    fullDescription:
-      "Modern apartment with ocean views in the heart of Baga. Close to beaches, restaurants, and nightlife.",
-    facilities: [
-      { name: "Shared Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Microwave", image: Kitchen },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 6,
-    name: "Villa Paradise",
-    location: "Anjuna Goa, India",
-    guests: 12,
-    bedrooms: 5,
-    beds: 6,
-    price: 32000,
-    type: "VILLA",
-    amenities: ["Private Pool", "Pet Friendly"],
-    rating: 4.8,
-    image: anandvilla6,
-    description: "Expansive villa in Anjuna perfect for large groups and celebrations.",
-    fullDescription:
-      "Expansive villa in Anjuna perfect for large groups and celebrations. Features multiple bedrooms, entertainment areas, and beautiful gardens.",
-    facilities: [
-      { name: "Private Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Microwave", image: Kitchen },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 7,
-    name: "Coastal Retreat",
-    location: "Morjim Goa, India",
-    guests: 8,
-    bedrooms: 4,
-    beds: 4,
-    price: 18500,
-    type: "VILLA",
-    amenities: ["Private Pool"],
-    rating: 4.6,
-    image: anandvilla7,
-    description: "Beachfront villa in Morjim with stunning coastal views.",
-    fullDescription: "Beachfront villa in Morjim with stunning coastal views and direct beach access.",
-    facilities: [
-      { name: "Private Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Microwave", image: Kitchen },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 8,
-    name: "Sunset Apartment",
-    location: "Calangute Goa, India",
-    guests: 5,
-    bedrooms: 2,
-    beds: 3,
-    price: 7200,
-    type: "APARTMENT",
-    amenities: ["Shared Pool", "Pet Friendly"],
-    rating: 4.3,
-    image: anandvilla8,
-    description: "Cozy apartment with sunset views in Calangute.",
-    fullDescription: "Cozy apartment with sunset views in Calangute, perfect for couples and small families.",
-    facilities: [
-      { name: "Shared Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Microwave", image: Kitchen },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 9,
-    name: "Casa Sol",
-    location: "Assagao Goa, India",
-    guests: 9,
-    bedrooms: 4,
-    beds: 5,
-    price: 17800,
-    type: "VILLA",
-    amenities: ["Private Pool", "Pet Friendly"],
-    rating: 4.7,
-    image: anandvilla9,
-    description: "Traditional Goan villa with lush gardens and a private pool.",
-    fullDescription:
-      "Traditional Goan villa in Assagao with lush gardens, private pool, and classic interiors. Ideal for families.",
-    facilities: [
-      { name: "Private Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Microwave", image: Kitchen },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 10,
-    name: "Lagoon Residence",
-    location: "Nerul Goa, India",
-    guests: 6,
-    bedrooms: 3,
-    beds: 3,
-    price: 14250,
-    type: "VILLA",
-    amenities: ["Private Pool", "Shared Pool"],
-    rating: 4.5,
-    image: anandvilla10,
-    description: "Modern villa on the lagoon with tranquil poolside views.",
-    fullDescription: "Modern villa on the Nerul lagoon with tranquil poolside views, a blend of luxury and nature.",
-    facilities: [
-      { name: "Private Pool", image: Pool },
-      { name: "Shared Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 11,
-    name: "Palm Grove Apartment",
-    location: "Vagator Goa, India",
-    guests: 4,
-    bedrooms: 2,
-    beds: 2,
-    price: 8700,
-    type: "APARTMENT",
-    amenities: ["Shared Pool"],
-    rating: 4.2,
-    image: anandvilla11,
-    description: "Apartment surrounded by palm trees, close to Vagator beach.",
-    fullDescription:
-      "Apartment surrounded by palm trees, close to Vagator beach, with a shared pool and modern facilities.",
-    facilities: [
-      { name: "Shared Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 12,
-    name: "Blue Haven Villa",
-    location: "Mapusa Goa, India",
-    guests: 14,
-    bedrooms: 6,
-    beds: 8,
-    price: 35500,
-    type: "VILLA",
-    amenities: ["Private Pool", "Pet Friendly"],
-    rating: 4.9,
-    image: anandvilla12,
-    description: "Large villa with private pool and garden, ideal for big groups.",
-    fullDescription:
-      "Large villa with private pool and a spacious garden in Mapusa, ideal for family gatherings and celebrations.",
-    facilities: [
-      { name: "Private Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Microwave", image: Kitchen },
-      { name: "Barbecue", image: "/microwave.png" },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 13,
-    name: "Hilltop Mansion",
-    location: "Porvorim Goa, India",
-    guests: 15,
-    bedrooms: 7,
-    beds: 9,
-    price: 42000,
-    type: "VILLA",
-    amenities: ["Private Pool", "Pet Friendly"],
-    rating: 4.8,
-    image: anandvilla13,
-    description: "Luxury mansion on a hilltop with panoramic views and infinity pool.",
-    fullDescription:
-      "Luxury mansion on a hilltop with panoramic views, infinity pool, and premium amenities for a lavish stay.",
-    facilities: [
-      { name: "Private Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Microwave", image: Kitchen },
-      { name: "Gym", image: "/microwave.png" },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 14,
-    name: "Sunshine Studio",
-    location: "Colva Goa, India",
-    guests: 2,
-    bedrooms: 1,
-    beds: 1,
-    price: 5400,
-    type: "STUDIO",
-    amenities: ["Shared Pool"],
-    rating: 4.0,
-    image: anandvilla14,
-    description: "Bright and airy studio apartment near Colva beach.",
-    fullDescription: "Bright and airy studio apartment near Colva beach, perfect for couples or solo travelers.",
-    facilities: [
-      { name: "Shared Pool", image: Pool },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 15,
-    name: "Gardenia Villa",
-    location: "Panjim Goa, India",
-    guests: 8,
-    bedrooms: 4,
-    beds: 4,
-    price: 16200,
-    type: "VILLA",
-    amenities: ["Private Pool", "Pet Friendly"],
-    rating: 4.5,
-    image: anandvilla15,
-    description: "Elegant villa in Panjim with lush garden and private pool.",
-    fullDescription:
-      "Elegant villa in Panjim with lush garden, private pool, and all modern comforts for a relaxing holiday.",
-    facilities: [
-      { name: "Private Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-      { name: "Kitchen", image: Kitchen },
-      { name: "Barbecue", image: "/microwave.png" },
-    ],
-    images: empireAnandVillaImages,
-  },
-  {
-    id: 16,
-    name: "Coral Bay Apartment",
-    location: "Morjim Goa, India",
-    guests: 3,
-    bedrooms: 1,
-    beds: 2,
-    price: 6900,
-    type: "APARTMENT",
-    amenities: ["Shared Pool"],
-    rating: 4.1,
-    image: anandvilla16,
-    description: "Cozy apartment with pool access close to Morjim beach.",
-    fullDescription: "Cozy apartment with pool access and walking distance to Morjim beach, ideal for small families.",
-    facilities: [
-      { name: "Shared Pool", image: Pool },
-      { name: "Free Parking", image: Parking },
-      { name: "AC", image: Ac },
-      { name: "WiFi", image: Wifi },
-    ],
-    images: empireAnandVillaImages,
-  },
-]
+// Utility to shuffle images for each villa
+function getRandomImages(imagesArr) {
+  const arr = [...imagesArr]
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr
+}
 
-// Villa Detail Component
+const facilityIconMap = {
+  "Private Pool": Pool,
+  "Shared Pool": Pool,
+  "Free Parking": Parking,
+  AC: Ac,
+  WiFi: Wifi,
+  Kitchen: Kitchen,
+  Microwave: Kitchen,
+  Barbecue: Kitchen,
+  Gym: Kitchen,
+  "Pet Friendly": null,
+}
+
+
 const VillaDetail = ({ villa, onBack }) => {
   const [showFullDescription, setShowFullDescription] = useState(false)
   const [showCancellationPolicy, setShowCancellationPolicy] = useState(false)
   const [showThingsToKnow, setShowThingsToKnow] = useState(false)
   const [checkInDate, setCheckInDate] = useState("")
   const [checkOutDate, setCheckOutDate] = useState("")
-  // Replace guests state with detailed guest counts
   const [adults, setAdults] = useState(1)
   const [children, setChildren] = useState(0)
   const [infants, setInfants] = useState(0)
   const [showGuestDropdown, setShowGuestDropdown] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isSaved, setIsSaved] = useState(false)
-  const [showPhotoGallery, setShowPhotoGallery] = useState(false)
+  const [showPhotoGallery, setShowPhotoGallery] = useState(false);
+  const { isSignedIn, user } = useUser();
+  const navigate = useNavigate();
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   const locationParts = villa.location.split(" ")
   const city = locationParts[0]
@@ -486,6 +155,90 @@ const VillaDetail = ({ villa, onBack }) => {
   const handleMorePhotosClick = () => {
     setShowPhotoGallery(true)
   }
+
+  const handleBookNow = async () => {
+    if (!isSignedIn) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Login Required',
+        text: 'Please log in to book this villa.',
+        confirmButtonColor: '#16a34a'
+      }).then(() => {
+        navigate("/sign-in");
+      });
+      return;
+    }
+    if (!checkInDate || !checkOutDate) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Dates',
+        text: 'Please select check-in and check-out dates.',
+        confirmButtonColor: '#16a34a'
+      });
+      return;
+    }
+    // Ensure villaId is a valid MongoDB ObjectId string
+    const villaId = villa._id || villa.id;
+    if (!villaId || villaId.length < 12) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Villa',
+        text: 'Invalid villa. Please try again from the main villa list.',
+        confirmButtonColor: '#16a34a'
+      });
+      return;
+    }
+    setBookingLoading(true);
+    try {
+      const bookingData = {
+        villaId,
+        villaName: villa.name,
+        email: user?.primaryEmailAddress?.emailAddress || user?.emailAddress || user?.email,
+        guestName: user?.fullName || user?.firstName || "",
+        checkIn: checkInDate,
+        checkOut: checkOutDate,
+        guests: adults + children,
+      };
+      const response = await fetch(`${API_BASE_URL}/api/bookings/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingData),
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Booking Successful!',
+          text: 'Confirmation sent to your email.',
+          confirmButtonColor: '#16a34a'
+        });
+        setBookingLoading(false);
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Booking Failed',
+          text: data.error || "Booking failed. Please try again.",
+          confirmButtonColor: '#16a34a'
+        });
+        setBookingLoading(false);
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Booking Failed',
+        text: "Booking failed. Please try again.",
+        confirmButtonColor: '#16a34a'
+      });
+      setBookingLoading(false);
+    }
+  };
+
+  // Create facilities array from villa amenities
+  const facilities =
+    villa.amenities?.map((amenity) => ({
+      name: amenity,
+      image: facilityIconMap[amenity] || Kitchen,
+    })) || []
 
   return (
     <div className="min-h-screen bg-white">
@@ -528,7 +281,7 @@ const VillaDetail = ({ villa, onBack }) => {
           {/* Main Image */}
           <div className="col-span-2 relative">
             <img
-              src={villa.images[currentImageIndex] || villa.image}
+              src={villa.images[currentImageIndex] || villa.images[0]}
               alt={villa.name}
               className="w-full h-full object-cover"
             />
@@ -559,21 +312,15 @@ const VillaDetail = ({ villa, onBack }) => {
                 {index === 3 && villa.images.length > 5 && (
                   <div
                     className="absolute inset-0 bg-black/50 flex items-center justify-center text-white cursor-pointer hover:bg-black/60 transition-colors"
-                    onClick={handleMorePhotosClick}
+                    onClick={e => {
+                      e.stopPropagation();
+                      setShowPhotoGallery(true);
+                    }}
                   >
-                    <div className="text-center">
-               
-
-                      <PhotoGallery
-        images={villa.images}
-        villaName={villa.name}
-        isOpen={showPhotoGallery}
-        onClose={() => setShowPhotoGallery(false)}
-      />
-                     
-      
-                      
-                    </div>
+  
+                      {/* <span className="text-lg font-semibold">+{villa.images.length - 5}</span> */}
+                      <PhotoGallery className="h-6 w-6 mb-2" />
+                   
                   </div>
                 )}
               </div>
@@ -602,7 +349,7 @@ const VillaDetail = ({ villa, onBack }) => {
               </div>
               <div className="flex items-center gap-2">
                 <Bed className="h-4 w-4 text-green-600" />
-                <span>{villa.beds} Beds</span>
+                <span>{villa.bathrooms || villa.bedrooms} Bathrooms</span>
               </div>
             </div>
 
@@ -610,7 +357,9 @@ const VillaDetail = ({ villa, onBack }) => {
             <div className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">Overview</h2>
               <div className="text-gray-700 leading-relaxed">
-                <p className="mb-4">{showFullDescription ? villa.fullDescription : villa.description}</p>
+                <p className="mb-4">
+                  {showFullDescription ? villa.description : villa.description?.substring(0, 200) + "..."}
+                </p>
                 <button
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   className="text-green-600 hover:text-green-700 font-medium underline"
@@ -624,7 +373,7 @@ const VillaDetail = ({ villa, onBack }) => {
             <div className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">Facilities</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {villa.facilities.map((facility, index) => (
+                {facilities.map((facility, index) => (
                   <div
                     key={index}
                     className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors border border-gray-200"
@@ -650,7 +399,7 @@ const VillaDetail = ({ villa, onBack }) => {
               </button>
             </div>
 
-            {/* Location Section with Chennai Map */}
+       
             <div className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">Location</h2>
               <div className="rounded-lg overflow-hidden h-64">
@@ -662,12 +411,12 @@ const VillaDetail = ({ villa, onBack }) => {
                   allowFullScreen=""
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Chennai Location Map"
+                  title="Location Map"
                 ></iframe>
               </div>
               <p className="text-sm text-gray-600 mt-2">
                 <MapPin className="h-4 w-4 inline mr-1" />
-                {villa.location} - Interactive map showing Chennai area
+                {villa.location} - Interactive map showing location
               </p>
             </div>
 
@@ -849,7 +598,7 @@ const VillaDetail = ({ villa, onBack }) => {
                         <div className="flex items-center justify-between mb-4">
                           <div>
                             <div className="font-medium text-gray-900">Children</div>
-                            <div className="text-xs text-gray-500">Age 3–12 years</div>
+                            <div className="text-xs text-gray-500 mt-1">Age 3–12 years</div>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
@@ -875,7 +624,7 @@ const VillaDetail = ({ villa, onBack }) => {
                         <div className="flex items-center justify-between mb-4">
                           <div>
                             <div className="font-medium text-gray-900">Infants</div>
-                            <div className="text-xs text-gray-500">Age Under 2</div>
+                            <div className="text-xs text-gray-500 mt-1">Age Under 2</div>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
@@ -908,8 +657,22 @@ const VillaDetail = ({ villa, onBack }) => {
                   </div>
                 </div>
 
-                <button className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors mb-4">
-                  Book Now
+                <button
+                  className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors mb-4 flex items-center justify-center"
+                  onClick={handleBookNow}
+                  disabled={bookingLoading}
+                >
+                  {bookingLoading ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                      </svg>
+                      Booking...
+                    </span>
+                  ) : (
+                    "Book Now"
+                  )}
                 </button>
 
                 <p className="text-center text-sm text-gray-600">Don't worry, you won't be charged yet</p>
@@ -919,7 +682,6 @@ const VillaDetail = ({ villa, onBack }) => {
         </div>
       </div>
 
-      {/* Photo Gallery Modal */}
       {/* Photo Gallery Modal */}
       <PhotoGallery
         images={villa.images}
@@ -933,12 +695,15 @@ const VillaDetail = ({ villa, onBack }) => {
 
 // Main Component
 const AllRooms = () => {
-  const [villas, setVillas] = useState(villasData)
-  const [filteredVillas, setFilteredVillas] = useState(villasData)
+  const [villas, setVillas] = useState([])
+  const [filteredVillas, setFilteredVillas] = useState([])
   const [favorites, setFavorites] = useState(new Set())
   const [sortBy, setSortBy] = useState("Recently Added")
   const [selectedVilla, setSelectedVilla] = useState(null)
   const [currentView, setCurrentView] = useState("list") // 'list' or 'detail'
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Filter states
   const [priceRange, setPriceRange] = useState([0, 50000])
@@ -954,13 +719,54 @@ const AllRooms = () => {
   const [showAmenitiesFilter, setShowAmenitiesFilter] = useState(true)
 
   useEffect(() => {
+    const fetchVillas = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/villas/`)
+        if (!response.ok) throw new Error("Network response was not ok")
+        const data = await response.json()
+
+        // Map backend image references to random permutation of imported images
+        const transformedData = data.map((villa) => {
+          let images = villa.images || []
+          if (images.length === 1 && images[0] === "empireAnandVillaImages") {
+            images = getRandomImages(empireAnandVillaImages)
+          }
+          return {
+            id: villa._id,
+            name: villa.name,
+            location: villa.location,
+            price: villa.price || 0,
+            description: villa.description,
+            images,
+            guests: villa.guests || 0,
+            bedrooms: villa.bedrooms || 0,
+            bathrooms: villa.bathrooms || 0,
+            rating: villa.rating || 4.5,
+            amenities: villa.facilities?.map((f) => f.name) || [],
+            type: villa.type || "VILLA",
+          }
+        })
+
+        setVillas(transformedData)
+        setFilteredVillas(transformedData)
+        setLoading(false)
+      } catch (error) {
+        setError(error)
+        setLoading(false)
+      }
+    }
+
+    fetchVillas()
+  }, [])
+
+  useEffect(() => {
     if (currentView === "list") {
       applyFilters()
     }
   }, [priceRange, selectedTypes, selectedBedrooms, selectedBeds, selectedAmenities, sortBy, currentView])
 
   const applyFilters = () => {
-    const filtered = villasData.filter((villa) => {
+    const filtered = villas.filter((villa) => {
       // Price filter
       if (villa.price < priceRange[0] || villa.price > priceRange[1]) return false
 
@@ -1038,9 +844,79 @@ const AllRooms = () => {
     setCurrentView("list")
   }
 
+  // Add a search handler
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/villas/search?location=${encodeURIComponent(searchTerm)}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch search results");
+      const data = await response.json();
+      // Map backend image references to imported images
+      const transformedData = data.map((villa) => {
+        let images = villa.images || [];
+        if (images.length === 1 && images[0] === "empireAnandVillaImages") {
+          images = getRandomImages(empireAnandVillaImages);
+        }
+        return {
+          id: villa._id,
+          name: villa.name,
+          location: villa.location,
+          price: villa.price || 0,
+          description: villa.description,
+          images,
+          guests: villa.guests || 0,
+          bedrooms: villa.bedrooms || 0,
+          bathrooms: villa.bathrooms || 0,
+          rating: villa.rating || 4.5,
+          amenities: villa.facilities?.map((f) => f.name) || [],
+          type: villa.type || "VILLA",
+        };
+      });
+      setVillas(transformedData);
+      setFilteredVillas(transformedData);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Show villa detail page
   if (currentView === "detail" && selectedVilla) {
     return <VillaDetail villa={selectedVilla} onBack={handleBackToList} />
+  }
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-lg text-gray-600">Loading villas...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <p className="text-lg text-red-600 mb-4">Error loading villas: {error.message}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
   }
 
   // Show villa listing page
@@ -1048,8 +924,24 @@ const AllRooms = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-2xl font-bold text-gray-900">Luxury Villas by Hireavilla</h1>
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="flex items-center gap-2 w-full md:w-auto">
+            <input
+              type="text"
+              placeholder="Search by location..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm w-full md:w-64"
+            />
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+            >
+              Search
+            </button>
+          </form>
           <div className="relative">
             <select
               value={sortBy}
@@ -1288,50 +1180,62 @@ const AllRooms = () => {
         {/* Main Content */}
         <div className="flex-1">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredVillas.map((villa) => (
-              <div
-                key={villa.id}
-                className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => handleViewVilla(villa)}
-              >
-                <div className="relative">
-                  <img src={villa.image || "/placeholder.svg"} alt={villa.name} className="w-full h-64 object-cover" />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      toggleFavorite(villa.id)
-                    }}
-                    className="absolute top-3 right-3 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
-                  >
-                    <Heart
-                      className={`h-5 w-5 ${favorites.has(villa.id) ? "fill-red-500 text-red-500" : "text-gray-600"}`}
-                    />
-                  </button>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-1">{villa.name}</h3>
-                  <p className="text-gray-600 text-sm mb-2">{villa.location}</p>
-                  <p className="text-gray-600 text-sm mb-3">
-                    {villa.guests} Guests | {villa.bedrooms} Bedrooms
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-xl font-bold text-gray-900">₹ {villa.price.toLocaleString()}</span>
-                      <span className="text-gray-600 text-sm ml-1">Per Night</span>
+            {filteredVillas &&
+              filteredVillas.map((villa) => (
+                <div
+                  key={villa.id || villa._id}
+                  className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => handleViewVilla(villa)}
+                >
+                  <div className="relative">
+                    {/* Show all images in a horizontal scrollable gallery */}
+                    <div className="flex overflow-x-auto gap-2 h-64">
+                      {villa.images && villa.images.map((img, idx) => (
+                        <img
+                          key={idx}
+                          src={img}
+                          alt={`${villa.name} ${idx + 1}`}
+                          className="object-cover h-64 min-w-[250px] rounded"
+                          style={{ flex: "0 0 auto" }}
+                        />
+                      ))}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                      <span className="text-sm font-medium text-gray-700">{villa.rating}</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleFavorite(villa.id)
+                      }}
+                      className="absolute top-3 right-3 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+                    >
+                      <Heart
+                        className={`h-5 w-5 ${favorites.has(villa.id) ? "fill-red-500 text-red-500" : "text-gray-600"}`}
+                      />
+                    </button>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-lg text-gray-900 mb-1">{villa.name}</h3>
+                    <p className="text-gray-600 text-sm mb-2">{villa.location}</p>
+                    <p className="text-gray-600 text-sm mb-3">
+                      {villa.guests} Guests | {villa.bedrooms} Bedrooms
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-xl font-bold text-gray-900">₹ {villa.price.toLocaleString()}</span>
+                        <span className="text-gray-600 text-sm ml-1">Per Night</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span className="text-sm font-medium text-gray-700">{villa.rating}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
 
-          {filteredVillas.length === 0 && (
+          {filteredVillas && filteredVillas.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">No villas found matching your criteria.</p>
               <button onClick={clearFilters} className="mt-4 text-green-600 hover:text-green-700 font-medium underline">
