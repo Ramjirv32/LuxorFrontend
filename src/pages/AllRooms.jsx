@@ -16,6 +16,13 @@ import {
   ChevronRight,
 } from "lucide-react"
 import PhotoGallery from "./PhotoGallery"
+import Ac from "../assets/Facilities/AC.png"
+import Kitchen from "../assets/Facilities/KITCHEN.png"
+// import Microwave from "../assets/Facilities/MICROWAVE.png"
+import Parking from "../assets/Facilities/PARK.png"
+import Pool from "../assets/Facilities/p.png"
+import Wifi from "../assets/Facilities/WIFI.png"
+
 
 // Import villa images
 import anandvilla1 from "../assets/empireanandvilla/anandvilla1.jpg"
@@ -54,7 +61,6 @@ export const empireAnandVillaImages = [
   anandvilla16,
 ]
 
-
 const villasData = [
   {
     id: 1,
@@ -73,12 +79,12 @@ const villasData = [
     fullDescription:
       "Located in the peaceful village of Saligao, Villa Kaia an elegant 4-bedroom retreat offers a perfect Goan escape with comfort and style. This stunning property features modern amenities, spacious rooms, and beautiful outdoor spaces perfect for relaxation and entertainment.",
     facilities: [
-      { name: "Private Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Microwave", icon: "📱" },
+      { name: "Private Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Microwave", image: Kitchen }, // Use Kitchen or correct import if available
     ],
     images: empireAnandVillaImages,
   },
@@ -98,12 +104,12 @@ const villasData = [
     fullDescription:
       "A beautiful villa in Siolim offering stunning views and modern amenities for a perfect getaway. This property combines traditional Goan architecture with contemporary comfort.",
     facilities: [
-      { name: "Private Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Microwave", icon: "📱" },
+      { name: "Private Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Microwave", image: Kitchen },
     ],
     images: empireAnandVillaImages,
   },
@@ -123,12 +129,12 @@ const villasData = [
     fullDescription:
       "Luxurious villa in Arpora with premium amenities and spacious accommodation for large groups. Features include multiple pools, elegant interiors, and beautiful outdoor spaces.",
     facilities: [
-      { name: "Private Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Microwave", icon: "📱" },
+      { name: "Private Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Microwave", image: Kitchen },
     ],
     images: empireAnandVillaImages,
   },
@@ -148,12 +154,12 @@ const villasData = [
     fullDescription:
       "Peaceful retreat in Candolim offering tranquility and modern comfort. Perfect for families and groups seeking a serene vacation experience.",
     facilities: [
-      { name: "Private Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Microwave", icon: "📱" },
+      { name: "Private Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Microwave", image: Kitchen },
     ],
     images: empireAnandVillaImages,
   },
@@ -173,12 +179,12 @@ const villasData = [
     fullDescription:
       "Modern apartment with ocean views in the heart of Baga. Close to beaches, restaurants, and nightlife.",
     facilities: [
-      { name: "Shared Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Microwave", icon: "📱" },
+      { name: "Shared Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Microwave", image: Kitchen },
     ],
     images: empireAnandVillaImages,
   },
@@ -198,12 +204,12 @@ const villasData = [
     fullDescription:
       "Expansive villa in Anjuna perfect for large groups and celebrations. Features multiple bedrooms, entertainment areas, and beautiful gardens.",
     facilities: [
-      { name: "Private Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Microwave", icon: "📱" },
+      { name: "Private Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Microwave", image: Kitchen },
     ],
     images: empireAnandVillaImages,
   },
@@ -222,12 +228,12 @@ const villasData = [
     description: "Beachfront villa in Morjim with stunning coastal views.",
     fullDescription: "Beachfront villa in Morjim with stunning coastal views and direct beach access.",
     facilities: [
-      { name: "Private Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Microwave", icon: "📱" },
+      { name: "Private Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Microwave", image: Kitchen },
     ],
     images: empireAnandVillaImages,
   },
@@ -246,12 +252,12 @@ const villasData = [
     description: "Cozy apartment with sunset views in Calangute.",
     fullDescription: "Cozy apartment with sunset views in Calangute, perfect for couples and small families.",
     facilities: [
-      { name: "Shared Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Microwave", icon: "📱" },
+      { name: "Shared Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Microwave", image: Kitchen },
     ],
     images: empireAnandVillaImages,
   },
@@ -268,14 +274,15 @@ const villasData = [
     rating: 4.7,
     image: anandvilla9,
     description: "Traditional Goan villa with lush gardens and a private pool.",
-    fullDescription: "Traditional Goan villa in Assagao with lush gardens, private pool, and classic interiors. Ideal for families.",
+    fullDescription:
+      "Traditional Goan villa in Assagao with lush gardens, private pool, and classic interiors. Ideal for families.",
     facilities: [
-      { name: "Private Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Microwave", icon: "📱" },
+      { name: "Private Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Microwave", image: Kitchen },
     ],
     images: empireAnandVillaImages,
   },
@@ -294,11 +301,11 @@ const villasData = [
     description: "Modern villa on the lagoon with tranquil poolside views.",
     fullDescription: "Modern villa on the Nerul lagoon with tranquil poolside views, a blend of luxury and nature.",
     facilities: [
-      { name: "Private Pool", icon: "🏊" },
-      { name: "Shared Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
+      { name: "Private Pool", image: Pool },
+      { name: "Shared Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
     ],
     images: empireAnandVillaImages,
   },
@@ -315,13 +322,14 @@ const villasData = [
     rating: 4.2,
     image: anandvilla11,
     description: "Apartment surrounded by palm trees, close to Vagator beach.",
-    fullDescription: "Apartment surrounded by palm trees, close to Vagator beach, with a shared pool and modern facilities.",
+    fullDescription:
+      "Apartment surrounded by palm trees, close to Vagator beach, with a shared pool and modern facilities.",
     facilities: [
-      { name: "Shared Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
+      { name: "Shared Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
     ],
     images: empireAnandVillaImages,
   },
@@ -338,15 +346,16 @@ const villasData = [
     rating: 4.9,
     image: anandvilla12,
     description: "Large villa with private pool and garden, ideal for big groups.",
-    fullDescription: "Large villa with private pool and a spacious garden in Mapusa, ideal for family gatherings and celebrations.",
+    fullDescription:
+      "Large villa with private pool and a spacious garden in Mapusa, ideal for family gatherings and celebrations.",
     facilities: [
-      { name: "Private Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Microwave", icon: "📱" },
-      { name: "Barbecue", icon: "🍖" },
+      { name: "Private Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Microwave", image: Kitchen },
+      { name: "Barbecue", image: "/microwave.png" },
     ],
     images: empireAnandVillaImages,
   },
@@ -363,15 +372,16 @@ const villasData = [
     rating: 4.8,
     image: anandvilla13,
     description: "Luxury mansion on a hilltop with panoramic views and infinity pool.",
-    fullDescription: "Luxury mansion on a hilltop with panoramic views, infinity pool, and premium amenities for a lavish stay.",
+    fullDescription:
+      "Luxury mansion on a hilltop with panoramic views, infinity pool, and premium amenities for a lavish stay.",
     facilities: [
-      { name: "Private Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Microwave", icon: "📱" },
-      { name: "Gym", icon: "🏋️" },
+      { name: "Private Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Microwave", image: Kitchen },
+      { name: "Gym", image: "/microwave.png" },
     ],
     images: empireAnandVillaImages,
   },
@@ -390,10 +400,10 @@ const villasData = [
     description: "Bright and airy studio apartment near Colva beach.",
     fullDescription: "Bright and airy studio apartment near Colva beach, perfect for couples or solo travelers.",
     facilities: [
-      { name: "Shared Pool", icon: "🏊" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
+      { name: "Shared Pool", image: Pool },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
     ],
     images: empireAnandVillaImages,
   },
@@ -410,14 +420,15 @@ const villasData = [
     rating: 4.5,
     image: anandvilla15,
     description: "Elegant villa in Panjim with lush garden and private pool.",
-    fullDescription: "Elegant villa in Panjim with lush garden, private pool, and all modern comforts for a relaxing holiday.",
+    fullDescription:
+      "Elegant villa in Panjim with lush garden, private pool, and all modern comforts for a relaxing holiday.",
     facilities: [
-      { name: "Private Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
-      { name: "Kitchen", icon: "🍳" },
-      { name: "Barbecue", icon: "🍖" },
+      { name: "Private Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
+      { name: "Kitchen", image: Kitchen },
+      { name: "Barbecue", image: "/microwave.png" },
     ],
     images: empireAnandVillaImages,
   },
@@ -436,14 +447,15 @@ const villasData = [
     description: "Cozy apartment with pool access close to Morjim beach.",
     fullDescription: "Cozy apartment with pool access and walking distance to Morjim beach, ideal for small families.",
     facilities: [
-      { name: "Shared Pool", icon: "🏊" },
-      { name: "Free Parking", icon: "🚗" },
-      { name: "AC", icon: "❄️" },
-      { name: "WiFi", icon: "📶" },
+      { name: "Shared Pool", image: Pool },
+      { name: "Free Parking", image: Parking },
+      { name: "AC", image: Ac },
+      { name: "WiFi", image: Wifi },
     ],
     images: empireAnandVillaImages,
   },
-];
+]
+
 // Villa Detail Component
 const VillaDetail = ({ villa, onBack }) => {
   const [showFullDescription, setShowFullDescription] = useState(false)
@@ -451,7 +463,11 @@ const VillaDetail = ({ villa, onBack }) => {
   const [showThingsToKnow, setShowThingsToKnow] = useState(false)
   const [checkInDate, setCheckInDate] = useState("")
   const [checkOutDate, setCheckOutDate] = useState("")
-  const [guests, setGuests] = useState(1)
+  // Replace guests state with detailed guest counts
+  const [adults, setAdults] = useState(1)
+  const [children, setChildren] = useState(0)
+  const [infants, setInfants] = useState(0)
+  const [showGuestDropdown, setShowGuestDropdown] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isSaved, setIsSaved] = useState(false)
   const [showPhotoGallery, setShowPhotoGallery] = useState(false)
@@ -546,9 +562,17 @@ const VillaDetail = ({ villa, onBack }) => {
                     onClick={handleMorePhotosClick}
                   >
                     <div className="text-center">
-                      <Plus className="h-6 w-6 mx-auto mb-1" />
-                      <span className="text-lg font-semibold">15</span>
-                      <button className="text-sm">More Photos</button>
+               
+
+                      <PhotoGallery
+        images={villa.images}
+        villaName={villa.name}
+        isOpen={showPhotoGallery}
+        onClose={() => setShowPhotoGallery(false)}
+      />
+                     
+      
+                      
                     </div>
                   </div>
                 )}
@@ -596,14 +620,28 @@ const VillaDetail = ({ villa, onBack }) => {
               </div>
             </div>
 
-            {/* Facilities Section */}
+            {/* Enhanced Facilities Section */}
             <div className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">Facilities</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {villa.facilities.map((facility, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <div className="text-2xl">{facility.icon}</div>
-                    <span className="text-gray-700">{facility.name}</span>
+                  <div
+                    key={index}
+                    className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors border border-gray-200"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm border border-gray-200">
+                        <img
+                          src={facility.image || "/placeholder.svg"}
+                          alt={facility.name}
+                          className="w-8 h-8 object-contain"
+                        />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900 text-sm">{facility.name}</h3>
+                        <p className="text-xs text-gray-500 mt-1">Available</p>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -767,19 +805,106 @@ const VillaDetail = ({ villa, onBack }) => {
                     </div>
                   </div>
 
-                  <div>
+                  {/* Guests Dropdown */}
+                  <div className="relative">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Guests</label>
-                    <select
-                      value={guests}
-                      onChange={(e) => setGuests(Number.parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                    <button
+                      type="button"
+                      onClick={() => setShowGuestDropdown((v) => !v)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-left focus:outline-none focus:ring-2 focus:ring-green-500 flex justify-between items-center"
                     >
-                      {Array.from({ length: villa.guests }, (_, i) => (
-                        <option key={i + 1} value={i + 1}>
-                          {i + 1} Guest{i + 1 > 1 ? "s" : ""}
-                        </option>
-                      ))}
-                    </select>
+                      {adults + children > 0
+                        ? `${adults + children} Guest${adults + children > 1 ? "s" : ""}${infants > 0 ? `, ${infants} Infant${infants > 1 ? "s" : ""}` : ""}`
+                        : "Select Guests"}
+                      <ChevronDown className="h-4 w-4 ml-2 text-gray-400" />
+                    </button>
+                    {showGuestDropdown && (
+                      <div className="absolute z-10 mt-2 w-full bg-white rounded-xl shadow-lg border border-gray-200 p-4">
+                        {/* Adults */}
+                        <div className="flex items-center justify-between mb-4">
+                          <div>
+                            <div className="font-medium text-gray-900">Adults</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-700 hover:bg-gray-100"
+                              onClick={() => setAdults(Math.max(1, adults - 1))}
+                              disabled={adults <= 1}
+                            >
+                              <Minus className="h-4 w-4" />
+                            </button>
+                            <span className="w-6 text-center">{adults}</span>
+                            <button
+                              type="button"
+                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-700 hover:bg-gray-100"
+                              onClick={() => setAdults(adults + 1)}
+                              disabled={adults + children >= villa.guests}
+                            >
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                        {/* Children */}
+                        <div className="flex items-center justify-between mb-4">
+                          <div>
+                            <div className="font-medium text-gray-900">Children</div>
+                            <div className="text-xs text-gray-500">Age 3–12 years</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-700 hover:bg-gray-100"
+                              onClick={() => setChildren(Math.max(0, children - 1))}
+                              disabled={children <= 0}
+                            >
+                              <Minus className="h-4 w-4" />
+                            </button>
+                            <span className="w-6 text-center">{children}</span>
+                            <button
+                              type="button"
+                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-700 hover:bg-gray-100"
+                              onClick={() => setChildren(adults + children < villa.guests ? children + 1 : children)}
+                              disabled={adults + children >= villa.guests}
+                            >
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                        {/* Infants */}
+                        <div className="flex items-center justify-between mb-4">
+                          <div>
+                            <div className="font-medium text-gray-900">Infants</div>
+                            <div className="text-xs text-gray-500">Age Under 2</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-700 hover:bg-gray-100"
+                              onClick={() => setInfants(Math.max(0, infants - 1))}
+                              disabled={infants <= 0}
+                            >
+                              <Minus className="h-4 w-4" />
+                            </button>
+                            <span className="w-6 text-center">{infants}</span>
+                            <button
+                              type="button"
+                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-700 hover:bg-gray-100"
+                              onClick={() => setInfants(infants + 1)}
+                            >
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          className="w-full mt-2 bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+                          onClick={() => setShowGuestDropdown(false)}
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -794,6 +919,7 @@ const VillaDetail = ({ villa, onBack }) => {
         </div>
       </div>
 
+      {/* Photo Gallery Modal */}
       {/* Photo Gallery Modal */}
       <PhotoGallery
         images={villa.images}
