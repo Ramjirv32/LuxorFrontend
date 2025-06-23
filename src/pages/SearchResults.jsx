@@ -1,7 +1,13 @@
+
+
 "use client"
 
-import { useState, useEffect } from "react"
-import { useLocation } from "react-router-dom"
+import { useState, useEffect, useRef } from "react"
+import { useLocation, Link } from "react-router-dom"
+import { motion } from "framer-motion"
+import { FaMapMarkerAlt, FaRegCalendar, FaSwimmingPool, FaWifi, FaStar, FaUsers, FaBed, FaBath } from "react-icons/fa"
+import { MdOutlineBeachAccess, MdHotTub } from "react-icons/md"
+import { LuChefHat } from "react-icons/lu"
 
 import anandvilla1 from "../assets/empireanandvilla/anandvilla1.jpg"
 import anandvilla2 from "../assets/empireanandvilla/anandvilla2.jpg"
@@ -20,8 +26,11 @@ import anandvilla14 from "../assets/empireanandvilla/anandvilla14.jpg"
 import anandvilla15 from "../assets/empireanandvilla/anandvilla15.jpg"
 import anandvilla16 from "../assets/empireanandvilla/anandvilla16.jpg"
 
+// Placeholder for API_BASE_URL. In a real application, this would be imported
+// from a configuration file or set as an environment variable.
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+// Images for luxury villas
 const defaultImages = [
   anandvilla1,
   anandvilla2,
@@ -41,13 +50,52 @@ const defaultImages = [
   anandvilla16,
 ]
 
-
+// Helper to get a random image from the defaultImages array
 function getRandomImage() {
   return defaultImages[Math.floor(Math.random() * defaultImages.length)]
 }
 
+// Animation variants for framer-motion
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 12
+    }
+  }
+}
+
+// Random amenities for each villa to enhance UI
+const amenities = [
+  { icon: <FaSwimmingPool className="text-blue-400" />, label: "Private Pool" },
+  { icon: <FaWifi className="text-gray-500" />, label: "Free WiFi" },
+  { icon: <MdOutlineBeachAccess className="text-yellow-600" />, label: "Beach Access" },
+  { icon: <MdHotTub className="text-cyan-400" />, label: "Hot Tub" },
+  { icon: <LuChefHat className="text-amber-700" />, label: "Chef Service" },
+]
+
+const getRandomAmenities = () => {
+  const shuffled = [...amenities].sort(() => 0.5 - Math.random())
+  return shuffled.slice(0, Math.floor(Math.random() * 3) + 2) // Return 2-4 random amenities
+}
+
 const SearchResults = () => {
   const location = useLocation()
+  const resultsRef = useRef(null)
 
   // Extract search parameters from the URL
   const searchParams = new URLSearchParams(location.search)
@@ -60,13 +108,16 @@ const SearchResults = () => {
   const [villas, setVillas] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [sortBy, setSortBy] = useState("recommended")
+  const [viewType, setViewType] = useState("grid")
+  const [currentImage, setCurrentImage] = useState({})
 
   useEffect(() => {
     const fetchVillas = async () => {
       setLoading(true)
       setError(null)
       try {
-     
+        // Fetch villas filtered by location
         const villaRes = await fetch(
           `${API_BASE_URL}/api/villas/search?location=${encodeURIComponent(destination || "")}`,
         )
@@ -81,15 +132,29 @@ const SearchResults = () => {
               villa.images.length === 1 &&
               (villa.images[0] === "empireAnandVillaImages" || villa.images[0] === "" || villa.images[0] === null)
             ) {
-              images = [getRandomImage()]
+              // Use 3-4 random images for each villa
+              const imageCount = Math.floor(Math.random() * 2) + 3
+              images = Array(imageCount).fill().map(() => getRandomImage())
             } else {
               // Ensure that if an image URL from the backend is invalid or a placeholder, it's replaced
               images = villa.images.map((img) => (img === "empireAnandVillaImages" || !img ? getRandomImage() : img))
             }
           } else {
-            images = [getRandomImage()] // If no images array or empty, use a random placeholder
+            // Use 3-4 random images for each villa
+            const imageCount = Math.floor(Math.random() * 2) + 3
+            images = Array(imageCount).fill().map(() => getRandomImage())
           }
-          return { ...villa, images }
+          
+          // Add random amenities, ratings, and other villa data
+          return { 
+            ...villa, 
+            images,
+            rating: (Math.random() * 1 + 4).toFixed(1), // Random rating between 4.0-5.0
+            reviews: Math.floor(Math.random() * 100) + 10, // Random number of reviews
+            amenities: getRandomAmenities(),
+            bedrooms: Math.floor(Math.random() * 4) + 2, // Random bedrooms (2-5)
+            bathrooms: Math.floor(Math.random() * 3) + 2, // Random bathrooms (2-4)
+          }
         })
 
         // Fetch all bookings for the selected date range
@@ -116,84 +181,339 @@ const SearchResults = () => {
     }
 
     fetchVillas()
-  }, [destination, checkIn, checkOut]) // Dependencies for useEffect [^1]
+  }, [destination, checkIn, checkOut])
 
   // Calculate nights of stay
   const calculateNights = () => {
     if (!checkIn || !checkOut) return 0
     const startDate = new Date(checkIn)
     const endDate = new Date(checkOut)
-    const diffTime = Math.abs(endDate.getTime() - startDate.getTime()) // Use getTime() for reliable diff
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   }
   const nights = calculateNights()
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return ""
+    const date = new Date(dateString)
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    }).format(date)
+  }
+
+  // Sort villas based on selected option
+  const sortedVillas = [...villas].sort((a, b) => {
+    switch (sortBy) {
+      case "price-low":
+        return a.price - b.price
+      case "price-high":
+        return b.price - a.price
+      case "rating":
+        return b.rating - a.rating
+      default:
+        return 0 // recommended/default
+    }
+  })
+
+  // Handle villa image cycling
+  const cycleImage = (villaId, direction) => {
+    setCurrentImage(prev => {
+      const villa = villas.find(v => v._id === villaId)
+      if (!villa || !villa.images || villa.images.length <= 1) return prev
+      
+      const currentIndex = prev[villaId] || 0
+      let newIndex
+      
+      if (direction === 'next') {
+        newIndex = (currentIndex + 1) % villa.images.length
+      } else {
+        newIndex = (currentIndex - 1 + villa.images.length) % villa.images.length
+      }
+      
+      return { ...prev, [villaId]: newIndex }
+    })
+  }
+
+  // Get current image index for a villa
+  const getCurrentImageIndex = (villaId) => {
+    return currentImage[villaId] || 0
+  }
+
   return (
-    <div className="pt-24 md:pt-28 min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 py-12">
-        <h2 className="text-2xl font-bold mb-6">
-          Villas in {destination || "All Locations"}
-          {checkIn && checkOut && (
-            <>
-              {" "}
-              ({checkIn} to {checkOut})
-            </>
-          )}
-        </h2>
-        <div className="mb-4 text-gray-600">
-          {adults && (
-            <span>
-              {Number.parseInt(adults) + Number.parseInt(children || "0")} Guest
-              {Number.parseInt(adults) + Number.parseInt(children || "0") !== 1 ? "s" : ""},
-            </span>
-          )}{" "}
-          {nights > 0 && (
-            <span>
-              {nights} Night{nights !== 1 ? "s" : ""}
-            </span>
-          )}
+    <div className="pt-20 min-h-screen bg-gray-50">
+      {/* Hero Banner */}
+      <div className="bg-gradient-to-r from-amber-50 to-amber-100 py-12 border-b border-amber-200">
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-serif font-light mb-6 text-amber-900">
+              Luxury Villas in <span className="font-semibold">{destination || "All Locations"}</span>
+            </h1>
+            
+            <div className="flex flex-wrap items-center gap-3 text-amber-800">
+              <div className="flex items-center">
+                <FaRegCalendar className="mr-2" />
+                <span>
+                  {checkIn && checkOut ? (
+                    <>
+                      {formatDate(checkIn)} — {formatDate(checkOut)}
+                      <span className="ml-2 bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full text-sm">
+                        {nights} Night{nights !== 1 ? "s" : ""}
+                      </span>
+                    </>
+                  ) : (
+                    "Any dates"
+                  )}
+                </span>
+              </div>
+              
+              {adults && (
+                <div className="flex items-center ml-4">
+                  <FaUsers className="mr-2" />
+                  <span>
+                    {Number.parseInt(adults) + Number.parseInt(children || "0")} Guest
+                    {Number.parseInt(adults) + Number.parseInt(children || "0") !== 1 ? "s" : ""}
+                  </span>
+                </div>
+              )}
+            </div>
+          </motion.div>
         </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 py-8" ref={resultsRef}>
         {loading ? (
-          <div className="flex justify-center items-center py-24">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-600 border-t-transparent"></div>
+          <div className="flex flex-col justify-center items-center py-32">
+            <div className="relative">
+              <div className="animate-spin rounded-full h-20 w-20 border-4 border-amber-200"></div>
+              <div className="absolute top-0 left-0 h-20 w-20 border-t-4 border-amber-600 rounded-full animate-spin"></div>
+            </div>
+            <p className="mt-6 text-amber-800 font-light text-lg">Discovering your perfect villa...</p>
           </div>
         ) : error ? (
-          <div className="bg-red-50 text-red-700 p-6 rounded-xl my-8 shadow-sm">
-            <h3 className="text-xl font-bold mb-2">Error Loading Villas</h3>
-            <p>{error}</p>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-50 text-red-700 p-8 rounded-xl my-8 shadow-sm border border-red-200"
+          >
+            <h3 className="text-2xl font-serif mb-3">We Encountered an Issue</h3>
+            <p className="text-lg">{error}</p>
+            <button 
+              className="mt-4 px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+              onClick={() => window.location.reload()}
+            >
+              Try Again
+            </button>
+          </motion.div>
         ) : villas.length === 0 ? (
-          <div className="text-center py-16 bg-gray-50 rounded-xl shadow-sm">
-            <h2 className="text-2xl font-playfair font-semibold mb-3">No villas found</h2>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              We couldn't find any available villas matching your search criteria.
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-24 bg-white rounded-xl shadow-sm border border-amber-100"
+          >
+            <h2 className="text-3xl font-serif font-light mb-4 text-amber-900">No Villas Available</h2>
+            <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
+              We couldn't find any available villas matching your search criteria. Try adjusting your dates or location.
             </p>
-          </div>
+            <Link 
+              to="/" 
+              className="inline-block px-8 py-3 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-all shadow-md hover:shadow-lg"
+            >
+              Return to Search
+            </Link>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {villas.map((villa) => (
-              <div key={villa._id} className="bg-white rounded-lg shadow p-6 flex flex-col">
-                {/* Using <img> tag with placeholder SVG URLs */}
-                <img
-                  src={villa.images && villa.images.length > 0 ? villa.images[0] : getRandomImage()}
-                  alt={villa.name}
-                  className="w-full h-56 object-cover rounded mb-4"
-                  style={{ background: "#eee" }}
-                />
-                <h3 className="text-xl font-semibold mb-2">{villa.name}</h3>
-                <div className="text-gray-600 mb-2">{villa.location}</div>
-                <div className="mb-2">₹ {villa.price} per night</div>
-                <div className="mb-2">
-                  {villa.isBooked ? (
-                    <span className="text-red-600 font-semibold">Booked for selected dates</span>
-                  ) : (
-                    <span className="text-green-600 font-semibold">Available</span>
-                  )}
-                </div>
-                <div className="text-gray-500 text-sm">{villa.description}</div>
+          <>
+            {/* Controls */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+              <div className="text-xl font-serif text-amber-900 mb-4 md:mb-0">
+                Found <span className="font-semibold">{villas.length}</span> luxury villas
               </div>
-            ))}
-          </div>
+              
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <select 
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="appearance-none bg-white border border-amber-200 rounded-md px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-300"
+                  >
+                    <option value="recommended">Recommended</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Top Rated</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-amber-700">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+                
+                <div className="flex border border-amber-200 rounded-md overflow-hidden">
+                  <button 
+                    onClick={() => setViewType('grid')} 
+                    className={`px-3 py-2 flex items-center ${viewType === 'grid' ? 'bg-amber-100 text-amber-900' : 'bg-white text-gray-600'}`}
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                    </svg>
+                  </button>
+                  <button 
+                    onClick={() => setViewType('list')} 
+                    className={`px-3 py-2 flex items-center ${viewType === 'list' ? 'bg-amber-100 text-amber-900' : 'bg-white text-gray-600'}`}
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Villa Results */}
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className={viewType === 'grid' 
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" 
+                : "flex flex-col space-y-8"
+              }
+            >
+              {sortedVillas.map((villa) => (
+                <motion.div 
+                  key={villa._id} 
+                  variants={itemVariants}
+                  className={`group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border border-amber-50 flex ${viewType === 'list' ? 'flex-row' : 'flex-col'}`}
+                >
+                  {/* Image Container */}
+                  <div 
+                    className={`relative overflow-hidden ${viewType === 'list' ? 'w-2/5' : 'w-full'}`}
+                    style={{ height: viewType === 'list' ? '100%' : '240px' }}
+                  >
+                    <img
+                      src={villa.images[getCurrentImageIndex(villa._id)]}
+                      alt={villa.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    
+                    {/* Image Navigation */}
+                    {villa.images.length > 1 && (
+                      <>
+                        <button 
+                          onClick={() => cycleImage(villa._id, 'prev')}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        >
+                          <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
+                          </svg>
+                        </button>
+                        <button 
+                          onClick={() => cycleImage(villa._id, 'next')}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        >
+                          <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                          </svg>
+                        </button>
+                      </>
+                    )}
+                    
+                    {/* Image Indicators */}
+                    {villa.images.length > 1 && (
+                      <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
+                        {villa.images.map((_, index) => (
+                          <div 
+                            key={index} 
+                            className={`h-1.5 w-1.5 rounded-full ${getCurrentImageIndex(villa._id) === index ? 'bg-white' : 'bg-white/40'}`}
+                          ></div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Rating Badge */}
+                    <div className="absolute top-3 right-3 bg-white/90 rounded-full px-2 py-1 flex items-center shadow-md">
+                      <FaStar className="text-amber-500 mr-1" />
+                      <span className="font-medium text-sm">{villa.rating}</span>
+                      <span className="text-gray-500 text-xs ml-1">({villa.reviews})</span>
+                    </div>
+                    
+                    {/* Availability Badge */}
+                    <div className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-medium shadow-md ${
+                      villa.isBooked 
+                        ? "bg-red-100 text-red-800 border border-red-200" 
+                        : "bg-green-100 text-green-800 border border-green-200"
+                    }`}>
+                      {villa.isBooked ? "Not Available" : "Available"}
+                    </div>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className={`p-6 flex flex-col ${viewType === 'list' ? 'w-3/5' : 'w-full'}`}>
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-xl font-serif font-medium text-gray-900">{villa.name}</h3>
+                    </div>
+                    
+                    <div className="flex items-center text-gray-500 mb-4">
+                      <FaMapMarkerAlt className="mr-1 text-amber-700" />
+                      <span>{villa.location}</span>
+                    </div>
+                    
+                    <div className={`flex gap-3 mb-4 flex-wrap ${viewType === 'list' ? 'mb-auto' : ''}`}>
+                      <div className="flex items-center bg-amber-50 px-2 py-1 rounded-md">
+                        <FaBed className="mr-1 text-amber-800" />
+                        <span className="text-sm">{villa.bedrooms} Bedrooms</span>
+                      </div>
+                      <div className="flex items-center bg-amber-50 px-2 py-1 rounded-md">
+                        <FaBath className="mr-1 text-amber-800" />
+                        <span className="text-sm">{villa.bathrooms} Bathrooms</span>
+                      </div>
+                    </div>
+                    
+                    <div className="text-gray-600 mb-4 line-clamp-2">
+                      {villa.description || "Experience luxury living in this beautifully designed villa with premium amenities and stunning views."}
+                    </div>
+                    
+                    {/* Amenities */}
+                    <div className="flex flex-wrap gap-3 mb-4">
+                      {villa.amenities.map((amenity, index) => (
+                        <div key={index} className="flex items-center text-sm text-gray-600">
+                          {amenity.icon}
+                          <span className="ml-1">{amenity.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="mt-auto flex items-center justify-between">
+                      <div>
+                        <span className="text-2xl font-semibold text-amber-900">₹{villa.price}</span>
+                        <span className="text-gray-500 text-sm"> / night</span>
+                      </div>
+                      
+                      <Link
+                        to={`/villa/${villa._id}`}
+                        className={`px-4 py-2 rounded-md transition-all ${
+                          villa.isBooked
+                            ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                            : "bg-amber-600 hover:bg-amber-700 text-white shadow-md hover:shadow-lg"
+                        }`}
+                        onClick={(e) => villa.isBooked && e.preventDefault()}
+                      >
+                        {villa.isBooked ? "Not Available" : "View Details"}
+                      </Link>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </>
         )}
       </div>
     </div>
