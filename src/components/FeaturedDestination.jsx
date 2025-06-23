@@ -1,86 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, MapPin, Star, Heart } from 'lucide-react'
+import { API_BASE_URL } from '../config/api'
+import { useNavigate } from "react-router-dom"
+
+// Unsplash images to use randomly
+const unsplashImages = [
+  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+  "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80",
+  "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+  "https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+];
+
+function getRandomUnsplash() {
+  return unsplashImages[Math.floor(Math.random() * unsplashImages.length)];
+}
 
 export const FeaturedDestination = () => {
+  const [properties, setProperties] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
-  
-  // Preserve any backend data fetching if it exists
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  
-  // Property data - could be fetched from backend
-  const properties = [
-    {
-      id: 1,
-      name: "Mehta Mansion",
-      location: "Lonavala, Maharashtra",
-      rating: 4.8,
-      guests: 27,
-      rooms: 9,
-      baths: 10,
-      price: "₹36,976",
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
-      bestRated: true,
-      category: "Lonavala"
-    },
-    {
-      id: 2,
-      name: "Ashore By Vista",
-      location: "Morjim, Goa",
-      rating: 5.0,
-      guests: 20,
-      rooms: 6,
-      baths: 8,
-      price: "₹64,927",
-      originalPrice: "₹86,977",
-      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2071&q=80",
-      bestRated: true,
-      category: "All"
-    },
-    {
-      id: 3,
-      name: "Magnolia Villa",
-      location: "Alibaug, Maharashtra",
-      rating: 4.6,
-      guests: 14,
-      rooms: 5,
-      baths: 6,
-      price: "₹48,758",
-      image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
-      bestRated: true,
-      category: "Alibaug"
-    },
-    {
-      id: 4,
-      name: "The Rain",
-      location: "Alleppey, Kerala",
-      rating: 4.7,
-      guests: 12,
-      rooms: 4,
-      baths: 5,
-      price: "₹44,545",
-      image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
-      bestRated: true,
-      category: "All"
-    },
-    {
-      id: 5,
-      name: "Shalom Villa",
-      location: "Coorg, Karnataka",
-      rating: 4.6,
-      guests: 12,
-      rooms: 4,
-      baths: 4,
-      price: "₹29,058",
-      image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
-      bestRated: true,
-      category: "Coorg"
-    }
-  ]
+  const navigate = useNavigate();
 
-  // Add support for touch events for mobile swipe
+  // Touch/swipe support
   const touchStartRef = useRef(null);
   const touchEndRef = useRef(null);
 
@@ -94,84 +39,84 @@ export const FeaturedDestination = () => {
 
   const handleTouchEnd = () => {
     if (!touchStartRef.current || !touchEndRef.current) return;
-    
     const distance = touchStartRef.current - touchEndRef.current;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe) {
-      nextSlide();
-    } else if (isRightSwipe) {
-      prevSlide();
-    }
-
+    if (distance > 50) nextSlide();
+    else if (distance < -50) prevSlide();
     touchStartRef.current = null;
     touchEndRef.current = null;
   };
 
   const nextSlide = () => {
-    if (isTransitioning) return
+    if (isTransitioning || properties.length === 0) return
     setIsTransitioning(true)
     setActiveIndex((prev) => (prev === properties.length - 1 ? 0 : prev + 1))
   }
 
   const prevSlide = () => {
-    if (isTransitioning) return
+    if (isTransitioning || properties.length === 0) return
     setIsTransitioning(true)
     setActiveIndex((prev) => (prev === 0 ? properties.length - 1 : prev - 1))
   }
 
-  // Reset transitioning state after animation completes
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsTransitioning(false)
-    }, 700) // Match this to your transition duration
+    const timer = setTimeout(() => setIsTransitioning(false), 700)
     return () => clearTimeout(timer)
   }, [activeIndex])
 
-  // Auto-advance slides
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide()
     }, 5000)
     return () => clearInterval(interval)
-  }, [])
+  }, [properties.length])
 
   // Show hand swipe animation on first load
   const [showSwipeHint, setShowSwipeHint] = useState(true)
   useEffect(() => {
     if (showSwipeHint) {
-      const timer = setTimeout(() => {
-        setShowSwipeHint(false)
-      }, 3000)
+      const timer = setTimeout(() => setShowSwipeHint(false), 3000)
       return () => clearTimeout(timer)
     }
   }, [showSwipeHint])
 
-  // Any original backend logic would be preserved here
+  // Fetch properties from backend
   useEffect(() => {
-    // This is where we would fetch properties from an API if needed
-    // For example:
-    /*
     const fetchProperties = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        setLoading(true);
-        const response = await fetch('/api/featured-properties');
-        const data = await response.json();
-        if (data.properties) {
-          setProperties(data.properties);
-        }
+        const res = await fetch(`${API_BASE_URL}/api/villas/`);
+        if (!res.ok) throw new Error("Failed to load properties");
+        let data = await res.json();
+        // Map backend data to carousel property format
+        data = data.map((villa, idx) => ({
+          id: villa._id || idx,
+          name: villa.name,
+          location: villa.location,
+          rating: villa.rating || (4.5 + Math.random() * 0.5).toFixed(1),
+          guests: villa.guests || 8,
+          rooms: villa.bedrooms || 3,
+          baths: villa.bathrooms || villa.bedrooms || 3,
+          price: villa.price ? `₹${villa.price.toLocaleString()}` : "₹12,000",
+          image: getRandomUnsplash(),
+          bestRated: Math.random() > 0.5,
+          category: villa.location?.split(",")[1]?.trim() || "All"
+        }));
+        setProperties(data);
       } catch (err) {
-        console.error('Error fetching properties:', err);
         setError('Failed to load properties');
       } finally {
         setLoading(false);
       }
     };
-
     fetchProperties();
-    */
   }, []);
+
+  // Handler for View Details button
+  const handleViewDetails = (property) => {
+    // Pass the property as state to /rooms
+    navigate('/rooms', { state: { villa: property } });
+  };
 
   return (
     <div className="max-w-7xl mx-auto relative">
@@ -184,7 +129,6 @@ export const FeaturedDestination = () => {
       >
         <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center">
           Featured Properties
-         
         </h1>
         <div className="flex justify-center">
           <motion.div 
@@ -210,7 +154,7 @@ export const FeaturedDestination = () => {
       )}
 
       {/* Carousel Container */}
-      {!loading && !error && (
+      {!loading && !error && properties.length > 0 && (
         <div 
           className="relative overflow-hidden rounded-2xl shadow-lg"
           onTouchStart={handleTouchStart}
@@ -356,16 +300,6 @@ export const FeaturedDestination = () => {
                               <span className="text-2xl font-bold">
                                 {property.price}
                               </span>
-                              {property.originalPrice && (
-                                <span className="text-sm text-gray-300 line-through">
-                                  {property.originalPrice}
-                                </span>
-                              )}
-                              {property.originalPrice && (
-                                <span className="text-xs font-medium text-green-400 bg-green-900/40 rounded-full px-2 py-0.5">
-                                  {Math.round((1 - parseInt(property.price.replace(/[^0-9]/g, '')) / parseInt(property.originalPrice.replace(/[^0-9]/g, ''))) * 100)}% OFF
-                                </span>
-                              )}
                             </div>
                             <p className="text-xs text-gray-300 mt-0.5">Per Night + Taxes</p>
                           </div>
@@ -374,6 +308,7 @@ export const FeaturedDestination = () => {
                             className="bg-white text-blue-600 font-medium px-4 py-2 rounded-lg shadow-md"
                             whileHover={{ scale: 1.05, backgroundColor: "#f8fafc" }}
                             whileTap={{ scale: 0.95 }}
+                            onClick={() => handleViewDetails(property)}
                           >
                             View Details
                           </motion.button>

@@ -1,111 +1,3 @@
-// import React, { useEffect } from 'react';
-// import { Phone, Mail, MapPin, Send } from 'lucide-react';
-// import AOS from 'aos';
-// import 'aos/dist/aos.css';
-
-// export default function Contact() {
-//   useEffect(() => {
-//     AOS.init({ duration: 1000 });
-//   }, []);
-
-//   return (
-//     <div className="min-h-screen bg-white text-black">
-//       <div className="container mx-auto px-2 sm:px-4 py-10 sm:py-20">
-//         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 text-center" data-aos="fade-up">
-//           Contact Us
-//         </h1>
-//         <p className="text-base sm:text-xl text-gray-600 mb-8 sm:mb-12 text-center max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-//           Have questions about our Indian travel experiences? We're here to help!
-//         </p>
-
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
-//           <div data-aos="fade-right">
-//             <form className="space-y-4 sm:space-y-6">
-//               <div>
-//                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-//                 <input
-//                   type="text"
-//                   id="name"
-//                   name="name"
-//                   required
-//                   className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 text-black"
-//                 />
-//               </div>
-//               <div>
-//                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-//                 <input
-//                   type="email"
-//                   id="email"
-//                   name="email"
-//                   required
-//                   className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 text-black"
-//                 />
-//               </div>
-//               <div>
-//                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-//                 <textarea
-//                   id="message"
-//                   name="message"
-//                   required
-//                   rows="4"
-//                   className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 text-black"
-//                 ></textarea>
-//               </div>
-//               <button
-//                 type="submit"
-//                 className="w-full bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-md transition duration-300 flex items-center justify-center"
-//               >
-//                 Send Message
-//                 <Send className="ml-2 h-5 w-5" />
-//               </button>
-//             </form>
-//           </div>
-
-//           <div className="space-y-6 sm:space-y-8" data-aos="fade-left">
-//             <h2 className="text-2xl font-semibold mb-6">Get in Touch</h2>
-//             <div className="flex items-start space-x-4">
-//               <Phone className="w-6 h-6 text-black mt-1" />
-//               <div>
-//                 <h3 className="font-medium">Phone</h3>
-//                 <p className="text-gray-600">+91 99400 47463</p>
-//               </div>
-//             </div>
-//             <div className="flex items-start space-x-4">
-//               <Mail className="w-6 h-6 text-black mt-1" />
-//               <div>
-//                 <h3 className="font-medium">Email</h3>
-//                 <p className="text-gray-600">luxorholidayhomestays@gmail.com</p>
-//               </div>
-//             </div>
-//             <div className="flex items-start space-x-4">
-//               <MapPin className="w-6 h-6 text-black mt-1" />
-//               <div>
-//                 <h3 className="font-medium">Address</h3>
-//                 <p className="text-gray-600">40/2B Kovalam main road, Chennai, 603112</p>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-
-//         <div className="mt-12 sm:mt-20" data-aos="fade-up">
-//           <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-center">Find Us on the Map</h2>
-//           <div className="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-300">
-//             <iframe
-//               title="Coimbatore Location Map"
-//               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d125323.40216323!2d76.89010037974042!3d11.011870079525526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba859af2f971cb5%3A0x2fc1c81e183ed282!2sChennai%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1673429729105!5m2!1sen!2sin"
-//               width="100%"
-//               height="100%"
-//               style={{ border: 0 }}
-//               allowFullScreen=""
-//               loading="lazy"
-//               referrerPolicy="no-referrer-when-downgrade"
-//             ></iframe>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
 
 import React, { useEffect, useState, useRef } from 'react';
 import { Phone, Mail, MapPin, Send, CheckCircle, Star, Sparkles } from 'lucide-react';
@@ -935,105 +827,110 @@ export default function Contact() {
               </motion.p>
               
               {/* Contact information cards with enhanced animations */}
-              <motion.div 
-                className="space-y-8 relative z-10"
-                variants={{
-                  hidden: { opacity: 0 },
-                  visible: { 
-                    opacity: 1,
-                    transition: { staggerChildren: 0.2 }
-                  }
-                }}
-                initial="hidden"
-                animate="visible"
-              >
-                <motion.div 
-                  variants={itemVariants}
-                  className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 shadow-sm border border-white/50 flex items-start gap-5 transform transition-all duration-500"
-                  whileHover={{ 
-                    y: -5,
-                    backgroundColor: "rgba(255, 255, 255, 0.8)",
-                    boxShadow: "0 15px 30px rgba(0,0,0,0.1)"
-                  }}
-                  data-aos="zoom-in"
-                  data-aos-delay="100"
-                >
-                  <motion.div 
-                    className="bg-gradient-to-br from-black to-gray-800 rounded-full p-3 shadow-md"
-                    whileHover={{ 
-                      scale: 1.1,
-                      rotate: 15,
-                      boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)"
-                    }}
-                  >
-                    <Phone className="w-6 h-6 text-white" />
-                  </motion.div>
-                  <div>
-                    <motion.h3 className="font-medium text-lg text-gray-800">
-                      Phone
-                    </motion.h3>
-                    <p className="text-gray-600">+91 99400 47463</p>
-                  </div>
-                </motion.div>
-                
-                <motion.div 
-                  variants={itemVariants}
-                  className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 shadow-sm border border-white/50 flex items-start gap-5 transform transition-all duration-500"
-                  whileHover={{ 
-                    y: -5,
-                    backgroundColor: "rgba(255, 255, 255, 0.8)",
-                    boxShadow: "0 15px 30px rgba(0,0,0,0.1)"
-                  }}
-                  data-aos="zoom-in"
-                  data-aos-delay="200"
-                >
-                  <motion.div 
-                    className="bg-gradient-to-br from-black to-gray-800 rounded-full p-3 shadow-md"
-                    whileHover={{ 
-                      scale: 1.1,
-                      rotate: 15,
-                      boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)"
-                    }}
-                  >
-                    <Mail className="w-6 h-6 text-white" />
-                  </motion.div>
-                  <div>
-                    <motion.h3 className="font-medium text-lg text-gray-800">
-                      Email
-                    </motion.h3>
-                    <p className="text-gray-600">luxorholidayhomestays@gmail.com</p>
-                  </div>
-                </motion.div>
-                
-                <motion.div 
-                  variants={itemVariants}
-                  className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 shadow-sm border border-white/50 flex items-start gap-5 transform transition-all duration-500"
-                  whileHover={{ 
-                    y: -5,
-                    backgroundColor: "rgba(255, 255, 255, 0.8)",
-                    boxShadow: "0 15px 30px rgba(0,0,0,0.1)"
-                  }}
-                  data-aos="zoom-in"
-                  data-aos-delay="300"
-                >
-                  <motion.div 
-                    className="bg-gradient-to-br from-black to-gray-800 rounded-full p-3 shadow-md"
-                    whileHover={{ 
-                      scale: 1.1,
-                      rotate: 15,
-                      boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)"
-                    }}
-                  >
-                    <MapPin className="w-6 h-6 text-white" />
-                  </motion.div>
-                  <div>
-                    <motion.h3 className="font-medium text-lg text-gray-800">
-                      Address
-                    </motion.h3>
-                    <p className="text-gray-600">40/2B Kovalam main road, Chennai, 603112</p>
-                  </div>
-                </motion.div>
-              </motion.div>
+           <motion.div 
+  className="space-y-8 relative z-10"
+  variants={{
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { staggerChildren: 0.2 }
+    }
+  }}
+  initial="hidden"
+  animate="visible"
+>
+  {/* Phone Card */}
+  <motion.div 
+    variants={itemVariants}
+    className="bg-white/60 backdrop-blur-sm rounded-2xl p-3 sm:p-4 md:p-6 shadow-sm border border-white/50 flex items-start gap-3 sm:gap-5 transform transition-all duration-500"
+    whileHover={{ 
+      y: -5,
+      backgroundColor: "rgba(255, 255, 255, 0.8)",
+      boxShadow: "0 15px 30px rgba(0,0,0,0.1)"
+    }}
+    data-aos="zoom-in"
+    data-aos-delay="100"
+  >
+    <motion.div 
+      className="bg-gradient-to-br from-black to-gray-800 rounded-full p-2 sm:p-3 md:p-4 shadow-md"
+      whileHover={{ 
+        scale: 1.1,
+        rotate: 15,
+        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)"
+      }}
+    >
+      <Phone className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
+    </motion.div>
+    <div>
+      <motion.h3 className="font-medium text-base sm:text-lg md:text-xl text-gray-800">
+        Phone
+      </motion.h3>
+      <p className="text-gray-600 text-xs sm:text-sm md:text-base break-all">+91 99400 47463</p>
+    </div>
+  </motion.div>
+
+  {/* Email Card */}
+  <motion.div 
+    variants={itemVariants}
+    className="bg-white/60 backdrop-blur-sm rounded-2xl p-3 sm:p-4 md:p-6 shadow-sm border border-white/50 flex items-start gap-3 sm:gap-5 transform transition-all duration-500"
+    whileHover={{ 
+      y: -5,
+      backgroundColor: "rgba(255, 255, 255, 0.8)",
+      boxShadow: "0 15px 30px rgba(0,0,0,0.1)"
+    }}
+    data-aos="zoom-in"
+    data-aos-delay="200"
+  >
+    <motion.div 
+      className="bg-gradient-to-br from-black to-gray-800 rounded-full p-2 sm:p-3 md:p-4 shadow-md"
+      whileHover={{ 
+        scale: 1.1,
+        rotate: 15,
+        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)"
+      }}
+    >
+      <Mail className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
+    </motion.div>
+    <div>
+      <motion.h3 className="font-medium text-base sm:text-lg md:text-xl text-gray-800">
+        Email
+      </motion.h3>
+      <p className="text-gray-600 text-xs sm:text-sm md:text-base break-all">luxorholidayhomestays@gmail.com</p>
+    </div>
+  </motion.div>
+
+  {/* Address Card */}
+  <motion.div 
+    variants={itemVariants}
+    className="bg-white/60 backdrop-blur-sm rounded-2xl p-3 sm:p-4 md:p-6 shadow-sm border border-white/50 flex items-start gap-3 sm:gap-5 transform transition-all duration-500"
+    whileHover={{ 
+      y: -5,
+      backgroundColor: "rgba(255, 255, 255, 0.8)",
+      boxShadow: "0 15px 30px rgba(0,0,0,0.1)"
+    }}
+    data-aos="zoom-in"
+    data-aos-delay="300"
+  >
+    <motion.div 
+      className="bg-gradient-to-br from-black to-gray-800 rounded-full p-2 sm:p-3 md:p-4 shadow-md"
+      whileHover={{ 
+        scale: 1.1,
+        rotate: 15,
+        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)"
+      }}
+    >
+      <MapPin className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
+    </motion.div>
+    <div>
+      <motion.h3 className="font-medium text-base sm:text-lg md:text-xl text-gray-800">
+        Address
+      </motion.h3>
+      <p className="text-gray-600 text-xs sm:text-sm md:text-base break-all">
+        40/2B Kovalam main road, Chennai, 603112
+      </p>
+    </div>
+  </motion.div>
+</motion.div>
               
               {/* Social proof with pulsating animation */}
               <motion.div 
