@@ -6,6 +6,7 @@ import {Route, Routes, useLocation} from 'react-router-dom'
 import Home from './pages/Home'
 import Footer from './components/Footer'
 import AllRooms from './pages/AllRooms'
+import VillaDetails from './pages/VillaDetails'
 import RoomDetails from './pages/RoomDetails'
 import MyBookings from './pages/MyBookings'
 import BookingDetails from './pages/BookingDetails';
@@ -46,6 +47,8 @@ const App = () => {
             <Route path='/' element={<Home/>} />
             <Route path='/rooms' element={<AllRooms/>} />
             <Route path='/rooms/:id' element={<RoomDetails/>} />
+            <Route path='/villa/:id' element={<VillaDetails/>} />
+            <Route path='/villas/:id' element={<VillaDetails/>} />
             <Route path='/search-results' element={<SearchResults/>} />
             <Route path='/my-bookings' element={<MyBookings/>} />
             <Route path='/booking/:id' element={<BookingDetails/>} />
