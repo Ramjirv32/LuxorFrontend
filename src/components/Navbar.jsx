@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
 import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -22,11 +21,10 @@ const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     
-    const { openSignIn } = useClerk();
-    const { isLoaded, isSignedIn, user } = useUser();
     const navigate = useNavigate();
     const location = useLocation();
-    const { setAuthToken, setUserData } = useAuth();
+    const { authToken, userData, logout } = useAuth();
+    const isSignedIn = !!authToken;
 
     // Function to handle navigation with proper scroll behavior
     const handleNavigation = (path) => {
@@ -61,101 +59,18 @@ const Navbar = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, [location.pathname]);
 
-    // Handle user authentication with Clerk and backend
-
     // Custom login handler
     const handleLogin = () => {
-        openSignIn({
-            afterSignInUrl: window.location.href,
-            redirectUrl: window.location.href
-        });
+        navigate('/sign-in');
     };
 
-    // Sync user with backend after sign in
-    useEffect(() => {
-        const syncUserWithBackend = async () => {
-            if (isSignedIn && user) {
-                try {
-                    console.log("Syncing user with backend:", user.id);
-                    
-                    // Get user email directly from Clerk
-                    const userEmail = user.primaryEmailAddress?.emailAddress;
-                    
-                    if (!userEmail) {
-                        console.error("No email found in Clerk user data");
-                        return;
-                    }
-                    
-                    // Store user email immediately
-                    localStorage.setItem('userEmail', userEmail);
-                    
-                    // Get user details from Clerk
-                    const userData = {
-                        clerkId: user.id,
-                        email: userEmail,
-                        password: user.id, // ClerkID as password
-                        name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-                        imageUrl: user.imageUrl || ''
-                    };
+    // User menu controls
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-                    console.log("[FRONTEND] Sending user data to backend:", userData);
-
-                    // Use fetch instead of axios for consistency
-                    const response = await fetch(`${API_BASE_URL}/api/users/sync`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(userData)
-                    });
-                    
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error(`[FRONTEND] Backend returned error: ${response.status} - ${errorText}`);
-                        throw new Error(`Backend returned ${response.status}: ${errorText}`);
-                    }
-                    
-                    const data = await response.json();
-                    console.log("[FRONTEND] Backend responded with:", data);
-                    
-                    if (data.token && data.user) {
-                        localStorage.setItem('authToken', data.token);
-                        localStorage.setItem('userId', data.user.id || data.user._id);
-                        localStorage.setItem('userEmail', data.user.email);
-                        
-                        setAuthToken(data.token);
-                        setUserData({
-                            ...data.user,
-                            _id: data.user._id || data.user.id,
-                            id: data.user.id || data.user._id,
-                            email: data.user.email
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error syncing user with backend:', error);
-                    
-                    // Use basic user data from Clerk as fallback
-                    if (user?.primaryEmailAddress?.emailAddress) {
-                        const email = user.primaryEmailAddress.emailAddress;
-                        localStorage.setItem('userEmail', email);
-                        
-                        setUserData({
-                            id: user.id,
-                            _id: user.id,
-                            email: email,
-                            firstName: user.firstName || '',
-                            lastName: user.lastName || '',
-                            profileImageUrl: user.imageUrl || ''
-                        });
-                    }
-                }
-            }
-        };
-
-        if (isLoaded) {
-            syncUserWithBackend();
-        }
-    }, [isLoaded, isSignedIn, user, setAuthToken, setUserData]);
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     return (
         <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${
@@ -197,7 +112,7 @@ const Navbar = () => {
                         } h-0.5 w-0 group-hover:w-full transition-all duration-300`} />
                     </div>
                 ))}
-                {isSignedIn && user && (
+                {isSignedIn && userData && (
                     <div 
                         onClick={() => handleNavigation('/my-bookings')}
                         className={`group flex flex-col gap-0.5 ${
@@ -232,26 +147,66 @@ const Navbar = () => {
                     className="h-7 transition-all duration-500 cursor-pointer hover:scale-110 invert" 
                 />
                 
-                {isSignedIn && user ? (
-                    <UserButton>
-                        <UserButton.MenuItems>
-                            <UserButton.Action 
-                                label="My Bookings" 
-                                labelIcon={<BookIcon/>} 
-                                onClick={() => {
-                                    window.scrollTo(0, 0);
-                                    navigate('/my-bookings');
-                                }}
-                            />
-                            <UserButton.Action 
-                                label="My Profile" 
-                                onClick={() => {
-                                    window.scrollTo(0, 0);
-                                    navigate('/profile');
-                                }}
-                            />
-                        </UserButton.MenuItems>
-                    </UserButton>
+                {isSignedIn && userData ? (
+                    <div className="relative">
+                        <div 
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={() => setUserMenuOpen(!userMenuOpen)}
+                        >
+                            <div className="w-10 h-10 rounded-full bg-emerald-100 border-2 border-emerald-500 overflow-hidden flex items-center justify-center">
+                                {userData.profileImageUrl ? (
+                                    <img src={userData.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="text-emerald-600 font-bold text-lg">
+                                        {userData.firstName ? userData.firstName.charAt(0).toUpperCase() : 
+                                         userData.name ? userData.name.charAt(0).toUpperCase() : 
+                                         userData.email ? userData.email.charAt(0).toUpperCase() : 'U'}
+                                    </div>
+                                )}
+                            </div>
+                            <span className="hidden lg:block text-sm font-medium">{userData.firstName || userData.name || userData.email}</span>
+                        </div>
+                        
+                        {userMenuOpen && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20">
+                                <div 
+                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                                    onClick={() => {
+                                        setUserMenuOpen(false);
+                                        handleNavigation('/my-bookings');
+                                    }}
+                                >
+                                    <BookIcon />
+                                    <span>My Bookings</span>
+                                </div>
+                                <div 
+                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                                    onClick={() => {
+                                        setUserMenuOpen(false);
+                                        handleNavigation('/profile');
+                                    }}
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    <span>My Profile</span>
+                                </div>
+                                <hr className="my-1" />
+                                <div 
+                                    className="px-4 py-2 hover:bg-gray-100 text-red-600 cursor-pointer flex items-center gap-2"
+                                    onClick={() => {
+                                        setUserMenuOpen(false);
+                                        handleLogout();
+                                    }}
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    <span>Logout</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 ) : (
                     <button 
                         onClick={handleLogin} 
@@ -264,26 +219,19 @@ const Navbar = () => {
 
             {/* Mobile Menu Button */}
             <div className="flex items-center gap-3 md:hidden relative z-10">
-                {isSignedIn && user && (
-                    <UserButton>
-                        <UserButton.MenuItems>
-                            <UserButton.Action 
-                                label="My Bookings" 
-                                labelIcon={<BookIcon/>} 
-                                onClick={() => {
-                                    window.scrollTo(0, 0);
-                                    navigate('/my-bookings');
-                                }}
-                            />
-                            <UserButton.Action 
-                                label="My Profile" 
-                                onClick={() => {
-                                    window.scrollTo(0, 0);
-                                    navigate('/profile');
-                                }}
-                            />
-                        </UserButton.MenuItems>
-                    </UserButton>
+                {isSignedIn && userData && (
+                    <div className="w-8 h-8 rounded-full bg-emerald-100 border-2 border-emerald-500 overflow-hidden flex items-center justify-center"
+                         onClick={() => setUserMenuOpen(!userMenuOpen)}>
+                        {userData.profileImageUrl ? (
+                            <img src={userData.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="text-emerald-600 font-bold text-sm">
+                                {userData.firstName ? userData.firstName.charAt(0).toUpperCase() : 
+                                 userData.name ? userData.name.charAt(0).toUpperCase() : 
+                                 userData.email ? userData.email.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                        )}
+                    </div>
                 )}
 
                 <img 
@@ -310,7 +258,7 @@ const Navbar = () => {
                     </div>
                 ))}
 
-                {isSignedIn && user && (
+                {isSignedIn && userData && (
                     <div
                         onClick={() => handleNavigation('/my-bookings')}
                         className="cursor-pointer text-lg hover:text-black hover:font-bold transition-all"
@@ -326,7 +274,17 @@ const Navbar = () => {
                     Dashboard
                 </button>
 
-                {!isSignedIn && (
+                {isSignedIn && userData ? (
+                    <button 
+                        onClick={handleLogout}
+                        className="bg-red-600 text-white hover:bg-red-700 px-8 py-2.5 rounded-full transition-all duration-300 mt-4 flex items-center gap-2"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Logout
+                    </button>
+                ) : (
                     <button 
                         onClick={() => {
                             handleLogin();
@@ -338,6 +296,47 @@ const Navbar = () => {
                     </button>
                 )}
             </div>
+            
+            {/* Mobile User Menu */}
+            {userMenuOpen && isSignedIn && userData && (
+                <div className="md:hidden fixed top-16 right-4 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                    <div 
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                        onClick={() => {
+                            setUserMenuOpen(false);
+                            handleNavigation('/my-bookings');
+                        }}
+                    >
+                        <BookIcon />
+                        <span>My Bookings</span>
+                    </div>
+                    <div 
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                        onClick={() => {
+                            setUserMenuOpen(false);
+                            handleNavigation('/profile');
+                        }}
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span>My Profile</span>
+                    </div>
+                    <hr className="my-1" />
+                    <div 
+                        className="px-4 py-2 hover:bg-gray-100 text-red-600 cursor-pointer flex items-center gap-2"
+                        onClick={() => {
+                            setUserMenuOpen(false);
+                            handleLogout();
+                        }}
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span>Logout</span>
+                    </div>
+                </div>
+            )}
         </nav>
     );
 }

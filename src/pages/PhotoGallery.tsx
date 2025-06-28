@@ -1,89 +1,70 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronLeft, Bookmark, Share2 } from "lucide-react"
-// import {Plus} from "lucide-react"
-import {
+import { ChevronLeft, Bookmark, Share2, X, ArrowDown } from "lucide-react"
 
-
-Plus
-} from "lucide-react"
-import anandvilla1 from "../assets/empireanandvilla/anandvilla1.jpg"
-import anandvilla2 from "../assets/empireanandvilla/anandvilla2.jpg"
-import anandvilla3 from "../assets/empireanandvilla/anandvilla3.jpg"
-import anandvilla4 from "../assets/empireanandvilla/anandvilla4.jpg"
-import anandvilla5 from "../assets/empireanandvilla/anandvilla5.jpg"
-import anandvilla6 from "../assets/empireanandvilla/anandvilla6.jpg"
-import anandvilla7 from "../assets/empireanandvilla/anandvilla7.jpg"
-import anandvilla8 from "../assets/empireanandvilla/anandvilla8.jpg"
-import anandvilla9 from "../assets/empireanandvilla/anandvilla9.jpg"
-import anandvilla10 from "../assets/empireanandvilla/anandvilla10.jpg"
-import anandvilla11 from "../assets/empireanandvilla/anandvilla11.jpg"
-import anandvilla12 from "../assets/empireanandvilla/anandvilla12.jpg"
-import anandvilla13 from "../assets/empireanandvilla/anandvilla13.jpg"
-import anandvilla14 from "../assets/empireanandvilla/anandvilla14.jpg"
-import anandvilla15 from "../assets/empireanandvilla/anandvilla15.jpg"
-import anandvilla16 from "../assets/empireanandvilla/anandvilla16.jpg"
-
-// Create an array of 25 images using the 16 imported images, repeating as needed
-const galleryImages = [
-  anandvilla1, anandvilla2, anandvilla3, anandvilla4, anandvilla5, anandvilla6, anandvilla7, anandvilla8,
-  anandvilla9, anandvilla10, anandvilla11, anandvilla12, anandvilla13, anandvilla14, anandvilla15, anandvilla16,
-  anandvilla1, anandvilla2, anandvilla3, anandvilla4, anandvilla5, anandvilla6, anandvilla7, anandvilla8, anandvilla9
-]
-
+// Interface for component props
 interface PhotoGalleryProps {
-  images: string[];
-  villaName: string;
+  images: string[];  // This will receive the villa's actual fetched images
+  villaName?: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
 // PhotoGallery Component
-const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, villaName, isOpen, onClose }) => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, villaName = "Villa", isOpen, onClose }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [viewMode, setViewMode] = useState('gallery'); // 'gallery' or 'split'
+
+  // Reset selected image index when images change
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [images]);
 
   useEffect(() => {
     if (isOpen) {
-      setIsLoading(true)
-      // Show loading for 3 seconds
+      setIsLoading(true);
+      // Shorter loading time for better UX
       const timer = setTimeout(() => {
-        setIsLoading(false)
-      }, 3000)
+        setIsLoading(false);
+      }, 800);
 
-      return () => clearTimeout(timer)
+      return () => clearTimeout(timer);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   // Use the images passed in via props
-  const imagesToShow = images
+  const imagesToShow = Array.isArray(images) && images.length > 0 ? images : ["/placeholder.svg"];
 
   // Helper to chunk images into [1,3,1,3,...] pattern
   const getGalleryRows = (imgs: string[]) => {
-    if (!Array.isArray(imgs)) return [];
-    const rows = []
-    let i = 0
-    let big = true
+    if (!Array.isArray(imgs) || imgs.length === 0) return [];
+    const rows = [];
+    let i = 0;
+    let big = true;
     while (i < imgs.length) {
       if (big) {
-        rows.push([imgs[i]])
-        i += 1
+        rows.push([imgs[i]]);
+        i += 1;
       } else {
-        rows.push(imgs.slice(i, i + 3))
-        i += 3
+        const remainingImages = imgs.slice(i, i + 3);
+        if (remainingImages.length > 0) {
+          rows.push(remainingImages);
+        }
+        i += 3;
       }
-      big = !big
+      big = !big;
     }
-    return rows
-  }
+    return rows;
+  };
 
-  const galleryRows = getGalleryRows(imagesToShow)
+  const galleryRows = getGalleryRows(imagesToShow);
 
   return (
-    <div className="fixed inset-0 bg-white z-50 flex flex-col">
+    <div className={`fixed inset-0 bg-white z-50 flex flex-col ${viewMode === 'split' ? 'h-[50vh]' : ''}`}>
       {/* Header */}
       <div className="w-full bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto flex items-center justify-between p-4">
@@ -96,21 +77,30 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, villaName, isOpen, 
               <span className="font-medium">Back</span>
             </button>
           </div>
-          <div className="flex items-center gap-6">
-            <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
-              <Bookmark className="h-5 w-5" />
-              <span className="font-medium">Save</span>
+          <div className="text-center flex-1">
+            <h2 className="font-semibold text-gray-900">{villaName} Photos</h2>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setViewMode(viewMode === 'gallery' ? 'split' : 'gallery')}
+              className="bg-gray-100 hover:bg-gray-200 p-2 rounded-lg transition-all duration-300"
+              title={viewMode === 'gallery' ? "Show villa details below" : "Full gallery view"}
+            >
+              <ArrowDown className={`h-5 w-5 transform transition-transform ${viewMode === 'split' ? 'rotate-180' : ''}`} />
             </button>
-            <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
-              <Share2 className="h-5 w-5" />
-              <span className="font-medium">Share</span>
+            <button 
+              onClick={onClose}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <X className="h-5 w-5" />
+              <span className="font-medium">Close</span>
             </button>
           </div>
         </div>
       </div>
-
+      
       {/* Main Content Area - Centered with max width */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="max-h-[70vh] overflow-y-auto bg-gray-50">
         <div className="max-w-4xl mx-auto p-6">
           {isLoading ? (
             // Loading State
@@ -141,6 +131,11 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, villaName, isOpen, 
                         src={row[0] || "/placeholder.svg"}
                         alt={`${villaName} ${rowIdx * 4 + 1}`}
                         className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-200"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.onerror = null;
+                          target.src = "/placeholder.svg";
+                        }}
                       />
                       {selectedImageIndex === rowIdx * 4 && (
                         <div className="absolute inset-0 bg-green-500/10"></div>
@@ -150,7 +145,7 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, villaName, isOpen, 
                     // Three small images
                     row.map((img, idx) => {
                       // Calculate the global image index
-                      const imgIdx = rowIdx * 4 - 3 + idx
+                      const imgIdx = rowIdx * 4 - 3 + idx;
                       return (
                         <div
                           key={imgIdx}
@@ -164,48 +159,58 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, villaName, isOpen, 
                             src={img || "/placeholder.svg"}
                             alt={`${villaName} ${imgIdx + 1}`}
                             className="w-full h-36 object-cover group-hover:scale-105 transition-transform duration-200"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.onerror = null;
+                              target.src = "/placeholder.svg";
+                            }}
                           />
                           {selectedImageIndex === imgIdx && (
                             <div className="absolute inset-0 bg-green-500/10"></div>
                           )}
                         </div>
-                      )
+                      );
                     })
                   )}
                 </div>
               ))}
+              
               {/* Image counter */}
               <div className="text-center text-gray-500 text-sm">
                 {selectedImageIndex + 1} of {imagesToShow.length} photos
               </div>
+
+              {/* No images message */}
+              {imagesToShow.length <= 1 && imagesToShow[0] === "/placeholder.svg" && (
+                <div className="text-center py-10">
+                  <p className="text-gray-500">No photos available for this property.</p>
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
-    </div>
-  )
-}
 
+      {/* Footer with continue button */}
+      <div className="bg-white p-4 text-center border-t border-gray-200">
+        <button
+          onClick={onClose}
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300"
+        >
+          Continue to Villa Details
+        </button>
+      </div>
+
+      {/* Bottom action bar */}
+      {viewMode === 'split' && (
+        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-4 text-center backdrop-blur-sm">
+          Scroll down to see villa details
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Only export the PhotoGallery component
+export default PhotoGallery;
 // HomePage Component (uses PhotoGallery)
-export default function HomePage() {
-  const [isGalleryOpen, setIsGalleryOpen] = useState(false)
-
-  return (
-    <div className="">
-      <button
-        onClick={() => setIsGalleryOpen(true)}
-        className="px-8 py-4 text-white rounded-xl shadow-lg  transition-colors font-medium"
-      >
-            <Plus className="h-6 w-6 mx-auto mt-6 " /> More Photos
-      </button>
-
-      <PhotoGallery
-
-        images={galleryImages}
-        villaName="Anand Villa"
-        isOpen={isGalleryOpen}
-        onClose={() => setIsGalleryOpen(false)}
-      />
-    </div>
-  )
-}

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Navbar from './components/Navbar'
-import {Route, Routes, useLocation} from 'react-router-dom'
+import {Route, Routes, useLocation, Navigate} from 'react-router-dom'
 import Home from './pages/Home'
 import Footer from './components/Footer'
 import AllRooms from './pages/AllRooms'
@@ -18,7 +18,24 @@ import HelpCenter from './components/Footer/Help-center'
 import Safety from './components/Footer/safety-info'
 import Gallery from './components/Navbar/Gallery'
 import SearchResults from './pages/SearchResults';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import SignIn from './pages/SignIn';
+import OTPVerification from './pages/OTPVerification';
+
+// Auth Guard Component
+const ProtectedRoute = ({ children }) => {
+  const { authToken, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="h-screen flex items-center justify-center">Loading...</div>;
+  }
+  
+  if (!authToken) {
+    return <Navigate to="/sign-in" replace />;
+  }
+  
+  return children;
+};
 
 const App = () => {
   const { pathname } = useLocation();
@@ -36,8 +53,8 @@ const App = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
   
-  const isOwnerPath = useLocation().pathname.includes("owner");
-  // j
+  const isOwnerPath = pathname.includes("owner");
+  
   return (
     <AuthProvider>
       <div>
@@ -50,7 +67,11 @@ const App = () => {
             <Route path='/villa/:id' element={<VillaDetails/>} />
             <Route path='/villas/:id' element={<VillaDetails/>} />
             <Route path='/search-results' element={<SearchResults/>} />
-            <Route path='/my-bookings' element={<MyBookings/>} />
+            <Route path='/my-bookings' element={
+              <ProtectedRoute>
+                <MyBookings/>
+              </ProtectedRoute>
+            } />
             <Route path='/booking/:id' element={<BookingDetails/>} />
             <Route path='/contact' element={<Contact />} />
             <Route path='/partners' element={<Partners />} />
@@ -58,6 +79,8 @@ const App = () => {
             <Route path='/si' element={<Safety/>} />
             <Route path='/g' element={<Gallery/>} />
             <Route path='about' element={<About />} />
+            <Route path="/sign-in" element={<SignIn />} />
+            <Route path="/verify-otp" element={<OTPVerification />} />
           </Routes>
         </div>
         <Footer />
@@ -76,4 +99,6 @@ const App = () => {
 }
 
 export default App;
+
+
 

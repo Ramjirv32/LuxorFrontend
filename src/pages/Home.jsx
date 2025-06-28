@@ -8,6 +8,9 @@ import LuxuryVillaFeatures from '../components/LuxuryVillaFeatures'
 import Testimonial from '../components/Testimonial'
 import NewsLetter from '../components/NewsLetter'
 
+
+
+
 const Home = () => {
   const location = useLocation()
 
@@ -64,6 +67,7 @@ const Home = () => {
 
   return (
     <>
+  
         <Hero/>
         <FeaturedDestination />
         <ExclusiveOffers />

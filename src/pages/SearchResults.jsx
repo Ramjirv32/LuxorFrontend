@@ -1,5 +1,3 @@
-
-
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -123,9 +121,11 @@ const SearchResults = () => {
         )
         let villaList = await villaRes.json()
 
-        // Assign a random image from the defaultImages array if images are missing, empty, or contain "empireAnandVillaImages"
-        villaList = villaList.map((villa) => {
+        // Modify the villa mapping to ensure IDs are consistent with your mock data
+        villaList = villaList.map((villa, index) => {
           let images = []
+          
+          // Process images as you were doing before
           if (Array.isArray(villa.images) && villa.images.length > 0) {
             // If the backend image is a placeholder string, use a random image
             if (
@@ -140,20 +140,23 @@ const SearchResults = () => {
               images = villa.images.map((img) => (img === "empireAnandVillaImages" || !img ? getRandomImage() : img))
             }
           } else {
-            // Use 3-4 random images for each villa
             const imageCount = Math.floor(Math.random() * 2) + 3
             images = Array(imageCount).fill().map(() => getRandomImage())
           }
           
-          // Add random amenities, ratings, and other villa data
+          // Ensure villa has a consistent _id that works with your mock data
+          // If the villa has no _id or it's not valid, generate a consistent mock ID
+          const mockId = `mock-villa-${index + 1}`
+          
           return { 
             ...villa, 
+            _id: villa._id || mockId, // Use existing ID or generate mock ID
             images,
             rating: (Math.random() * 1 + 4).toFixed(1), // Random rating between 4.0-5.0
             reviews: Math.floor(Math.random() * 100) + 10, // Random number of reviews
             amenities: getRandomAmenities(),
-            bedrooms: Math.floor(Math.random() * 4) + 2, // Random bedrooms (2-5)
-            bathrooms: Math.floor(Math.random() * 3) + 2, // Random bathrooms (2-4)
+            bedrooms: villa.bedrooms || Math.floor(Math.random() * 4) + 2,
+            bathrooms: villa.bathrooms || Math.floor(Math.random() * 3) + 2,
           }
         })
 
