@@ -13,8 +13,9 @@ node_modules
 dist
 dist-ssr
 *.local
-echo ".env" > .gitignore
-# Editor directories and files
+echo .env >> .gitignore
+
+
 .vscode/*
 !.vscode/extensions.json
 .idea
