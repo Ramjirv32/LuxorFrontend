@@ -1109,4 +1109,100 @@
   display: none;
 }
 
+/* Print Styles */
+@media print {
+  /* Hide navigation elements, footer and other non-essential elements */
+  nav, header, footer, .no-print, button, .whatsapp-button {
+    display: none !important;
+  }
+  
+  /* Hide specifically the footer component */
+  footer, .footer, [data-component="footer"] {
+    display: none !important;
+    height: 0 !important;
+    visibility: hidden !important;
+  }
+  
+  /* Show only the print container */
+  .print-only {
+    display: block !important;
+  }
+  
+  /* Full width for print content */
+  .print-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Reset background colors for printing */
+  body {
+    background-color: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Add page margin */
+  @page {
+    size: auto;
+    margin: 1cm;
+  }
+  
+  /* Force background colors and images to print in some browsers */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  /* Ensure page breaks don't happen in the middle of certain sections */
+  .page-break-inside-avoid {
+    page-break-inside: avoid !important;
+  }
+  
+  /* Remove paddings added for screen view */
+  .pt-28, .pb-16, .py-20 {
+    padding: 0 !important;
+  }
+  
+  /* Improve contrast for printing */
+  .text-gray-600 {
+    color: #444 !important;
+  }
+  
+  /* Force background color for status badges */
+  .bg-green-100 {
+    background-color: #d1fae5 !important;
+  }
+  
+  .bg-yellow-100 {
+    background-color: #fef3c7 !important;
+  }
+  
+  .bg-red-100 {
+    background-color: #fee2e2 !important;
+  }
+  
+  /* WhatsApp button hide */
+  .fixed.bottom-5.right-5 {
+    display: none !important;
+  }
+  
+  /* When body has print-mode class */
+  body.print-mode footer,
+  body.print-mode .footer,
+  body.print-mode [data-component="footer"],
+  body.print-mode .whatsapp-button,
+  body.print-mode nav {
+    display: none !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    z-index: -1 !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+}
+
 

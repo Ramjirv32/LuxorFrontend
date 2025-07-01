@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+
 import {
   Heart,
   ChevronDown,
@@ -29,12 +30,8 @@ import {
   Zap,
   Home,
 } from "lucide-react"
+
 import PhotoGallery from "./PhotoGallery"
-// import Kitchen from "../assets/Facilities/KITCHEN.png"
-// import Parking from "../assets/Facilities/PARK.png"
-// import Pool from "../assets/Facilities/p.png"
-// import Wifi from "../assets/Facilities/WIFI.png"
-// Remove Clerk import
 import { useAuth } from "../context/AuthContext"
 import { useNavigate, useParams, useLocation } from "react-router-dom"
 import { API_BASE_URL } from "../config/api"
@@ -130,7 +127,75 @@ import RW17 from "/ramwatervilla/RW17.jpg"
 import RW18 from "/ramwatervilla/RW18.jpg"
 import RW19 from "/ramwatervilla/RW19.jpg"
 
-// Villa image collections
+// LavishVilla 1 (22 images)
+// import lvone1 from "/LavishVilla 1/lvone 1.jpg"
+import lvone2 from "/LavishVilla 1/lvone2.jpg"
+import lvone3 from "/LavishVilla 1/lvone3.jpg"
+import lvone4 from "/LavishVilla 1/lvone4.jpg"
+import lvone5 from "/LavishVilla 1/lvone5.jpg"
+import lvone6 from "/LavishVilla 1/lvone6.jpg"
+import lvone7 from "/LavishVilla 1/lvone7.jpg"
+import lvone8 from "/LavishVilla 1/lvone8.jpg"
+import lvone9 from "/LavishVilla 1/lvone9.jpg"
+import lvone10 from "/LavishVilla 1/lvone10.jpg"
+import lvone11 from "/LavishVilla 1/lvone11.jpg"
+import lvone12 from "/LavishVilla 1/lvone12.jpg"
+import lvone13 from "/LavishVilla 1/lvone13.jpg"
+import lvone14 from "/LavishVilla 1/lvone14.jpg"
+import lvone15 from "/LavishVilla 1/lvone15.jpg"
+import lvone16 from "/LavishVilla 1/lvone16.jpg"
+import lvone17 from "/LavishVilla 1/lvone17.jpg"
+import lvone18 from "/LavishVilla 1/lvone18.jpg"
+import lvone19 from "/LavishVilla 1/lvone19.jpg"
+import lvone20 from "/LavishVilla 1/lvone20.jpg"
+import lvone21 from "/LavishVilla 1/lvone21.jpg"
+import lvone22 from "/LavishVilla 1/lvone22.jpg"
+
+// LavishVilla 2 (22 images)
+import lvtwo1 from "/LavishVilla 2/lvtwo1.jpg"
+import lvtwo2 from "/LavishVilla 2/lvtwo2.jpg"
+import lvtwo3 from "/LavishVilla 2/lvtwo3.jpg"
+import lvtwo4 from "/LavishVilla 2/lvtwo4.jpg"
+import lvtwo5 from "/LavishVilla 2/lvtwo5.jpg"
+import lvtwo6 from "/LavishVilla 2/lvtwo6.jpg"
+import lvtwo7 from "/LavishVilla 2/lvtwo7.jpg"
+import lvtwo8 from "/LavishVilla 2/lvtwo8.jpg"
+import lvtwo9 from "/LavishVilla 2/lvtwo9.jpg"
+import lvtwo10 from "/LavishVilla 2/lvtwo10.jpg"
+import lvtwo11 from "/LavishVilla 2/lvtwo11.jpg"
+import lvtwo12 from "/LavishVilla 2/lvtwo12.jpg"
+import lvtwo13 from "/LavishVilla 2/lvtwo13.jpg"
+import lvtwo14 from "/LavishVilla 2/lvtwo14.jpg"
+import lvtwo15 from "/LavishVilla 2/lvtwo15.jpg"
+import lvtwo16 from "/LavishVilla 2/lvtwo16.jpg"
+import lvtwo17 from "/LavishVilla 2/lvtwo17.jpg"
+import lvtwo18 from "/LavishVilla 2/lvtwo18.jpg"
+import lvtwo19 from "/LavishVilla 2/lvtwo19.jpg"
+import lvtwo20 from "/LavishVilla 2/lvtwo20.jpg"
+import lvtwo21 from "/LavishVilla 2/lvtwo21.jpg"
+import lvtwo22 from "/LavishVilla 2/lvtwo22.jpg"
+
+// LavishVilla 3 (18 images)
+import lvthree1 from "/LavishVilla 3/lvthree1.jpg"
+import lvthree2 from "/LavishVilla 3/lvthree2.jpg"
+import lvthree3 from "/LavishVilla 3/lvthree3.jpg"
+import lvthree4 from "/LavishVilla 3/lvthree4.jpg"
+import lvthree5 from "/LavishVilla 3/lvthree5.jpg"
+import lvthree6 from "/LavishVilla 3/lvthree6.jpg"
+import lvthree7 from "/LavishVilla 3/lvthree7.jpg"
+import lvthree8 from "/LavishVilla 3/lvthree8.jpg"
+import lvthree9 from "/LavishVilla 3/lvthree9.jpg"
+import lvthree10 from "/LavishVilla 3/lvthree10.jpg"
+// import lvthree11 from "/LavishVilla 3/lvthree11.jpg"
+import lvthree12 from "/LavishVilla 3/lvthree12.jpg"
+import lvthree13 from "/LavishVilla 3/lvthree13.jpg"
+import lvthree14 from "/LavishVilla 3/lvthree14.jpg"
+import lvthree15 from "/LavishVilla 3/lvthree15.jpg"
+import lvthree16 from "/LavishVilla 3/lvthree16.jpg"
+import lvthree17 from "/LavishVilla 3/lvthree17.jpg"
+import lvthree18 from "/LavishVilla 3/lvthree18.jpg"
+
+// Update villa image collections
 const villaImageCollections = {
   "Amrith Palace": [
     AP1,
@@ -202,6 +267,74 @@ const villaImageCollections = {
     anandvilla14,
     anandvilla15,
     anandvilla16,
+  ],
+  "Lavish Villa 1": [
+    
+    lvone2,
+    lvone3,
+    lvone4,
+    lvone5,
+    lvone6,
+    lvone7,
+    lvone8,
+    lvone9,
+    lvone10,
+    lvone11,
+    lvone12,
+    lvone13,
+    lvone14,
+    lvone15,
+    lvone16,
+    lvone17,
+    lvone18,
+    lvone19,
+    lvone20,
+    lvone21,
+    lvone22,
+  ],
+  "Lavish Villa 2": [
+    lvtwo1,
+    lvtwo2,
+    lvtwo3,
+    lvtwo4,
+    lvtwo5,
+    lvtwo6,
+    lvtwo7,
+    lvtwo8,
+    lvtwo9,
+    lvtwo10,
+    lvtwo11,
+    lvtwo12,
+    lvtwo13,
+    lvtwo14,
+    lvtwo15,
+    lvtwo16,
+    lvtwo17,
+    lvtwo18,
+    lvtwo19,
+    lvtwo20,
+    lvtwo21,
+    lvtwo22,
+  ],
+  "Lavish Villa 3": [
+    lvthree1,
+    lvthree2,
+    lvthree3,
+    lvthree4,
+    lvthree5,
+    lvthree6,
+    lvthree7,
+    lvthree8,
+    lvthree9,
+    lvthree10,
+    // lvthree11,
+    lvthree12,
+    lvthree13,
+    lvthree14,
+    lvthree15,
+    lvthree16,
+    lvthree17,
+    lvthree18,
   ],
 }
 
@@ -286,6 +419,7 @@ const VillaDetail = () => {
     email: "",
     phone: "",
   })
+
   // Remove isSignedIn and user from Clerk
   const { userData, authToken } = useAuth()
   const isSignedIn = !!authToken && !!userData // Update isSignedIn check based on authToken
@@ -313,15 +447,39 @@ const VillaDetail = () => {
       const timeDiff = endDate.getTime() - startDate.getTime()
       const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24))
 
-      setCheckInDate(startDate.toISOString().split("T")[0])
-      setCheckOutDate(endDate.toISOString().split("T")[0])
+      // Fix: Use standardized date formatting to avoid timezone issues
+      setCheckInDate(formatDateToYYYYMMDD(startDate))
+      setCheckOutDate(formatDateToYYYYMMDD(endDate))
       setTotalDays(daysDiff)
-      // Removed automatic amount calculation - user can see amount only at booking time
+
+      // Fix: Calculate totalAmount when dates change
+      if (villa?.price) {
+        // Ensure villa.price is a number
+        const basePrice = Number.parseFloat(villa.price) * daysDiff
+        const serviceFee = Math.round(basePrice * 0.05)
+        const taxAmount = Math.round((basePrice + serviceFee) * 0.18)
+        setTotalAmount(Math.round(basePrice + serviceFee + taxAmount))
+      }
     } else {
       setTotalDays(0)
       setTotalAmount(0)
     }
   }, [dateRange, villa?.price])
+
+  // Corrected function to parse date strings
+  const parseYYYYMMDD = (dateString) => {
+    if (!dateString) return null
+    const [year, month, day] = dateString.split("-")
+    return new Date(Number.parseInt(year), Number.parseInt(month) - 1, Number.parseInt(day))
+  }
+
+  // Corrected function to format dates
+  const formatDateToYYYYMMDD = (date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, "0")
+    const day = String(date.getDate()).padStart(2, "0")
+    return `${year}-${month}-${day}`
+  }
 
   // Navigation functions
   const nextImage = () => {
@@ -344,59 +502,178 @@ const VillaDetail = () => {
     setShowPhotoGallery(false)
   }
 
-  // Fetch villa data function (extracted for reusability)
+  // Add this function to create a fallback villa with images when API fails
+  const createFallbackVilla = () => {
+    console.log("Creating fallback villa with sample images")
+
+    // Use ID from URL params to try matching with a villa name
+    let matchedCollection = "Empire Anand Villa Samudra" // Default
+
+    // Try to match ID with known collections
+    if (id.includes("amrith") || id.includes("palace")) {
+      matchedCollection = "Amrith Palace"
+    } else if (id.includes("east") || id.includes("coast")) {
+      matchedCollection = "East Coast Villa"
+    } else if (id.includes("ram") || id.includes("water")) {
+      matchedCollection = "Ram Water Villa"
+    }
+
+    const fallbackVilla = {
+      id: id,
+      _id: id,
+      name: matchedCollection,
+      location: "Luxury Location, India",
+      price: 15000,
+      description: "This beautiful luxury villa offers a perfect getaway with modern amenities and stunning views.",
+      images: villaImageCollections[matchedCollection] || empireAnandVillaSamudraImages,
+      guests: 8,
+      bedrooms: 4,
+      bathrooms: 3,
+      rating: 4.7,
+      amenities: ["Private Pool", "Free WiFi", "AC", "Kitchen", "Free Parking"],
+      type: "VILLA",
+    }
+
+    setVilla(fallbackVilla)
+    setLoading(false)
+  }
+
+  // Enhanced useEffect to properly handle villa data from navigation state
+  useEffect(() => {
+    // If we already have villa data from navigation state, process it properly
+    if (location.state?.villa) {
+      const navigationVilla = location.state.villa
+
+      // Process images if needed
+      let processedImages = navigationVilla.images || []
+
+      // If we came from search results, ensure we have the complete image collection
+      if (location.state?.fromSearch) {
+        console.log("Coming from search results, ensuring full image collection")
+
+        // Match villa name with image collections if images are insufficient
+        if (!processedImages.length || processedImages.length < 5) {
+          const villaName = navigationVilla.name?.toLowerCase() || ""
+
+          if (villaName.includes("amrith") || villaName.includes("palace")) {
+            processedImages = villaImageCollections["Amrith Palace"]
+          } else if (villaName.includes("east") || villaName.includes("coast")) {
+            processedImages = villaImageCollections["East Coast Villa"]
+          } else if (villaName.includes("ram") || villaName.includes("water")) {
+            processedImages = villaImageCollections["Ram Water Villa"]
+          } else if (villaName.includes("empire") || villaName.includes("anand") || villaName.includes("samudra")) {
+            processedImages = villaImageCollections["Empire Anand Villa Samudra"]
+          } else {
+            // Default to Empire Anand if no match
+            processedImages = empireAnandVillaSamudraImages
+          }
+        }
+      }
+
+      // Set the processed villa with correct images
+      setVilla({
+        ...navigationVilla,
+        images: processedImages,
+      })
+      setLoading(false)
+    } else if (id) {
+      fetchVillaDetails()
+    }
+  }, [id, location.state])
+
+  // Enhance fetchVillaDetails to better handle image mapping
   const fetchVillaDetails = async () => {
     try {
       setLoading(true)
-      console.log("Fetching villa with ID:", id) // Debug log
-      const response = await fetch(`${API_BASE_URL}/api/villas/${id}`)
-      console.log("API Response status:", response.status) // Debug log
+      console.log("Fetching villa with ID:", id)
+
+      // Try both potential API endpoints to handle legacy URLs
+      let response
+      try {
+        response = await fetch(`${API_BASE_URL}/api/villas/${id}`)
+        if (!response.ok) {
+          // If villas endpoint fails, try the rooms endpoint
+          const roomsResponse = await fetch(`${API_BASE_URL}/api/rooms/${id}`)
+          if (roomsResponse.ok) {
+            response = roomsResponse
+          }
+        }
+      } catch (fetchError) {
+        console.error("Error fetching from primary endpoint:", fetchError)
+        // Try backup endpoint
+        response = await fetch(`${API_BASE_URL}/api/rooms/${id}`)
+      }
+
       if (!response.ok) {
         const errorText = await response.text()
         console.log("API Error response:", errorText)
         throw new Error(`Villa not found (${response.status}): ${errorText}`)
       }
+
       const data = await response.json()
-      // Transform the data like in AllRooms
-      let images = data.images || []
-      if (images.length === 1 && images[0] === "empireAnandVillaImages") {
-        images = getRandomImages(empireAnandVillaSamudraImages)
+      console.log("Raw villa data from API:", data)
+
+      // Get villa name for better image mapping
+      const villaName = data.name?.toLowerCase() || ""
+      let images = []
+
+      // Match villa name with image collections
+      if (villaName.includes("amrith") || villaName.includes("palace")) {
+        console.log("Mapping Amrith Palace images")
+        images = villaImageCollections["Amrith Palace"]
+      } else if (villaName.includes("east") || villaName.includes("coast")) {
+        console.log("Mapping East Coast Villa images")
+        images = villaImageCollections["East Coast Villa"]
+      } else if (villaName.includes("ram") || villaName.includes("water")) {
+        console.log("Mapping Ram Water Villa images")
+        images = villaImageCollections["Ram Water Villa"]
+      } else if (villaName.includes("empire") || villaName.includes("anand") || villaName.includes("samudra")) {
+        console.log("Mapping Empire Anand Villa Samudra images")
+        images = villaImageCollections["Empire Anand Villa Samudra"]
+      } else {
+        // If data has images, use them
+        if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+          images = data.images
+        } else {
+          // Default to Empire Anand if no match
+          console.log("Using default Empire Anand Villa Samudra images")
+          images = empireAnandVillaSamudraImages
+        }
       }
+
       const transformedVilla = {
         id: data._id,
+        _id: data._id,
         name: data.name,
         location: data.location,
-        price: data.price || 0,
-        description: data.description,
-        images,
-        guests: data.guests || 0,
-        bedrooms: data.bedrooms || 0,
-        bathrooms: data.bathrooms || 0,
+        price: data.price || 15000,
+        description: data.description || "Luxury villa with all modern amenities for a comfortable stay.",
+        images: images, // Use our image mapping logic
+        guests: data.guests || 8,
+        bedrooms: data.bedrooms || 4,
+        bathrooms: data.bathrooms || data.bedrooms || 3,
         rating: data.rating || 4.5,
-        amenities: data.facilities?.map((f) => f.name) || [],
+        amenities: data.facilities?.map((f) => f.name || f) || [
+          "Private Pool",
+          "Free WiFi",
+          "AC",
+          "Kitchen",
+          "Free Parking",
+        ],
         type: data.type || "VILLA",
       }
-      console.log("Fetched villa data:", transformedVilla) // Debug log
+
+      console.log("Transformed villa data:", transformedVilla)
+      console.log("Number of images:", transformedVilla.images.length)
+
       setVilla(transformedVilla)
       setLoading(false)
     } catch (error) {
       setError(error.message)
       setLoading(false)
+      createFallbackVilla()
     }
   }
-
-  // Fetch villa data based on ID from URL only if not provided via state
-  useEffect(() => {
-    // If we already have villa data from navigation state, no need to fetch
-    if (location.state?.villa) {
-      setVilla(location.state.villa)
-      setLoading(false)
-      return
-    }
-    if (id) {
-      fetchVillaDetails()
-    }
-  }, [id, location.state])
 
   // Cleanup effect to prevent memory leaks and reset state
   useEffect(() => {
@@ -458,6 +735,7 @@ const VillaDetail = () => {
     isBookingInProgress.current = false
   }
 
+  // Enhanced handleBookNow function to fix totalAmount issue
   const handleBookNow = async () => {
     // Debug: Log authentication state
     console.log("Authentication State:", {
@@ -465,20 +743,38 @@ const VillaDetail = () => {
       userData,
       hasAuthToken: !!authToken,
     })
-
     // Prevent duplicate bookings
     if (bookingLoading || isBookingInProgress.current) {
       return
     }
 
     if (!isSignedIn) {
+      // Save current booking state to localStorage before redirecting
+      const bookingState = {
+        villaId: villa._id || villa.id,
+        villaName: villa.name,
+        checkInDate,
+        checkOutDate,
+        adults,
+        children,
+        infants,
+        totalDays,
+        totalAmount,
+        bookingStep,
+        // Include the current URL to return to this exact page
+        returnUrl: window.location.pathname + window.location.search,
+      }
+
+      // Save to localStorage
+      localStorage.setItem("pendingBooking", JSON.stringify(bookingState))
+
       Swal.fire({
         icon: "info",
         title: "Login Required",
-        text: "Please log in to book this villa.",
+        text: "Please log in to book this villa. We'll save your booking details.",
         confirmButtonColor: "#16a34a",
       }).then(() => {
-        navigate("/sign-in")
+        navigate("/sign-in?redirect=booking")
       })
       return
     }
@@ -508,6 +804,20 @@ const VillaDetail = () => {
     isBookingInProgress.current = true
 
     try {
+      // Fix: Calculate totalAmount directly instead of relying on state
+      // This ensures we always have the correct value even if the state update hasn't completed
+      const villaPrice = Number.parseFloat(villa.price) || 0
+      const daysStay = totalDays || 0
+      const basePrice = villaPrice * daysStay
+      const serviceFee = Math.round(basePrice * 0.05)
+      const taxAmount = Math.round((basePrice + serviceFee) * 0.18)
+      const calculatedTotalAmount = Math.round(basePrice + serviceFee + taxAmount)
+
+      // Check if calculated amount is valid
+      if (isNaN(calculatedTotalAmount) || calculatedTotalAmount <= 0) {
+        throw new Error("Invalid booking amount. Please try again with valid dates.")
+      }
+
       const bookingData = {
         villaId,
         villaName: villa.name,
@@ -517,12 +827,8 @@ const VillaDetail = () => {
         checkOut: checkOutDate,
         guests: adults + children,
         infants: infants,
-        totalAmount: Math.round(
-          totalDays * villa.price +
-            totalDays * villa.price * 0.05 +
-            (totalDays * villa.price + totalDays * villa.price * 0.05) * 0.18,
-        ),
-        totalDays: totalDays,
+        totalAmount: calculatedTotalAmount, // Use the calculated value
+        totalDays: daysStay,
       }
 
       console.log("Booking Data being sent:", bookingData) // Debug log
@@ -531,7 +837,6 @@ const VillaDetail = () => {
       // Check authentication
       if (!userData || !authToken) {
         console.log("No authentication data available") // Debug log
-
         Swal.fire({
           icon: "warning",
           title: "Authentication Required",
@@ -572,7 +877,6 @@ const VillaDetail = () => {
 
       if (response.ok && data.success) {
         console.log("Booking successful, starting redirect process...") // Debug log
-
         // Reset all booking form data immediately
         resetBookingForm()
 
@@ -585,7 +889,6 @@ const VillaDetail = () => {
           confirmButtonText: "Go to Homepage",
         }).then(() => {
           console.log("User clicked OK, redirecting...") // Debug log
-
           // Simple redirect - just navigate to homepage
           navigate("/", { replace: true })
         })
@@ -616,7 +919,6 @@ const VillaDetail = () => {
       }
     } catch (err) {
       console.error("Booking error caught:", err) // Enhanced error log
-
       Swal.fire({
         icon: "error",
         title: "Booking Failed",
@@ -636,6 +938,72 @@ const VillaDetail = () => {
       isBookingInProgress.current = false
     }
   }
+
+  // Add a function to restore booking state from localStorage
+  const restoreBookingState = () => {
+    try {
+      const savedBookingState = localStorage.getItem("pendingBooking")
+
+      if (savedBookingState) {
+        const bookingState = JSON.parse(savedBookingState)
+
+        // Only restore if we're on the same villa
+        if ((villa._id || villa.id) === bookingState.villaId) {
+          console.log("Restoring previous booking state", bookingState)
+
+          // Restore dates
+          if (bookingState.checkInDate) {
+            setCheckInDate(bookingState.checkInDate)
+            const startDate = parseYYYYMMDD(bookingState.checkInDate)
+
+            if (bookingState.checkOutDate) {
+              setCheckOutDate(bookingState.checkOutDate)
+              const endDate = parseYYYYMMDD(bookingState.checkOutDate)
+
+              if (startDate && endDate) {
+                setDateRange([
+                  {
+                    startDate,
+                    endDate,
+                    key: "selection",
+                  },
+                ])
+              }
+            }
+          }
+
+          // Restore guest count
+          if (bookingState.adults) setAdults(bookingState.adults)
+          if (bookingState.children) setChildren(bookingState.children)
+          if (bookingState.infants) setInfants(bookingState.infants)
+
+          // Restore booking step
+          if (bookingState.bookingStep) setBookingStep(bookingState.bookingStep)
+
+          // Clear saved state after restoring
+          localStorage.removeItem("pendingBooking")
+
+          // Show success message
+          Swal.fire({
+            icon: "success",
+            title: "Welcome Back!",
+            text: "Your booking details have been restored.",
+            timer: 2000,
+            showConfirmButton: false,
+          })
+        }
+      }
+    } catch (error) {
+      console.error("Error restoring booking state:", error)
+    }
+  }
+
+  // Check for auth changes to potentially restore booking state
+  useEffect(() => {
+    if (isSignedIn && !loading && villa) {
+      restoreBookingState()
+    }
+  }, [isSignedIn, loading, villa])
 
   const facilities =
     villa?.amenities?.map((amenity) => ({
@@ -706,7 +1074,6 @@ const VillaDetail = () => {
     const styleSheet = document.createElement("style")
     styleSheet.textContent = animationStyles
     document.head.appendChild(styleSheet)
-
     return () => {
       if (document.head.contains(styleSheet)) {
         document.head.removeChild(styleSheet)
@@ -794,6 +1161,54 @@ const VillaDetail = () => {
     )
   }
 
+  // Maps for villa locations
+  const villaLocationMaps = {
+    // Chennai locations
+    "Amrith Palace":
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d497511.2313083493!2d79.92235835!3d13.048160899999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5265ea4f7d3361%3A0x6e61a70b6863d433!2sChennai%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1703123456789!5m2!1sen!2sin",
+    "Ram Water Villa":
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d497511.2313083493!2d79.92235835!3d13.048160899999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5265ea4f7d3361%3A0x6e61a70b6863d433!2sChennai%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1703123456789!5m2!1sen!2sin",
+
+    // Mahabalipuram location
+    "East Coast Villa":
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.0508553307337!2d80.1922800751949!3d12.626603124726253!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a53abe2da38b4e3%3A0xfb6fec132bad1c1e!2sMahabalipuram%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1703123456790!5m2!1sen!2sin",
+
+    // Pondicherry locations
+    "Lavis Villa":
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62560.77864823462!2d79.78733527341074!3d11.934145785286691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5361ab8e49cfcf%3A0xcc6bd326d2f0b04e!2sPuducherry!5e0!3m2!1sen!2sin!4v1703123456791!5m2!1sen!2sin",
+    "Empire Anand Villa Samudra":
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62560.77864823462!2d79.78733527341074!3d11.934145785286691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5361ab8e49cfcf%3A0xcc6bd326d2f0b04e!2sPuducherry!5e0!3m2!1sen!2sin!4v1703123456791!5m2!1sen!2sin",
+  }
+
+  // Location map based on city name
+  const locationMaps = {
+    Chennai:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d497511.2313083493!2d79.92235835!3d13.048160899999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5265ea4f7d3361%3A0x6e61a70b6863d433!2sChennai%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1703123456789!5m2!1sen!2sin",
+    Mahabalipuram:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.0508553307337!2d80.1922800751949!3d12.626603124726253!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a53abe2da38b4e3%3A0xfb6fec132bad1c1e!2sMahabalipuram%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1703123456790!5m2!1sen!2sin",
+    Pondicherry:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62560.77864823462!2d79.78733527341074!3d11.934145785286691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5361ab8e49cfcf%3A0xcc6bd326d2f0b04e!2sPuducherry!5e0!3m2!1sen!2sin!4v1703123456791!5m2!1sen!2sin",
+  }
+
+  // Helper function to get the correct map URL
+  const getVillaMapURL = (villaName, location) => {
+    // First try to match by exact villa name
+    if (villaLocationMaps[villaName]) {
+      return villaLocationMaps[villaName]
+    }
+
+    // Otherwise, try to match by location
+    // Check if location contains any of our city names
+    for (const city of Object.keys(locationMaps)) {
+      if (location && location.includes(city)) {
+        return locationMaps[city]
+      }
+    }
+
+    // If all else fails, default to Chennai
+    return locationMaps["Chennai"]
+  }
+
   // Return the component JSX (main content)
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50 pt-16 sm:pt-20 md:pt-24 relative overflow-hidden">
@@ -872,13 +1287,16 @@ const VillaDetail = () => {
           {/* Main Image - Larger and more prominent */}
           <div className="col-span-1 lg:col-span-2 relative group h-80 lg:h-full">
             <img
-              src={villa.images[currentImageIndex] || villa.images[0]}
+              src={villa.images[currentImageIndex] || villa.images[0] || empireAnandVillaSamudraImages[0]}
               alt={villa.name}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               style={{ boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.15)" }}
+              onError={(e) => {
+                // If image fails to load, try a fallback image
+                e.target.src = empireAnandVillaSamudraImages[0]
+              }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
             {/* Navigation Arrows - Enhanced for better visibility */}
             <button
               onClick={prevImage}
@@ -894,7 +1312,6 @@ const VillaDetail = () => {
             >
               <ChevronRight className="h-5 w-5 text-gray-700" />
             </button>
-
             {/* Image Counter - Better styling */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-sm px-4 py-2 rounded-full backdrop-blur-sm font-medium">
               {currentImageIndex + 1} / {villa.images.length}
@@ -917,7 +1334,6 @@ const VillaDetail = () => {
                   className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
                 {/* Overlay for last image if more photos available */}
                 {index === 3 && villa.images.length > 5 && (
                   <div className="absolute inset-0 bg-black/60 flex items-center justify-center transition-all duration-300 group-hover:bg-black/40">
@@ -978,19 +1394,19 @@ const VillaDetail = () => {
                 📍 View on Map
               </button>
             </div>
+          </div>
 
-            {/* Rating Section */}
-            <div className="flex items-center gap-4 mb-6 sm:mb-8">
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 sm:h-5 sm:w-5 ${i < Math.floor(villa.rating || 4.5) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
-                  />
-                ))}
-                <span className="text-gray-700 font-semibold ml-2">{villa.rating || 4.5}</span>
-                <span className="text-gray-500 text-sm">({Math.floor(Math.random() * 50) + 20} reviews)</span>
-              </div>
+          {/* Rating Section */}
+          <div className="flex items-center gap-4 mb-6 sm:mb-8">
+            <div className="flex items-center gap-1">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`h-4 w-4 sm:h-5 sm:w-5 ${i < Math.floor(villa.rating || 4.5) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                />
+              ))}
+              <span className="text-gray-700 font-semibold ml-2">{villa.rating || 4.5}</span>
+              <span className="text-gray-500 text-sm">({Math.floor(Math.random() * 50) + 20} reviews)</span>
             </div>
           </div>
 
@@ -1056,7 +1472,9 @@ const VillaDetail = () => {
             <h2 className="text-3xl font-semibold text-gray-900 mb-6">Overview</h2>
             <div className="text-gray-700 leading-relaxed text-lg">
               <p className="mb-6">
-                {showFullDescription ? villa.description : villa.description?.substring(0, 200) + "..."}
+                {showFullDescription
+                  ? villa.longDescription || villa.description
+                  : (villa.longDescription || villa.description)?.substring(0, 200) + "..."}
               </p>
               <button
                 onClick={() => setShowFullDescription(!showFullDescription)}
@@ -1100,14 +1518,14 @@ const VillaDetail = () => {
             <h2 className="text-3xl font-semibold text-gray-900 mb-8">Where you'll be</h2>
             <div className="rounded-2xl overflow-hidden h-80 shadow-xl hover:shadow-2xl transition-shadow duration-500">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d497511.2313083493!2d79.92235835!3d13.048160899999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5265ea4f7d3361%3A0x6e61a70b6863d433!2sChennai%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1703123456789!5m2!1sen!2sin"
+                src={getVillaMapURL(villa.name, villa.location)}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Location Map"
+                title={`Map showing ${villa.name} location in ${villa.location}`}
               ></iframe>
             </div>
             <div className="flex items-center gap-3 mt-4 text-gray-600">
@@ -1207,6 +1625,87 @@ const VillaDetail = () => {
               </div>
             )}
           </div>
+
+          {/* Nearby Attractions Section */}
+          {villa.nearbyAttractions && villa.nearbyAttractions.length > 0 && (
+            <div className="mb-10 animate-fadeInUp">
+              <h2 className="text-3xl font-semibold text-gray-900 mb-6">Nearby Attractions</h2>
+              <ul className="space-y-3">
+                {villa.nearbyAttractions.map((attraction, index) => (
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 bg-gray-50 p-4 rounded-xl hover:bg-gray-100 transition-colors"
+                  >
+                    <MapPin className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-800">{attraction}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Event Information Section */}
+          {villa.events && (
+            <div className="mb-10 animate-fadeInUp">
+              <h2 className="text-3xl font-semibold text-gray-900 mb-6">Events</h2>
+              <div className="bg-white rounded-2xl p-6 border-2 border-gray-100 hover:border-green-200 hover:shadow-lg transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center shadow-sm border border-green-100">
+                    <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-lg">Event Friendly Villa</h3>
+                    <p className="text-gray-600 mt-1">
+                      This villa is suitable for hosting events. {villa.eventPricing && `${villa.eventPricing}.`}
+                    </p>
+                    {villa.maxGuests && villa.guests && villa.maxGuests > villa.guests && (
+                      <div className="mt-3 bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+                        <p className="text-sm text-yellow-700">
+                          <span className="font-medium">Note:</span> While the villa accommodates {villa.guests} guests
+                          for overnight stays, events can host up to {villa.maxGuests} people. Additional charges may
+                          apply.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Security Deposit Information */}
+          {villa.securityDeposit && (
+            <div className="mb-10 animate-fadeInUp">
+              <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-blue-100 rounded-full">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Security Deposit</h3>
+                    <p className="text-gray-600 text-sm">
+                      A refundable security deposit of ₹{villa.securityDeposit.toLocaleString()} will be collected at
+                      the time of booking.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Enhanced Timeline Booking Sidebar - Increased Width */}
@@ -1269,7 +1768,6 @@ const VillaDetail = () => {
                           ? "Review and complete your booking"
                           : "Thank you for choosing us!"}
                   </p>
-
                   {/* User Authentication Status */}
                   {isSignedIn && userData && (
                     <div className="mt-2 flex items-center justify-center text-xs text-green-600 bg-green-50 rounded-full px-3 py-1">
@@ -1289,6 +1787,22 @@ const VillaDetail = () => {
                     ₹ {villa.price.toLocaleString()}
                     <span className="text-xs sm:text-sm font-normal text-gray-600 ml-1">/ night</span>
                   </div>
+                  {(villa.weekdayPrice || villa.weekendPrice) && (
+                    <div className="flex justify-center gap-4 mt-2 text-sm">
+                      {villa.weekdayPrice && (
+                        <div>
+                          <span className="text-gray-600">Weekdays:</span>
+                          <span className="font-medium ml-1">₹{villa.weekdayPrice.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {villa.weekendPrice && (
+                        <div>
+                          <span className="text-gray-600">Weekends:</span>
+                          <span className="font-medium ml-1">₹{villa.weekendPrice.toLocaleString()}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <div className="text-xs text-gray-500">Min. stay: 1 night</div>
                 </div>
 
@@ -1315,7 +1829,6 @@ const VillaDetail = () => {
                           )}
                         </div>
                       </div>
-
                       <div className="bg-white border-2 border-gray-200 rounded-xl p-3 sm:p-4 hover:border-green-300 transition-all duration-300 min-h-[4rem] touch-manipulation">
                         <div className="text-xs text-gray-500 mb-1 font-medium">Check-out</div>
                         <div className="font-semibold text-gray-800 flex items-center">
@@ -1375,7 +1888,7 @@ const VillaDetail = () => {
                           ))}
                         </div>
 
-                        {/* Calendar Grid with Cleaner Date Boxes */}
+                        {/* Calendar Grid with Enhanced Date Boxes */}
                         <div className="grid grid-cols-7 gap-2">
                           {(() => {
                             const year = currentCalendarMonth.getFullYear()
@@ -1388,40 +1901,60 @@ const VillaDetail = () => {
                             for (let i = 0; i < 42; i++) {
                               const currentDate = new Date(startDate)
                               currentDate.setDate(startDate.getDate() + i)
+                              // Set to noon to avoid timezone issues
+                              currentDate.setHours(12, 0, 0, 0)
                               days.push(currentDate)
                             }
 
                             return days.map((currentDate, index) => {
                               const today = new Date()
+                              today.setHours(0, 0, 0, 0)
+
                               const isCurrentMonth = currentDate.getMonth() === month
                               const isToday = currentDate.toDateString() === today.toDateString()
                               const isPast = currentDate < today && !isToday
-                              const isSelected =
+
+                              // Fix: Ensure we're comparing dates properly by using the formatted string
+                              const currentDateStr = formatDateToYYYYMMDD(currentDate)
+                              const isCheckIn = checkInDate === currentDateStr
+                              const isCheckOut = checkOutDate === currentDateStr
+
+                              const isInRange =
                                 checkInDate &&
                                 checkOutDate &&
-                                currentDate >= new Date(checkInDate) &&
-                                currentDate <= new Date(checkOutDate)
-                              const isCheckIn =
-                                checkInDate && currentDate.toDateString() === new Date(checkInDate).toDateString()
-                              const isCheckOut =
-                                checkOutDate && currentDate.toDateString() === new Date(checkOutDate).toDateString()
+                                currentDateStr >= checkInDate &&
+                                currentDateStr <= checkOutDate
+
+                              const isFirstDayOfMonth = currentDate.getDate() === 1
 
                               return (
                                 <div
                                   key={`${currentDate.getTime()}-${index}`}
                                   className={`
+                                    relative
                                     ${isCurrentMonth ? "" : "opacity-40"}
-                                    ${isPast ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}
-                                    ${isSelected ? "bg-green-200 text-green-900" : ""}
-                                    ${isCheckIn ? "bg-green-600 text-white font-bold border-2 border-green-700" : ""}
-                                    ${isCheckOut ? "bg-blue-600 text-white font-bold border-2 border-blue-700" : ""}
-                                    flex flex-col items-center justify-center rounded-lg cursor-pointer min-h-[40px] sm:min-h-[48px] transition-all duration-200 select-none
+                                    ${
+                                      isPast
+                                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                        : isCheckIn
+                                          ? "bg-green-600 text-white font-bold border-2 border-green-700 shadow-lg"
+                                          : isCheckOut
+                                            ? "bg-blue-600 text-white font-bold border-2 border-blue-700 shadow-lg"
+                                            : isInRange
+                                              ? "bg-green-100 text-green-800 hover:bg-green-200"
+                                              : "hover:bg-gray-100 hover:scale-105"
+                                    }
+                                    flex flex-col items-center justify-center rounded-lg cursor-pointer 
+                                    min-h-[42px] sm:min-h-[48px] transition-all duration-200 select-none
+                                    ${isToday && !isCheckIn && !isCheckOut ? "ring-2 ring-green-500 ring-offset-1" : ""}
                                   `}
                                   onClick={() => {
                                     if (isPast) return
-                                    const dateStr = currentDate.toISOString().split("T")[0]
+
+                                    // Improved date selection logic
                                     if (!checkInDate || (checkInDate && checkOutDate)) {
-                                      setCheckInDate(dateStr)
+                                      const newStartDate = formatDateToYYYYMMDD(currentDate)
+                                      setCheckInDate(newStartDate)
                                       setCheckOutDate("")
                                       setDateRange([
                                         {
@@ -1431,12 +1964,24 @@ const VillaDetail = () => {
                                         },
                                       ])
                                     } else if (checkInDate && !checkOutDate) {
-                                      if (currentDate > new Date(checkInDate)) {
-                                        setCheckOutDate(dateStr)
+                                      // Compare using the formatted date string
+                                      if (currentDateStr > checkInDate) {
+                                        setCheckOutDate(currentDateStr)
                                         setDateRange([
                                           {
-                                            startDate: new Date(checkInDate),
+                                            startDate: parseYYYYMMDD(checkInDate),
                                             endDate: currentDate,
+                                            key: "selection",
+                                          },
+                                        ])
+                                      } else if (currentDateStr < checkInDate) {
+                                        // If clicked date is before check-in, swap them
+                                        setCheckOutDate(checkInDate)
+                                        setCheckInDate(currentDateStr)
+                                        setDateRange([
+                                          {
+                                            startDate: currentDate,
+                                            endDate: parseYYYYMMDD(checkInDate),
                                             key: "selection",
                                           },
                                         ])
@@ -1444,20 +1989,35 @@ const VillaDetail = () => {
                                     }
                                   }}
                                 >
-                                  {/* Date Number Only */}
+                                  {/* Month indicator for first day of month */}
+                                  {isFirstDayOfMonth && isCurrentMonth && (
+                                    <div className="absolute -top-7 text-xs font-medium text-gray-500">
+                                      {currentDate.toLocaleString("default", { month: "short" })}
+                                    </div>
+                                  )}
+
+                                  {/* Date Number with Enhanced Styling */}
                                   <div
-                                    className="text-lg font-bold"
-                                    style={{
-                                      color:
+                                    className={`
+                                      text-lg font-medium flex items-center justify-center
+                                      ${
                                         isCheckIn || isCheckOut
-                                          ? "white"
-                                          : isToday && !isCheckIn && !isCheckOut
-                                            ? "#16a34a"
-                                            : "#111827",
-                                    }}
+                                          ? "text-white"
+                                          : isToday
+                                            ? "text-green-600 font-bold"
+                                            : "text-gray-800"
+                                      }
+                                      ${isInRange && !isCheckIn && !isCheckOut ? "bg-green-100 rounded-full w-10 h-10" : ""}
+                                      transition-all duration-300
+                                    `}
                                   >
                                     {currentDate.getDate()}
                                   </div>
+
+                                  {/* Small indicator for today */}
+                                  {isToday && !isCheckIn && !isCheckOut && (
+                                    <div className="absolute -bottom-1 w-1 h-1 rounded-full bg-green-500"></div>
+                                  )}
                                 </div>
                               )
                             })
@@ -1478,30 +2038,42 @@ const VillaDetail = () => {
                           </div>
                         </div>
 
-                        {/* Selected Dates Summary */}
+                        {/* Selected Dates Summary - Enhanced Design */}
                         {checkInDate && checkOutDate && (
-                          <div className="mt-4 pt-3 border-t border-gray-100 bg-green-50 rounded-lg p-3">
-                            <div className="flex items-center justify-between text-sm">
+                          <div className="mt-4 pt-3 border-t border-gray-100 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 shadow-inner">
+                            <div className="flex items-center justify-between text-sm mb-2">
                               <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 bg-green-600 rounded-full"></div>
-                                <span className="font-medium text-gray-700">Selected Dates</span>
+                                <div className="w-3 h-3 bg-gradient-to-br from-green-500 to-green-600 rounded-full"></div>
+                                <span className="font-medium text-gray-800">Your Stay</span>
                               </div>
-                              <span className="text-green-600 font-bold">
+                              <span className="text-green-600 font-bold px-2 py-1 bg-green-100 rounded-lg">
                                 {totalDays} night{totalDays > 1 ? "s" : ""}
                               </span>
                             </div>
-                            <div className="text-sm text-gray-600 mt-2 font-medium">
-                              {new Date(checkInDate).toLocaleDateString("en-IN", {
-                                weekday: "long",
-                                month: "long",
-                                day: "numeric",
-                              })}{" "}
-                              →{" "}
-                              {new Date(checkOutDate).toLocaleDateString("en-IN", {
-                                weekday: "long",
-                                month: "long",
-                                day: "numeric",
-                              })}
+                            <div className="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm mt-2">
+                              <div className="text-gray-800">
+                                <div className="text-xs text-gray-500 mb-1 font-medium">Check-in</div>
+                                <div className="font-semibold">
+                                  {checkInDate &&
+                                    new Date(checkInDate).toLocaleDateString("en-IN", {
+                                      weekday: "short",
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                </div>
+                              </div>
+                              <div className="border-t-2 border-dashed border-gray-300 w-12 mx-1"></div>
+                              <div className="text-right text-gray-800">
+                                <div className="text-xs text-gray-500 mb-1 font-medium">Check-out</div>
+                                <div className="font-semibold">
+                                  {checkOutDate &&
+                                    new Date(checkOutDate).toLocaleDateString("en-IN", {
+                                      weekday: "short",
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                </div>
+                              </div>
                             </div>
                           </div>
                         )}
@@ -1516,12 +2088,11 @@ const VillaDetail = () => {
                     <div className="bg-green-50 rounded-xl p-4 border border-green-100">
                       <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
                         <svg className="w-5 h-5 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18  8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                          <path d="M13 6a3 3 0  11-6 0 016 0zM18  8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
                         </svg>
                         How many guests?
                       </h4>
                       <p className="text-sm text-gray-600 mb-4">Maximum {villa.guests} guests allowed</p>
-
                       {/* Adults */}
                       <div className="guest-counter flex items-center justify-between mb-4 p-4 rounded-lg">
                         <div>
@@ -1660,7 +2231,6 @@ const VillaDetail = () => {
                   <div className="animate-fadeInUp space-y-4">
                     <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
                       <h4 className="font-semibold text-gray-900 mb-3">Booking Summary</h4>
-
                       <div className="space-y-3 text-sm">
                         <div className="flex justify-between">
                           <span className="text-gray-600">Dates:</span>
@@ -1740,7 +2310,6 @@ const VillaDetail = () => {
                       Previous
                     </button>
                   )}
-
                   <button
                     onClick={() => {
                       if (bookingStep < 3) {
@@ -1822,7 +2391,6 @@ const VillaDetail = () => {
                       Review your booking details and confirm
                     </p>
                   )}
-
                   {/* Success Step */}
                   {bookingStep === 5 && (
                     <div className="text-center animate-fadeIn">
@@ -1860,4 +2428,5 @@ const VillaDetail = () => {
     </div>
   )
 }
+
 export default VillaDetail

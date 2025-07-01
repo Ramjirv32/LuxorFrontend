@@ -18,8 +18,8 @@ const OTPVerification = () => {
   const { setAuthToken, setUserData } = useAuth();
   
   // Get user data from location state
-  const { email, name, password, isLogin } = location.state || {};
-
+  const { phoneNumber, name, isLogin } = location.state || {};
+  
   // Initialize AOS
   useEffect(() => {
     AOS.init({
@@ -60,233 +60,241 @@ const OTPVerification = () => {
     
     // Auto-focus next input
     if (value !== '' && index < 5) {
-      document.getElementById(`otp-input-${index + 1}`).focus();
+      const nextInput = document.getElementById(`otp-input-${index + 1}`);
+      if (nextInput) nextInput.focus();
     }
   };
   
-  // Handle key press
+  // Handle backspace key to focus previous input
   const handleKeyDown = (index, e) => {
     if (e.key === 'Backspace' && index > 0 && !otp[index]) {
-      // Focus previous input when backspace is pressed on an empty input
-      document.getElementById(`otp-input-${index - 1}`).focus();
-    } else if (e.key === 'ArrowLeft' && index > 0) {
-      document.getElementById(`otp-input-${index - 1}`).focus();
-    } else if (e.key === 'ArrowRight' && index < 5) {
-      document.getElementById(`otp-input-${index + 1}`).focus();
+      const prevInput = document.getElementById(`otp-input-${index - 1}`);
+      if (prevInput) prevInput.focus();
     }
   };
   
-  // Paste OTP from clipboard
+  // Handle paste for OTP
   const handlePaste = (e) => {
     e.preventDefault();
-    const pasteData = e.clipboardData.getData('text').slice(0, 6).split('');
+    const pastedData = e.clipboardData.getData('text/plain').trim();
     
-    if (pasteData.length === 0 || !/^\d+$/.test(pasteData.join(''))) return;
-    
-    const newOTP = [...otp];
-    pasteData.forEach((value, index) => {
-      if (index < 6) newOTP[index] = value;
-    });
-    
-    setOTP(newOTP);
-    
-    // Focus the next empty input or the last input
-    const nextEmptyIndex = newOTP.findIndex(val => val === '');
-    if (nextEmptyIndex !== -1) {
-      document.getElementById(`otp-input-${nextEmptyIndex}`).focus();
-    } else {
-      document.getElementById('otp-input-5').focus();
+    if (/^\d{6}$/.test(pastedData)) {
+      const newOTP = pastedData.split('').slice(0, 6);
+      setOTP(newOTP);
+      
+      // Focus the last input
+      const lastInput = document.getElementById('otp-input-5');
+      if (lastInput) lastInput.focus();
     }
   };
   
-  // Resend OTP
-  const handleResendOTP = async () => {
-    if (resendDisabled) return;
+  // Handle OTP verification
+  const verifyOTP = async (e) => {
+    if (e) e.preventDefault();
+    
+    setLoading(true);
+    setError('');
     
     try {
-      setLoading(true);
-      setError('');
+      // Get the full OTP string
+      const otpString = otp.join('');
       
-      const endpoint = isLogin ? 'send-login-otp' : 'send-registration-otp';
+      if (otpString.length !== 6) {
+        throw new Error('Please enter the complete 6-digit OTP');
+      }
       
-      const response = await fetch(`${API_BASE_URL}/api/auth/${endpoint}`, {
+      // Get the confirmation result from session storage
+      const confirmationResultString = sessionStorage.getItem('confirmationResult');
+      if (!confirmationResultString) {
+        throw new Error('Session expired. Please request a new OTP');
+      }
+      
+      // Try to verify the OTP with Firebase
+      try {
+        // For security reasons, we can't directly stringify/parse the confirmationResult object
+        // Instead, we'll make a request to our backend with the verificationId and OTP code
+        const storedPhoneNumber = sessionStorage.getItem('phoneNumber');
+        
+        // Send verification request to backend
+        const response = await fetch(`${API_BASE_URL}/api/auth/verify-phone-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            phoneNumber: storedPhoneNumber || phoneNumber,
+            otp: otpString,
+            name: name,
+            isNewUser: !isLogin
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to verify OTP');
+        }
+        
+        // Store authentication data
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('userId', data.user._id);
+        localStorage.setItem('userEmail', data.user.email || data.user.phoneNumber);
+        
+        // Update context
+        setAuthToken(data.token);
+        setUserData(data.user);
+        
+        // Show success message
+        setSuccess('Phone number verified successfully!');
+        
+        // Clear session storage
+        sessionStorage.removeItem('confirmationResult');
+        sessionStorage.removeItem('phoneNumber');
+        
+        // Redirect after delay
+        setTimeout(() => {
+          // Check if there's a pending booking
+          const pendingBooking = localStorage.getItem('pendingBooking');
+          if (pendingBooking) {
+            try {
+              const bookingData = JSON.parse(pendingBooking);
+              if (bookingData.returnUrl) {
+                navigate(bookingData.returnUrl);
+                return;
+              } else if (bookingData.villaId) {
+                navigate(`/villas/${bookingData.villaId}`);
+                return;
+              }
+            } catch (error) {
+              console.error("Error parsing pending booking:", error);
+            }
+          }
+          navigate('/');
+        }, 2000);
+        
+      } catch (firebaseError) {
+        console.error("Firebase verification error:", firebaseError);
+        throw new Error('Invalid OTP. Please check and try again.');
+      }
+      
+    } catch (error) {
+      console.error('OTP verification error:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Handle resend OTP
+  const resendOTP = async () => {
+    if (resendDisabled) return;
+    
+    setLoading(true);
+    setError('');
+    setResendDisabled(true);
+    
+    try {
+      // Make API call to resend OTP
+      const response = await fetch(`${API_BASE_URL}/api/auth/resend-otp`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber })
       });
       
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to resend OTP');
+        throw new Error(data.message || 'Failed to resend OTP');
       }
       
-      setSuccess('OTP resent successfully!');
-      setTimer(120); // Reset timer
-      setResendDisabled(true);
+      // Reset timer and OTP inputs
+      setTimer(120);
+      setOTP(['', '', '', '', '', '']);
+      
+      // Focus first input
+      const firstInput = document.getElementById('otp-input-0');
+      if (firstInput) firstInput.focus();
+      
+      setSuccess('OTP sent successfully!');
       
       // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccess('');
       }, 3000);
-    } catch (err) {
-      setError(err.message || 'Something went wrong');
+      
+    } catch (error) {
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
-  
-  // Submit OTP
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Validate OTP
-    const otpValue = otp.join('');
-    if (otpValue.length !== 6) {
-      setError('Please enter all 6 digits');
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      setError('');
-      
-      const endpoint = isLogin ? 'verify-login' : 'verify-register';
-      const body = isLogin 
-        ? { email, otp: otpValue }
-        : { name, email, password, otp: otpValue };
-      
-      const response = await fetch(`${API_BASE_URL}/api/auth/${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Verification failed');
-      }
-      
-      // Save authentication data
-      if (data.token && data.user) {
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('userId', data.user._id || data.user.id);
-        localStorage.setItem('userEmail', data.user.email);
-        
-        setAuthToken(data.token);
-        setUserData(data.user);
-        
-        setSuccess(isLogin ? 'Login successful!' : 'Registration successful!');
-        
-        // Redirect to homepage after short delay
-        setTimeout(() => {
-          navigate('/', { replace: true });
-        }, 1500);
-      } else {
-        throw new Error('Invalid response from server');
-      }
-    } catch (err) {
-      setError(err.message || 'Verification failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  // Redirect if no email in state
-  useEffect(() => {
-    if (!email) {
-      navigate('/sign-in', { replace: true });
-    }
-  }, [email, navigate]);
-  
-  // If no email, show nothing while redirecting
-  if (!email) {
-    return null;
-  }
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-emerald-50 px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50 flex items-center justify-center px-4 py-20">
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
         <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{animationDelay: '2s'}}></div>
+        <div className="absolute -bottom-8 left-40 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{animationDelay: '4s'}}></div>
       </div>
       
-      <div className="w-full max-w-md" data-aos="zoom-in">
-        <div className="bg-white p-8 rounded-2xl shadow-xl">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Verify Your Email</h2>
-            <p className="mt-2 text-gray-600">
-              We've sent a 6-digit code to <span className="font-medium">{email}</span>
-            </p>
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8" data-aos="fade-up">
+        <div className="text-center mb-8">
+          <div className="mb-6 inline-flex p-4 bg-emerald-100 rounded-full">
+            <svg className="h-8 w-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Verify Your Phone</h2>
+          <p className="text-gray-600">
+            We've sent a verification code to<br />
+            <span className="font-medium text-gray-900">{phoneNumber}</span>
+          </p>
+        </div>
+        
+        {error && (
+          <div className="mb-6 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded" data-aos="fade-up">
+            <p className="font-medium">Error</p>
+            <p className="text-sm">{error}</p>
+          </div>
+        )}
+        
+        {success && (
+          <div className="mb-6 p-3 bg-green-50 border-l-4 border-green-500 text-green-700 rounded" data-aos="fade-up">
+            <p className="font-medium">Success</p>
+            <p className="text-sm">{success}</p>
+          </div>
+        )}
+        
+        <form onSubmit={verifyOTP}>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2 text-center">
+              Enter 6-digit code
+            </label>
+            <div className="flex justify-between gap-2">
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  id={`otp-input-${index}`}
+                  type="text"
+                  maxLength="1"
+                  value={digit}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  onPaste={index === 0 ? handlePaste : undefined}
+                  className="w-12 h-12 text-center text-xl font-semibold border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  autoFocus={index === 0}
+                />
+              ))}
+            </div>
           </div>
           
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
-              <p className="font-medium">Error</p>
-              <p className="text-sm">{error}</p>
-            </div>
-          )}
-          
-          {success && (
-            <div className="mb-4 p-3 bg-green-50 border-l-4 border-green-500 text-green-700 rounded">
-              <p className="font-medium">Success</p>
-              <p className="text-sm">{success}</p>
-            </div>
-          )}
-          
-          <form onSubmit={handleSubmit}>
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Enter Verification Code
-              </label>
-              <div className="flex justify-between gap-2">
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    id={`otp-input-${index}`}
-                    type="text"
-                    maxLength="1"
-                    value={digit}
-                    onChange={(e) => handleChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    onPaste={index === 0 ? handlePaste : undefined}
-                    className="w-12 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    autoFocus={index === 0}
-                  />
-                ))}
-              </div>
-              <p className="mt-3 text-sm text-gray-500 text-center">
-                Didn't receive the code?{' '}
-                <button 
-                  type="button"
-                  onClick={handleResendOTP}
-                  disabled={resendDisabled || loading}
-                  className={`${
-                    resendDisabled 
-                    ? 'text-gray-400 cursor-not-allowed' 
-                    : 'text-emerald-600 hover:text-emerald-500'
-                  } font-medium transition-colors`}
-                >
-                  {resendDisabled ? `Resend in ${formatTime(timer)}` : 'Resend OTP'}
-                </button>
-              </p>
-            </div>
-            
+          <div className="flex flex-col gap-4">
             <button
               type="submit"
-              disabled={loading || otp.some(d => d === '')}
-              className={`w-full py-3 rounded-lg text-white font-medium transition-all duration-300 ${
+              className={`w-full py-3 px-4 rounded-lg text-white font-medium transition-all duration-300 ${
                 loading 
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : otp.some(d => d === '')
-                  ? 'bg-emerald-400 opacity-70 cursor-not-allowed'
-                  : 'bg-emerald-600 hover:bg-emerald-700 focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-lg hover:shadow-xl'
+                : 'bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-lg hover:shadow-xl'
               }`}
+              disabled={loading || otp.some(digit => !digit)}
             >
               {loading ? (
                 <div className="flex items-center justify-center">
@@ -297,20 +305,39 @@ const OTPVerification = () => {
                   Verifying...
                 </div>
               ) : (
-                'Verify & Continue'
+                'Verify OTP'
               )}
             </button>
-          </form>
-          
-          <div className="mt-6 text-center">
-            <button 
-              onClick={() => navigate('/sign-in')} 
-              className="text-sm text-gray-600 hover:text-emerald-600 transition-colors"
-            >
-              Go back to login
-            </button>
+            
+            <div className="text-center">
+              <p className="text-sm text-gray-600 mb-2">
+                Didn't receive the code? {timer > 0 && `(${formatTime(timer)})`}
+              </p>
+              <button
+                type="button"
+                onClick={resendOTP}
+                disabled={resendDisabled || loading}
+                className={`text-sm font-medium ${
+                  resendDisabled 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-emerald-600 hover:text-emerald-500'
+                }`}
+              >
+                Resend OTP
+              </button>
+            </div>
+            
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => navigate('/sign-in')}
+                className="text-sm font-medium text-gray-600 hover:text-gray-800"
+              >
+                Back to Sign In
+              </button>
+            </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

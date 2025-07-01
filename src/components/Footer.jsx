@@ -16,7 +16,7 @@ const Footer = () => {
   };
 
   return (
-    <div className='bg-[#F6F9FC] text-gray-500/80 pt-8 px-6 md:px-16 lg:px-24 xl:px-32'>
+    <footer className='bg-[#F6F9FC] text-gray-500/80 pt-8 px-6 md:px-16 lg:px-24 xl:px-32' data-component="footer">
             <div className='flex flex-wrap justify-between gap-12 md:gap-6'>
                 <div className='max-w-80'>
                     <img src={assets.logo} alt="logo" className='mb-4 h-8 md:h-9 ' />
@@ -88,7 +88,7 @@ const Footer = () => {
                     <li><a href="#">Sitemap</a></li>
                 </ul>
             </div>
-        </div>
+        </footer>
   )
 }
 

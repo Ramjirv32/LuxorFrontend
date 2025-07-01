@@ -3,13 +3,23 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, MapPin, Star, Heart } from 'lucide-react'
 import { API_BASE_URL } from '../config/api'
 import { useNavigate } from "react-router-dom"
+import Amrith from "/AmrithPalace/AP8.jpg"
+import Anand from "/empireanandvillasamudra/anandvilla1.jpg"
+import lv1 from "/LavishVilla 1/lvone18.jpg"
 
-// Unsplash images to use randomly
+import lv2 from "/LavishVilla 2/lvtwo22.jpg"
+import lv3 from "/LavishVilla 3/lvthree6.jpg"
+import Ramwater from "/ramwatervilla/RW8.jpg"
+import Eastcoast from "/eastcoastvilla/EC2.jpg"
+
 const unsplashImages = [
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80",
+  lv3,
+  lv2,
+  Amrith,
+  Anand,
+  lv1,
+  
   "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  "https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
   "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
 ];
 
@@ -65,8 +75,8 @@ export const FeaturedDestination = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      nextSlide()
-    }, 5000)
+      nextSlide();
+    }, 7000); // Change interval to 7 seconds
     return () => clearInterval(interval)
   }, [properties.length])
 
@@ -78,6 +88,16 @@ export const FeaturedDestination = () => {
       return () => clearTimeout(timer)
     }
   }, [showSwipeHint])
+
+  // Map villa names to their respective image collections
+  const villaImageMap = {
+    "Lavish Villa III": lv3,
+    "Lavish Villa II": lv2,
+    "Lavish Villa I": lv1,
+    "Amrith Palace": Amrith,
+    "Ram Water Villa": Ramwater,
+    "East Coast Villa": Eastcoast,
+  };
 
   // Fetch properties from backend
   useEffect(() => {
@@ -98,9 +118,9 @@ export const FeaturedDestination = () => {
           rooms: villa.bedrooms || 3,
           baths: villa.bathrooms || villa.bedrooms || 3,
           price: villa.price ? `₹${villa.price.toLocaleString()}` : "₹12,000",
-          image: getRandomUnsplash(),
+          image: villaImageMap[villa.name] || villa.images?.[0] || getRandomUnsplash(),
           bestRated: Math.random() > 0.5,
-          category: villa.location?.split(",")[1]?.trim() || "All"
+          category: villa.location?.split(",")[1]?.trim() || "All",
         }));
         setProperties(data);
       } catch (err) {

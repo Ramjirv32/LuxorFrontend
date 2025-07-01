@@ -52,6 +52,23 @@ export const AuthProvider = ({ children }) => {
     setUserData(null);
   };
 
+  // In the login function, add support for redirection
+  const login = async (email, password) => {
+    // ...existing login logic...
+
+    // After successful login and setting userData/token
+
+    // Check if there's a pending booking to return to
+    const pendingBooking = localStorage.getItem('pendingBooking');
+    if (pendingBooking) {
+      // Don't remove it here - we'll let the VillaDetails component handle it
+      // This ensures the data is available when the component mounts
+      console.log("Found pending booking after login");
+    }
+
+    // ...rest of the function...
+  };
+
   const value = {
     authToken,
     setAuthToken,

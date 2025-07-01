@@ -25,6 +25,9 @@ const Navbar = () => {
     const location = useLocation();
     const { authToken, userData, logout } = useAuth();
     const isSignedIn = !!authToken;
+    
+    // Check if the current user is admin
+    const isAdmin = isSignedIn && userData && userData.email === 'adminluxor331';
 
     // Function to handle navigation with proper scroll behavior
     const handleNavigation = (path) => {
@@ -94,7 +97,7 @@ const Navbar = () => {
                 </div>
             </div>
 
-            {/* Desktop Nav - Updated with handleNavigation and black text */}
+            {/* Desktop Nav - Updated to show Dashboard only for admin */}
             <div className="hidden md:flex items-center gap-4 lg:gap-8 relative z-10">
                 {navLinks.map((link, i) => (
                     <div 
@@ -127,16 +130,20 @@ const Navbar = () => {
                         } h-0.5 w-0 group-hover:w-full transition-all duration-300`} />
                     </div>
                 )}
-                <button 
-                    className={`border px-4 py-1 text-sm font-medium rounded-full cursor-pointer ${
-                        isScrolled 
-                        ? 'text-black border-black hover:bg-black hover:text-white' 
-                        : 'text-black border-black hover:bg-black hover:text-white'
-                    } transition-all relative z-10`} 
-                    onClick={() => handleNavigation('/owner')}
-                >
-                    Dashboard
-                </button>
+                
+                {/* Only show Dashboard button for admin */}
+                {isAdmin && (
+                    <button 
+                        className={`border px-4 py-1 text-sm font-medium rounded-full cursor-pointer ${
+                            isScrolled 
+                            ? 'text-black border-black hover:bg-black hover:text-white' 
+                            : 'text-black border-black hover:bg-black hover:text-white'
+                        } transition-all relative z-10`} 
+                        onClick={() => handleNavigation('/owner')}
+                    >
+                        Dashboard
+                    </button>
+                )}
             </div>
 
             {/* Desktop Right */}
@@ -242,7 +249,7 @@ const Navbar = () => {
                 />
             </div>
 
-            {/* Mobile Menu - Updated with handleNavigation */}
+            {/* Mobile Menu - Updated to show Dashboard only for admin */}
             <div className={`fixed top-0 left-0 w-full h-screen bg-white/95 backdrop-blur-md text-base flex flex-col md:hidden items-center justify-center gap-6 font-medium text-gray-800 transition-all duration-500 z-50 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
                 <button className="absolute top-4 right-4" onClick={() => setIsMenuOpen(false)}>
                     <img src={assets.closeIcon} alt="close-menu" className="h-6.5" />
@@ -267,12 +274,15 @@ const Navbar = () => {
                     </div>
                 )}
 
-                <button 
-                    className="border px-6 py-2 text-sm font-medium rounded-full cursor-pointer hover:bg-black hover:text-white transition-all mt-4" 
-                    onClick={() => handleNavigation('/owner')}
-                >
-                    Dashboard
-                </button>
+                {/* Only show Dashboard button for admin in mobile menu */}
+                {isAdmin && (
+                    <button 
+                        className="border px-6 py-2 text-sm font-medium rounded-full cursor-pointer hover:bg-black hover:text-white transition-all mt-4" 
+                        onClick={() => handleNavigation('/owner')}
+                    >
+                        Dashboard
+                    </button>
+                )}
 
                 {isSignedIn && userData ? (
                     <button 

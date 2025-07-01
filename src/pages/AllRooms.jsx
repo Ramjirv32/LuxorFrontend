@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom"
 import { API_BASE_URL } from "../config/api"
 import Swal from 'sweetalert2'
 
+
 // Custom CSS animations
 const styles = `
   @keyframes fadeInUp {
@@ -213,7 +214,75 @@ import RW17 from "/ramwatervilla/RW17.jpg"
 import RW18 from "/ramwatervilla/RW18.jpg"
 import RW19 from "/ramwatervilla/RW19.jpg"
 
-// Villa image collections
+// LavishVilla 1 (22 images)
+import lvone1 from "/LavishVilla 1/lvone8.jpg";
+import lvone2 from "/LavishVilla 1/lvone2.jpg";
+import lvone3 from "/LavishVilla 1/lvone3.jpg";
+import lvone4 from "/LavishVilla 1/lvone4.jpg";
+import lvone5 from "/LavishVilla 1/lvone5.jpg";
+import lvone6 from "/LavishVilla 1/lvone6.jpg";
+import lvone7 from "/LavishVilla 1/lvone7.jpg";
+import lvone8 from "/LavishVilla 1/lvone8.jpg";
+import lvone9 from "/LavishVilla 1/lvone9.jpg";
+import lvone10 from "/LavishVilla 1/lvone10.jpg";
+import lvone11 from "/LavishVilla 1/lvone11.jpg";
+import lvone12 from "/LavishVilla 1/lvone12.jpg";
+import lvone13 from "/LavishVilla 1/lvone13.jpg";
+import lvone14 from "/LavishVilla 1/lvone14.jpg";
+import lvone15 from "/LavishVilla 1/lvone15.jpg";
+import lvone16 from "/LavishVilla 1/lvone16.jpg";
+import lvone17 from "/LavishVilla 1/lvone17.jpg";
+import lvone18 from "/LavishVilla 1/lvone18.jpg";
+import lvone19 from "/LavishVilla 1/lvone19.jpg";
+import lvone20 from "/LavishVilla 1/lvone20.jpg";
+import lvone21 from "/LavishVilla 1/lvone21.jpg";
+import lvone22 from "/LavishVilla 1/lvone22.jpg";
+
+// LavishVilla 2 (22 images)
+import lvtwo1 from "/LavishVilla 2/lvtwo1.jpg";
+import lvtwo2 from "/LavishVilla 2/lvtwo2.jpg";
+import lvtwo3 from "/LavishVilla 2/lvtwo3.jpg";
+import lvtwo4 from "/LavishVilla 2/lvtwo4.jpg";
+import lvtwo5 from "/LavishVilla 2/lvtwo5.jpg";
+import lvtwo6 from "/LavishVilla 2/lvtwo6.jpg";
+import lvtwo7 from "/LavishVilla 2/lvtwo7.jpg";
+import lvtwo8 from "/LavishVilla 2/lvtwo8.jpg";
+import lvtwo9 from "/LavishVilla 2/lvtwo9.jpg";
+import lvtwo10 from "/LavishVilla 2/lvtwo10.jpg";
+import lvtwo11 from "/LavishVilla 2/lvtwo11.jpg";
+import lvtwo12 from "/LavishVilla 2/lvtwo12.jpg";
+import lvtwo13 from "/LavishVilla 2/lvtwo13.jpg";
+import lvtwo14 from "/LavishVilla 2/lvtwo14.jpg";
+import lvtwo15 from "/LavishVilla 2/lvtwo15.jpg";
+import lvtwo16 from "/LavishVilla 2/lvtwo16.jpg";
+import lvtwo17 from "/LavishVilla 2/lvtwo17.jpg";
+import lvtwo18 from "/LavishVilla 2/lvtwo18.jpg";
+import lvtwo19 from "/LavishVilla 2/lvtwo19.jpg";
+import lvtwo20 from "/LavishVilla 2/lvtwo20.jpg";
+import lvtwo21 from "/LavishVilla 2/lvtwo21.jpg";
+import lvtwo22 from "/LavishVilla 2/lvtwo22.jpg";
+
+// LavishVilla 3 (18 images)
+import lvthree1 from "/LavishVilla 3/lvthree1.jpg";
+import lvthree2 from "/LavishVilla 3/lvthree2.jpg";
+import lvthree3 from "/LavishVilla 3/lvthree3.jpg";
+import lvthree4 from "/LavishVilla 3/lvthree4.jpg";
+import lvthree5 from "/LavishVilla 3/lvthree5.jpg";
+import lvthree6 from "/LavishVilla 3/lvthree6.jpg";
+import lvthree7 from "/LavishVilla 3/lvthree7.jpg";
+import lvthree8 from "/LavishVilla 3/lvthree8.jpg";
+import lvthree9 from "/LavishVilla 3/lvthree9.jpg";
+import lvthree10 from "/LavishVilla 3/lvthree10.jpg";
+import lvthree11 from "/LavishVilla 3/lvthree10.jpg";
+import lvthree12 from "/LavishVilla 3/lvthree12.jpg";
+import lvthree13 from "/LavishVilla 3/lvthree13.jpg";
+import lvthree14 from "/LavishVilla 3/lvthree14.jpg";
+import lvthree15 from "/LavishVilla 3/lvthree15.jpg";
+import lvthree16 from "/LavishVilla 3/lvthree16.jpg";
+import lvthree17 from "/LavishVilla 3/lvthree17.jpg";
+import lvthree18 from "/LavishVilla 3/lvthree18.jpg"
+
+// Update villa image collections
 const villaImageCollections = {
   "Amrith Palace": [
     AP1, AP2, AP3, AP4, AP5, AP6, AP7, AP8, AP9, AP10,
@@ -231,6 +300,20 @@ const villaImageCollections = {
   "Empire Anand Villa Samudra": [
     anandvilla1, anandvilla2, anandvilla3, anandvilla4, anandvilla5, anandvilla6, anandvilla7, anandvilla8,
     anandvilla9, anandvilla10, anandvilla11, anandvilla12, anandvilla13, anandvilla14, anandvilla15, anandvilla16
+  ],
+  "Lavish Villa I": [
+     lvone1, lvone2, lvone3, lvone4, lvone5, lvone6, lvone7, lvone8, lvone9, lvone10,
+    lvone11, lvone12, lvone13, lvone14, lvone15, lvone16, lvone17, lvone18, lvone19, lvone20,
+    lvone21, lvone22
+  ],
+  "Lavish Villa II": [
+    lvtwo1, lvtwo2, lvtwo3, lvtwo4, lvtwo5, lvtwo6, lvtwo7, lvtwo8, lvtwo9, lvtwo10,
+    lvtwo11, lvtwo12, lvtwo13, lvtwo14, lvtwo15, lvtwo16, lvtwo17, lvtwo18, lvtwo19, lvtwo20,
+    lvtwo21, lvtwo22
+  ],
+  "Lavish Villa III": [
+    lvthree1, lvthree2, lvthree3, lvthree4, lvthree5, lvthree6, lvthree7, lvthree8, lvthree9, lvthree10,
+      lvthree12, lvthree13, lvthree14, lvthree15, lvthree16, lvthree17, lvthree18
   ]
 };
 

@@ -1,37 +1,56 @@
 // LuxorStay/src/utils/firebase.js
-// import { initializeApp } from "firebase/app";
-// import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-// // Firebase config
-// const firebaseConfig = {
-//   apiKey: "AIzaSyARG6hWCN2hbo_3mILCu-DpCgp9QMKc_KM",
-//   authDomain: "luxorstay-dd33a.firebaseapp.com",
-//   projectId: "luxorstay-dd33a",
-//   storageBucket: "luxorstay-dd33a.firebasestorage.app",
-//   messagingSenderId: "219478737238",
-//   appId: "1:219478737238:web:44737c42df771f2cdfd6f7"
-// };
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB5kBbalHfhAVDmwMyuX56BDJ64nX-drA4",
+  authDomain: "luxorstayhomes.firebaseapp.com",
+  projectId: "luxorstayhomes",
+  storageBucket: "luxorstayhomes.firebasestorage.app",
+  messagingSenderId: "583547923942",
+  appId: "1:583547923942:web:2a6190ea978452543cba27",
+  measurementId: "G-JCER68LZ3B"
+};
 
-// // Initialize Firebase
-// const app = initializeApp(firebaseConfig);
-// const auth = getAuth(app);
-// const googleProvider = new GoogleAuthProvider();
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+let analytics = null;
 
-// export const signInWithGoogle = async () => {
-//   try {
-//     const result = await signInWithPopup(auth, googleProvider);
-//     const user = result.user;
+// Only initialize analytics in the browser environment
+if (typeof window !== 'undefined') {
+  analytics = getAnalytics(app);
+}
+
+// Initialize Firebase Auth
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+// Google Sign-In method
+export const signInWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
     
-//     return {
-//       email: user.email,
-//       username: user.displayName,
-//       image: user.photoURL,
-//       googleId: user.uid
-//     };
-//   } catch (error) {
-//     console.error("Error signing in with Google:", error);
-//     throw error;
-//   }
-// };
+    console.log("Firebase Google auth successful:", user);
+    
+    return {
+      email: user.email,
+      name: user.displayName,
+      image: user.photoURL,
+      uid: user.uid,
+      phoneNumber: user.phoneNumber
+    };
+  } catch (error) {
+    console.error("Error signing in with Google:", error);
+    throw error;
+  }
+};
 
-// export default app;
+// Get current authenticated user
+export const getCurrentUser = () => {
+  return auth.currentUser;
+};
+
+export { app, auth, analytics };

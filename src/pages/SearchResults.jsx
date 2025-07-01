@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { useLocation, Link } from "react-router-dom"
+import { useLocation, Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { FaMapMarkerAlt, FaRegCalendar, FaSwimmingPool, FaWifi, FaStar, FaUsers, FaBed, FaBath } from "react-icons/fa"
 import { MdOutlineBeachAccess, MdHotTub } from "react-icons/md"
@@ -94,6 +94,7 @@ const getRandomAmenities = () => {
 const SearchResults = () => {
   const location = useLocation()
   const resultsRef = useRef(null)
+  const navigate = useNavigate()
 
   // Extract search parameters from the URL
   const searchParams = new URLSearchParams(location.search)
@@ -243,6 +244,47 @@ const SearchResults = () => {
   // Get current image index for a villa
   const getCurrentImageIndex = (villaId) => {
     return currentImage[villaId] || 0
+  }
+
+  // Fix the navigateToVillaDetail function to handle images properly
+  const navigateToVillaDetail = (e, villa) => {
+    e.stopPropagation(); // Prevent parent click from triggering
+    const villaId = villa._id || villa.id;
+    
+    // Ensure villa has proper image collection based on name
+    let processedVilla = {...villa};
+    
+    // Check if villa has no images or has insufficient images
+    if (!processedVilla.images || !Array.isArray(processedVilla.images) || processedVilla.images.length < 5) {
+      // Match villa name with image collections
+      const villaName = processedVilla.name?.toLowerCase() || '';
+      
+      if (villaName.includes('amrith') || villaName.includes('palace')) {
+        console.log("Mapping Amrith Palace images to villa");
+        processedVilla.images = villaImageCollections["Amrith Palace"];
+      } else if (villaName.includes('east') || villaName.includes('coast')) {
+        console.log("Mapping East Coast Villa images to villa");
+        processedVilla.images = villaImageCollections["East Coast Villa"];
+      } else if (villaName.includes('ram') || villaName.includes('water')) {
+        console.log("Mapping Ram Water Villa images to villa");
+        processedVilla.images = villaImageCollections["Ram Water Villa"];
+      } else if (villaName.includes('empire') || villaName.includes('anand') || villaName.includes('samudra')) {
+        console.log("Mapping Empire Anand Villa Samudra images to villa");
+        processedVilla.images = villaImageCollections["Empire Anand Villa Samudra"];
+      } else {
+        // Default to Empire Anand if no match
+        console.log("Using default Empire Anand Villa Samudra images");
+        processedVilla.images = empireAnandVillaSamudraImages;
+      }
+    }
+    
+    // Now navigate with the processed villa data containing proper images
+    navigate(`/rooms/${villaId}`, { 
+      state: { 
+        villa: processedVilla,
+        fromSearch: true // Mark that we came from search results
+      } 
+    });
   }
 
   return (
@@ -501,7 +543,7 @@ const SearchResults = () => {
                       </div>
                       
                       <Link
-                        to={`/villa/${villa._id}`}
+                        to={`/villas/${villa._id}`}
                         className={`px-4 py-2 rounded-md transition-all ${
                           villa.isBooked
                             ? "bg-gray-100 text-gray-500 cursor-not-allowed"

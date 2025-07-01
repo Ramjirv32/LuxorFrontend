@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api';
 import { useAuth } from '../context/AuthContext';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { signInWithGoogle } from '../utils/firebase';
+import { FcGoogle } from 'react-icons/fc';
 
 const SignIn = () => {
   // Initialize AOS for animations
@@ -26,58 +28,55 @@ const SignIn = () => {
   
   const { setAuthToken, setUserData } = useAuth();
   const navigate = useNavigate();
-
-  // Input validation
-  const validateInputs = () => {
-    if (!email || !password) {
-      setError('Email and password are required');
-      return false;
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const isRedirectFromBooking = searchParams.get('redirect') === 'booking';
+  
+  // Function to handle post-login navigation
+  const handleSuccessfulLogin = () => {
+    // Check if there's a pending booking
+    const pendingBooking = localStorage.getItem('pendingBooking');
+    
+    if (pendingBooking && isRedirectFromBooking) {
+      try {
+        const bookingData = JSON.parse(pendingBooking);
+        
+        if (bookingData.returnUrl) {
+          // Navigate back to the specific villa details page
+          navigate(bookingData.returnUrl);
+          return;
+        } else if (bookingData.villaId) {
+          // If no return URL but we have villa ID, construct the URL
+          navigate(`/villas/${bookingData.villaId}`);
+          return;
+        }
+      } catch (error) {
+        console.error("Error parsing pending booking data:", error);
+      }
     }
     
-    if (!isLogin) {
-      if (!name) {
-        setError('Name is required');
-        return false;
-      }
-      if (password !== confirmPassword) {
-        setError('Passwords do not match');
-        return false;
-      }
-      if (password.length < 6) {
-        setError('Password must be at least 6 characters');
-        return false;
-      }
-    }
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address');
-      return false;
-    }
-    
-    return true;
+    // Default redirect to home
+    navigate('/');
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-    
-    if (!validateInputs()) return;
-    
     setLoading(true);
+    setError('');
     
     try {
-      // Call the OTP sending endpoint instead of direct login/register
-      const endpoint = isLogin ? 'send-login-otp' : 'send-registration-otp';
+      // Validation
+      if (!isLogin && password !== confirmPassword) {
+        throw new Error("Passwords don't match");
+      }
       
-      const response = await fetch(`${API_BASE_URL}/api/auth/${endpoint}`, {
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, name }),
       });
       
       const data = await response.json();
@@ -86,27 +85,100 @@ const SignIn = () => {
         throw new Error(data.error || 'Authentication failed');
       }
       
-      setSuccess('Verification code sent to your email!');
+      // Store auth token
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userId', data.user._id);
+      localStorage.setItem('userEmail', data.user.email);
       
-      // Navigate to OTP verification page with user data
+      // Update auth context
+      setAuthToken(data.token);
+      setUserData(data.user);
+      
+      // Show success message
+      setSuccess(isLogin ? "Login successful!" : "Account created successfully!");
+      
+      // Add a small delay before navigation to show the success message
       setTimeout(() => {
-        navigate('/verify-otp', { 
-          state: { 
-            email, 
-            name: isLogin ? '' : name, 
-            password, 
-            isLogin 
-          } 
-        });
+        handleSuccessfulLogin();
       }, 1000);
       
-    } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.');
+    } catch (error) {
+      console.error("Auth error:", error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
-
+  
+  // Google sign-in handler
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      // Get user info from Firebase
+      const googleUser = await signInWithGoogle();
+      
+      console.log("Google auth successful, sending to backend:", googleUser);
+      
+      // Now send this data to your backend to create/login the user
+      const response = await fetch(`${API_BASE_URL}/api/auth/google-auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: googleUser.email,
+          name: googleUser.name,
+          imageUrl: googleUser.image,
+          uid: googleUser.uid
+        })
+      });
+      
+      // Check if response is valid JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Non-JSON response received:", await response.text());
+        throw new Error("Server returned an invalid response format");
+      }
+      
+      const data = await response.json();
+      console.log("Backend auth response:", data);
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Google authentication failed');
+      }
+      
+      // Store auth token
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userId', data.user._id);
+      localStorage.setItem('userEmail', data.user.email);
+      
+      // Update auth context
+      setAuthToken(data.token);
+      setUserData(data.user);
+      
+      // Show success message
+      setSuccess("Google sign-in successful!");
+      
+      // Navigate after a short delay
+      setTimeout(() => {
+        handleSuccessfulLogin();
+      }, 1000);
+      
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Toggle between login and signup
+  const toggleAuthMode = () => {
+    setIsLogin(!isLogin);
+    setError('');
+    setSuccess('');
+  };
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-emerald-50 px-4 py-20">
       <div className="absolute inset-0 -z-10">
@@ -115,8 +187,15 @@ const SignIn = () => {
         <div className="absolute -bottom-8 left-40 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{animationDelay: '4s'}}></div>
       </div>
       
+      {/* Indicator if redirected from booking */}
+      {isRedirectFromBooking && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium shadow-md z-20">
+          Log in to continue your booking
+        </div>
+      )}
+      
       <div className="w-full max-w-4xl flex rounded-2xl shadow-2xl overflow-hidden">
-        {/* Left side: Form */}
+        {/* Left side: Auth form */}
         <div className="bg-white w-full md:w-1/2 p-8 lg:p-12" data-aos="fade-right">
           <div className="mb-8">
             <Link to="/" className="flex items-center">
@@ -148,6 +227,7 @@ const SignIn = () => {
             </div>
           )}
           
+          {/* Email Authentication Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div data-aos="fade-up" data-aos-delay="100">
@@ -288,11 +368,7 @@ const SignIn = () => {
               {isLogin ? "Don't have an account?" : "Already have an account?"}
               <button
                 type="button"
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setError('');
-                  setSuccess('');
-                }}
+                onClick={toggleAuthMode}
                 className="ml-1 font-medium text-emerald-600 hover:text-emerald-500 transition-colors"
               >
                 {isLogin ? 'Sign Up' : 'Sign In'}
@@ -300,44 +376,30 @@ const SignIn = () => {
             </p>
           </div>
           
-          {isLogin && (
-            <div className="mt-6" data-aos="fade-up" data-aos-delay="600">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">
-                    Or continue with
-                  </span>
-                </div>
+          {/* Social Login Section */}
+          <div className="mt-6" data-aos="fade-up" data-aos-delay="600">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
               </div>
-              
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <div>
-                  <a
-                    href="#"
-                    className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972a6.033 6.033 0 110-12.064c1.498 0 2.866.549 3.921 1.453l2.814-2.814A9.969 9.969 0 0012.545 2C7.021 2 2.543 6.477 2.543 12s4.478 10 10.002 10c8.396 0 10.249-7.85 9.426-11.748l-9.426-.013z" />
-                    </svg>
-                  </a>
-                </div>
-                
-                <div>
-                  <a
-                    href="#"
-                    className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z" clipRule="evenodd" />
-                    </svg>
-                  </a>
-                </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">
+                  Or continue with
+                </span>
               </div>
             </div>
-          )}
+            
+            <div className="mt-6">
+              <button
+                onClick={handleGoogleSignIn}
+                className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors items-center"
+                disabled={loading}
+              >
+                <FcGoogle className="w-5 h-5 mr-2" />
+                Sign in with Google
+              </button>
+            </div>
+          </div>
         </div>
         
         {/* Right side: Image */}
@@ -369,6 +431,5 @@ const SignIn = () => {
     </div>
   );
 };
-
 
 export default SignIn;
