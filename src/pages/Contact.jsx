@@ -8,5 +8,5 @@ const ContactPage = () => {
     </main>
   );
 };
-
+// /new/
 export default ContactPage;
