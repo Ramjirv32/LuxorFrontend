@@ -85,7 +85,25 @@ const SignIn = () => {
         throw new Error(data.error || 'Authentication failed');
       }
       
-      // Store auth token
+      // Check if verification is required
+      if (data.requiresVerification) {
+        // Save email in session storage for the OTP page
+        sessionStorage.setItem('verificationEmail', email);
+        sessionStorage.setItem('verificationName', name);
+        sessionStorage.setItem('isLogin', isLogin.toString());
+        
+        // Navigate to OTP verification page
+        navigate('/verify-otp', { 
+          state: { 
+            email: email,
+            name: name,
+            isLogin: isLogin
+          } 
+        });
+        return;
+      }
+      
+      // Regular login/signup success flow
       localStorage.setItem('authToken', data.token);
       localStorage.setItem('userId', data.user._id);
       localStorage.setItem('userEmail', data.user.email);
@@ -128,7 +146,7 @@ const SignIn = () => {
         body: JSON.stringify({
           email: googleUser.email,
           name: googleUser.name,
-          imageUrl: googleUser.image,
+          imageUrl: googleUser.photoURL || googleUser.image,
           uid: googleUser.uid
         })
       });
@@ -166,7 +184,7 @@ const SignIn = () => {
       
     } catch (error) {
       console.error("Google sign-in error:", error);
-      setError(error.message);
+      setError(error.message || "Failed to sign in with Google");
     } finally {
       setLoading(false);
     }
@@ -331,9 +349,12 @@ const SignIn = () => {
                   </label>
                 </div>
                 <div className="text-sm">
-                  <a href="#" className="font-medium text-emerald-600 hover:text-emerald-500">
+                  <Link 
+                    to="/forgot-password" 
+                    className="font-medium text-emerald-600 hover:text-emerald-500"
+                  >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               </div>
             )}

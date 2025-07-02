@@ -9,7 +9,7 @@ import Kitchen from "../assets/Facilities/KITCHEN.png"
 import Parking from "../assets/Facilities/PARK.png"
 import Pool from "../assets/Facilities/p.png"
 import Wifi from "../assets/Facilities/WIFI.png"
-import { useUser } from "@clerk/clerk-react"
+
 import { useNavigate } from "react-router-dom"
 import { API_BASE_URL } from "../config/api"
 import Swal from 'sweetalert2'

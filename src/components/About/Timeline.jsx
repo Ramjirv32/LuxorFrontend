@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 
 const milestones = [
   {
-    date: '2020',
+    date: '2024',
     text: 'Villa Established',
     icon: <FaHome size={28} />,
     bgImage:
